@@ -229,7 +229,7 @@ function mainActionHandler() {
             }
             break;
         case 'about_link':
-            alert("m2ag.labs iot client version 1.0. Usage info available at m2aglabs.com"); // jshint ignore:line
+            alert("m2ag.labs thing client version 1.0. Usage info available at m2aglabs.com"); // jshint ignore:line
             break;
         case 'poll_switch':
             if (document.getElementById('poll_switch').checked) {
