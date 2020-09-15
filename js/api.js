@@ -1,6 +1,6 @@
 const thing_url = `${window.location.protocol}//${window.location.hostname}:8888`
 const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
-const git_url = `https://raw.githubusercontent.com/m2ag-labs/m2ag-iot-things/master`
+const git_url = `https://raw.githubusercontent.com/m2ag-labs/m2ag-things/master`
 
 /**
  * Using fetch in the code for now. Control auth and settings here. Basic auth
