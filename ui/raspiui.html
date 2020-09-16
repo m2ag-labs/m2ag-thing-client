@@ -128,7 +128,7 @@
         }
 
         set value(value) {
-            //if the input control is not set ,  set correctly
+            //if the input control is not set, set correctly
             if (!this.readOnly) {
                 let input = document.getElementById(`${this.target}_input`)
                 switch (this.type) {
@@ -161,10 +161,9 @@
                 .then(response => response.json())
                 .then(result => updateUi(result))
                 .catch(error => console.log('error', error))
-
         }
-
     }
+
 
     /**
      * Sets up form
@@ -179,7 +178,7 @@
             if (data.hasOwnProperty(param)) {
                 //Create the div
                 //do we have a vendor attribute?
-                let style = 'alpha' //alpha numeric readonly as default
+                let style = 'alpha' //alpha numeric readonly
                 if ('vendor' in data[param] && 'style' in data[param].vendor) {
                     style = data[param]['vendor']['style']
                 }

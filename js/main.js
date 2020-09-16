@@ -19,8 +19,8 @@ function mainInit() {
                 create_device_tree(result)
                 if ('features' in result.data) {
                     let GE = customElements.get('service-element')
-                    for (let i = 0; i < result.data.features.length; i++) {
-                        const id = result.data.features[i]
+                    for (let i = 0; i < result.data['features'].length; i++) {
+                        const id = result.data['features'][i]
                         thing = new GE({context: id})
                         thing.id = id
                         document.getElementById('service-status-list').appendChild(thing)
@@ -43,10 +43,8 @@ function mainInit() {
     }
 
     //Set iframes, turn on controls, etc.
-    //TODO: allow selecting a display.
     //TODO: check if ui is enabled.
-    //TODO: change to ui by default if one is available.
-    //TODO: when do I add other service monitors?
+    //TODO: change to ui by jstree if one is available.
     //Add thing one always
     let GE = customElements.get('service-element')
 
@@ -55,8 +53,6 @@ function mainInit() {
     document.getElementById('service-status-list').appendChild(thing)
 
 }
-
-let ui_name_map = {}
 
 function uiInit(thing) {
     //ui-tab-list -- append to there
@@ -92,7 +88,7 @@ function createUiLi(tag, index, selected = false) {
     //put the index of the thing in the name field -- use to set src page
 }
 
-function uiActionHandler(data) {
+function uiActionHandler() {
     let idx = this.id.split('.')
     document.getElementById('ui_frame').src =
         `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true`
@@ -221,7 +217,7 @@ function mainActionHandler() {
                 let data = {user: document.getElementById("connect_name").value, password: pw_1};
                 fetch(`${api_url}/password`, fetchDataOptions('PUT', JSON.stringify(data)))
                     .then(response => response.json())
-                    .then(result => setPassword())
+                    .then(() => setPassword())
                     .catch(error => console.log('error', error))
 
             } else {
