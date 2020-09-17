@@ -87,7 +87,7 @@
                                     <h5 class="card-title">device tree</h5>
                                 </li>
                             </ul>
-                            <div id="device_tree_area" style="overflow: scroll">
+                            <div id="device_tree_area" style="overflow: scroll;">
 
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                                 <li class="list-group-item list-group-item-primary text-center">
                                     <h5 class="card-title">detail</h5>
                                 </li>
-                                <li class="list-group-item text-center" id="detail_table_li" style="overflow: scroll">
+                                <li class="list-group-item text-center" id="detail_table_li" style="overflow: scroll;">
 
                                 </li>
                             </ul>
@@ -114,30 +114,15 @@
         <div aria-labelledby="pills-ui-tab" class="tab-pane fade show" id="ui" role="tabpanel">
             <div class="card">
                 <nav class="navbar navbar-expand-sm navbar-light bg-light">
-                    <ul class="nav nav-pills mb-3" role="tablist" id="ui-tab-list">
-                        <!--<li class="nav-item ui-select">
-                            <a aria-controls="pills-ads1x15" aria-selected="true" class="nav-link active"
-                               data-toggle="pill"
-                               href="#"
-                               id="m2ag-ads1x15" role="tab">m2ag-ads1x15</a>
-                        </li>
-                        <li class="nav-item ui-select">
-                            <a aria-controls="pills-enviro" aria-selected="false" class="nav-link"
-                               data-toggle="pill"
-                               href="#"
-                               id="m2ag-enviro" role="tab">m2ag-enviro</a>
-                        </li>-->
-                    </ul>
+                    <ul class="nav nav-pills mb-3" role="tablist" id="ui-tab-list"></ul>
                 </nav>
                 <div class="card-body">
                     <iframe id="ui_frame" src=""
-                            style="position: relative; height:700px; width:100%; border:0" title="UI">
+                            style="position: relative; height: 700px; width: 100%; border: 0;" title="UI">
                     </iframe>
                 </div>
             </div>
         </div>
-
-
     </div>
     <!-- message toast -->
 </div> <!-- container main content-->
@@ -147,7 +132,7 @@
     <div class="modal-dialog">
 
         <!-- Modal content-->
-        <div class="modal-content" style="height: 750px; width:500px">
+        <div class="modal-content" style="height: 750px; width: 500px;">
             <div class="modal-header">
                 <h5 class="modal-title">websocket comm</h5>
                 <button aria-label="Close" class="close" data-dismiss="modal" type="button">
@@ -223,12 +208,9 @@
                            id="mpills-set-password-tab" role="tab">set password</a>
                     </li>
                 </ul>
-
                 <div class="tab-content" id="mpills-tabContent">
-
                     <div aria-labelledby="pills-connect-tab" class="tab-pane fade show active" id="credentials"
                          role="tabpanel">
-
                         <div class="card">
                             <div class="card-body">
                                 <p class="card-text">
@@ -262,12 +244,9 @@
                                 </ul>
                             </div>
                         </div>
-
                     </div> <!-- connect tab -->
-
                     <div aria-labelledby="pills-set-password-tab" class="tab-pane fade" id="mpills-comm"
                          role="tabpanel">
-
                         <div class="card">
                             <div class="card-body">
                                 <p class="card-text">
@@ -277,7 +256,7 @@
                                             <div class="form-group">
                                                 <label for="emailfield"></label><input autocomplete="username"
                                                                                        id="emailfield"
-                                                                                       style="display: none"
+                                                                                       style="display: none;"
                                                                                        type="text" value="">
                                                 <label for="password_1">enter new password</label>
                                                 <input autocomplete="new-password" class="form-control" id="password_1"
@@ -298,11 +277,8 @@
                                 </ul>
                             </div>
                         </div>
-
                     </div> <!-- comm tab -->
-
                 </div><!-- tab pane-->
-
             </div>
         </div>
     </div>
@@ -317,10 +293,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-
-
             <div class="modal-body">
-
                 <ul class="nav nav-pills" role="tablist">
                     <li class="nav-item">
                         <a aria-controls="mpills" aria-selected="true" class="nav-link active"
@@ -352,7 +325,7 @@
 
                                                 </ul>
                                                 <button class="btn btn-success thinger-button-add" id="add-components"
-                                                        style="display: none" type="button">
+                                                        style="display: none;" type="button">
                                                     add
                                                 </button>
                                             </div>
@@ -363,7 +336,7 @@
                                                 </ul>
                                                 <button class="btn btn-danger thinger-button-remove"
                                                         id="remove-components"
-                                                        style="display: none" type="button">
+                                                        style="display: none;" type="button">
                                                     remove
                                                 </button>
                                             </div>
@@ -392,7 +365,7 @@
 
                                                 </ul>
                                                 <button class="btn btn-success thinger-button-add" id="add-things"
-                                                        style="display: none" type="button">
+                                                        style="display: none;" type="button">
                                                     add
                                                 </button>
                                             </div>
@@ -402,7 +375,7 @@
 
                                                 </ul>
                                                 <button class="btn btn-danger thinger-button-remove" id="remove-things"
-                                                        style="display: none" type="button">
+                                                        style="display: none;" type="button">
                                                     remove
                                                 </button>
                                             </div>
@@ -417,10 +390,7 @@
                     </div> <!-- thing -->
 
                 </div><!-- tab pane-->
-
-
             </div>
-
         </div>
     </div>
     <!-- toast -->
@@ -444,7 +414,7 @@
 </div>
 <!-- message toast -->
 <div aria-atomic="true" aria-live="assertive" class="toast" id="message-toast" role="alert"
-     style="position: absolute; top: 10%; right: 5%; min-width: 300px">
+     style="position: absolute; top: 10%; right: 5%; min-width: 300px;">
     <div class="toast-header">
         <img alt="" class="rounded mr-2" src="">
         <strong class="mr-auto" id="message-toast-title">title</strong>
