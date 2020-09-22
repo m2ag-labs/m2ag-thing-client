@@ -119,7 +119,7 @@
                 this.polled = value
                 this._toggleAttribute('polling')
             }
-            fetch(`${api_url}/${this.params.context}/status`, fetchDataOptions())
+            fetch(`${api_url}/${this.params.context}/status`, getDataOptions)
                 .then(response => response.json())
                 .then(result => this.status = result)
                 .catch(error => console.log('error', error))
@@ -209,7 +209,7 @@
                     end_point += 'start'
             }
 
-            fetch(`${api_url}/${end_point}`, fetchDataOptions())
+            fetch(`${api_url}/${end_point}`, getDataOptions)
                 .then(response => response.json())
                 .then(result => this.status = result)
                 .catch(error => console.log('error', error))

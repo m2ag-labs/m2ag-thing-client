@@ -1,5 +1,6 @@
 let poll_enable = false;
 let auth_hash;
+let jwt_token;
 let poll_targets = [];
 
 window.addEventListener("load", mainInit, false)
@@ -10,10 +11,9 @@ function mainInit() {
     for (let i = 0; i < controls.length; i++) {
         controls[i].addEventListener('click', mainActionHandler, false)
     }
-
-    manageLocalStorage('load')
+    manageLocalStorage('load') //sets dataOptions dataHeader too
     if (auth_hash !== undefined) {
-        fetch(`${api_url}/config`, fetchDataOptions('GET'))
+        fetch(`${api_url}/config`, getDataOptions)
             .then(response => response.json())
             .then(result => {
                 create_device_tree(result)
@@ -28,14 +28,25 @@ function mainInit() {
                 }
             })
             .catch(error => console.log('error', error))
-        //add teh device tree handler here to avoid multiple addition
+        //add the device tree handler here to avoid multiple addition
         treeInit()
         commInit()
 
-        fetch(`${thing_url}/`, fetchThingOptions('GET'))
+        //get a valid jwt token from the sever, set in options, call fetch
+        fetch(`${api_url}/auth`, getDataOptions)
             .then(response => response.json())
-            .then(result => uiInit(result))
+            .then(result => {
+                jwt_token = result.data['token']
+                const auth = `Bearer ${jwt_token}`
+                thingHeaders.append("Authorization", auth);
+                fetch(`${thing_url}/`, getThingOptions)
+                    .then(response => response.json())
+                    .then(result => uiInit(result))
+                    .catch(error => console.log('error', error))
+                })
             .catch(error => console.log('error', error))
+
+
 
 
     } else {
@@ -62,7 +73,7 @@ function uiInit(thing) {
         if (i === 0) {
             first = false
             //TODO: set to fist thing
-            document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true`
+            document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
             ui_html = createUiLi(thing[i].title, i, true)
         } else {
             ui_html += createUiLi(thing[i].title, i, false)
@@ -91,9 +102,8 @@ function createUiLi(tag, index, selected = false) {
 function uiActionHandler() {
     let idx = this.id.split('.')
     document.getElementById('ui_frame').src =
-        `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true`
+        `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
 }
-
 
 /**
  *  Poll the services to get realtime status
@@ -153,19 +163,22 @@ function manageLocalStorage(mode = 'load') {
                 document.getElementById("connect_name").value = config.name || "";
                 document.getElementById("connect_password").value = config.pw || "";
                 auth_hash = config.hash;
+                //set options header for
+                dataHeaders.append("Authorization", 'Basic ' + config.hash);
             } catch (e) {
                 //It's ok, just continue if not set
             }
             break;
         case 'save':
             auth_hash = btoa(document.getElementById('connect_name').value + ":" + document.getElementById('connect_password').value);
+            dataHeaders.set("Authorization", 'Basic ' + auth_hash)
             config = {
                 "name": document.getElementById("connect_name").value,
                 "pw": document.getElementById("connect_password").value,
                 "hash": auth_hash
             };
             localStorage.setItem('client_config', JSON.stringify(config));
-            fetch(`${api_url}/config`, fetchDataOptions('GET'))
+            fetch(`${api_url}/config`, getDataOptions)
                 .then(response => response.json())
                 .then(result => create_device_tree(result))
                 .catch(error => console.log('error', error))
@@ -176,6 +189,7 @@ function manageLocalStorage(mode = 'load') {
             localStorage.setItem('client_config', JSON.stringify(config));
             document.getElementById("connect_name").value = "";
             document.getElementById("connect_password").value = "";
+            dataHeaders.delete("Authorization")
             break;
         default:
             console.log("unknown local storage operation");
@@ -215,7 +229,8 @@ function mainActionHandler() {
             const pw_2 = document.getElementById("password_2").value;
             if (pw_1 !== "" && pw_1 === pw_2) {
                 let data = {user: document.getElementById("connect_name").value, password: pw_1};
-                fetch(`${api_url}/password`, fetchDataOptions('PUT', JSON.stringify(data)))
+                putDataOptions['data'] = JSON.stringify(data)
+                fetch(`${api_url}/password`, putDataOptions )
                     .then(response => response.json())
                     .then(() => setPassword())
                     .catch(error => console.log('error', error))

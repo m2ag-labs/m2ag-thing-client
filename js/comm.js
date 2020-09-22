@@ -1,12 +1,14 @@
 //TODO: add ability to turn off console
-function getWebSocket(path, callbacks = {}) {
+function getWebSocket(path, callbacks = {}, auth = null) {
 
     let uri = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-    // uri += document.getElementById('connect_name').value + ':';
-    // uri += document.getElementById('connect_password').value + '@'
     uri += window.location.hostname + ':8888'
-
-    let ws = new WebSocket(`${uri}${path}`);
+    let ws
+    if(auth === null) {
+        ws = new WebSocket(`${uri}${path}`)
+    } else {
+        ws = new WebSocket(`${uri}${path}?Authorization=${auth}`)
+    }
 
     if ('on_open' in callbacks) {
         ws.onopen = function (evt) {

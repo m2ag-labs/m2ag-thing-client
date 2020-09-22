@@ -2,58 +2,43 @@ const thing_url = `${window.location.protocol}//${window.location.hostname}:8888
 const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
 const git_url = `https://raw.githubusercontent.com/m2ag-labs/m2ag-things/master`
 
+const dataHeaders = new Headers();
+dataHeaders.append("Content-Type", "application/json")
+//dataHeaders.append("Authorization", 'Basic ' + auth_hash) -- set in init an managelocalstrorage
+const   getDataOptions = {
+    method: 'GET',
+    headers: dataHeaders,
+    redirect: 'follow'
+};
 /**
- * Using fetch in the code for now. Control auth and settings here. Basic auth
- * @param method
- * @param body
- * @returns {{mode: string, redirect: string, headers: {Authorization: string, "Content-Type": string}, cache: string, method: string, referrerPolicy: string, credentials: string}}
+ * use for post and delete too. Be sure to set method back to PUT if changed
+ * @type {{redirect: string, headers: Headers, method: string, body: string}}
  */
-function fetchDataOptions(method = 'GET', body = null) {
-    let init = {
-        method: method,
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + auth_hash
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer'
-    }
-    if (body !== null)
-        init['body'] = body
-
-    return init
+const putDataOptions = {
+    method: 'PUT',
+    headers: dataHeaders,
+    body: '',
+    redirect: 'follow'
 }
 
+
+const thingHeaders = new Headers();
+thingHeaders.append("Content-Type", "application/json");
+const getThingOptions = {
+    method: 'GET',
+    headers: thingHeaders,
+    redirect: 'follow'
+};
 /**
- * Same as getDataOptions except security will be jwt (by beta)
- * @param method
- * @param body
- * @returns {{mode: string, redirect: string, headers: {"Content-Type": string}, cache: string, method: string, referrerPolicy: string, credentials: string}}
+ * use for post too
+ * @type {{redirect: string, headers: Headers, method: string, body: string}}
  */
-function fetchThingOptions(method = 'GET', body = null) {
-
-    let init = {
-        method: method,
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-            //'Authorization': 'Basic ' + auth_hash,
-            //'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-    }
-    if (body !== null)
-        init['body'] = body
-
-    return init
+const putThingOptions = {
+    method: 'PUT',
+    headers: thingHeaders,
+    body: '',
+    redirect: 'follow'
 }
-
 
 /**
  * Can't get fetch to get the module files from git hub due to cors issues -- xhr works.

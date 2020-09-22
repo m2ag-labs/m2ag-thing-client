@@ -127,7 +127,7 @@ function clearTable() {
 
 function setTable(node) {
 
-    fetch(`${api_url}/${node.data}`, fetchDataOptions('GET'))
+    fetch(`${api_url}/${node.data}`, getDataOptions )
                 .then(response => response.json())
                 .then(result => buildTable(result, node.data))
                 .catch(error => console.log('error', error))
@@ -166,13 +166,13 @@ function updateModule(evt) {
             break
         case 'accept':
         case 'delete':
-
-            fetch(`${api_url}/${evt.detail.path}`, fetchDataOptions('PUT', JSON.stringify(evt.detail.data)))
+            putDataOptions['data'] = JSON.stringify(evt.detail.data)
+            fetch(`${api_url}/${evt.detail.path}`, putDataOptions)
                 .then(response => response.json())
                 .then(result => buildTable(result, evt.detail.path))
                 .catch(error => console.log('error', error))
 
-            fetch(`${api_url}/config`, fetchDataOptions('GET'))
+            fetch(`${api_url}/config`, getDataOptions)
                 .then(response => response.json())
                 .then(result => create_device_tree(result))
                 .catch(error => console.log('error', error))

@@ -27,33 +27,30 @@
 <script src="../js/vendor/bootstrap.min.js"></script>
 
 <script src="js/gauge.min.js"></script>
-
 <script src="../js/comm.js"></script>
 <script>
-
     window.addEventListener("load", init);
     let opts = {} //component to look at, update method
-    let target_interval
-    let target_socket
+    let target_interval  //if polling
+    let target_socket //for websocket connection
     let translators = {} //format translators
     let props = {} //property list -- makes it easy to find
     const cols = 2 // 0 based
-    //TODO: add auth header here -- probably have to use let
-    //Maybe move this back to api.js -- easier to keep them apart -- no authhash here
+    //TODO:
+    //Maybe move this back to api.js -- easier to keep them apart -- no authhash here -- what about expiring jwts?
+    let auth
     const thing_url = `${window.location.protocol}//${window.location.hostname}:8888`
-    const putThingOptions = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: '',
-        redirect: 'follow'
-    }
-    const getThingOptions = {
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: requestHeaders,
+        redirect: 'follow'
+    };
+    const putOptions = {
+        method: 'PUT',
+        headers: requestHeaders,
+        body: '',
         redirect: 'follow'
     }
 
@@ -69,15 +66,22 @@
             opts[ix[0]] = ix[1]
         }
         //get the defaults from the thing and setup fields
-        fetch(`${thing_url}/${opts.index}`, getThingOptions)
+        //get bearer token from the query string
+        if(opts['jwt'] !== undefined && opts['jwt'] !== '') {
+            auth = `Bearer ${opts['jwt']}`
+            requestHeaders.append("Authorization", auth);
+             fetch(`${thing_url}/${opts.index}`, getOptions)
             .then(response => response.json())
             .then(result => setDefaults(result))
             .catch(error => console.log('error', error))
-
+        } else {
+            alert('missing auth token') // gotta have a token
+        }
     }
 
+
     function pollThing() {
-        fetch(`${thing_url}/${opts.index}/properties`, getThingOptions)
+        fetch(`${thing_url}/${opts.index}/properties`, getOptions)
             .then(response => response.json())
             .then(result => updateUi(result))
             .catch(error => console.log('error', error))
@@ -156,8 +160,8 @@
             }
             let bdy = {}
             bdy[id] = val //Doesn't like it if I don't do it this way -- makes bad request
-            putThingOptions.body = JSON.stringify(bdy)
-            fetch(`${thing_url}/${opts.index}/properties/${id}`, putThingOptions)
+            putOptions.body = JSON.stringify(bdy)
+            fetch(`${thing_url}/${opts.index}/properties/${id}`, putOptions)
                 .then(response => response.json())
                 .then(result => updateUi(result))
                 .catch(error => console.log('error', error))
@@ -216,7 +220,7 @@
         }
         //are we doing websockets?
         if ('socket' in opts)
-            target_socket = getWebSocket(`/${opts['index']}`, {on_message: updateUi})
+            target_socket = getWebSocket(`/${opts['index']}`, {on_message: updateUi}, auth)
         //get the starter values.
         pollThing()
     }

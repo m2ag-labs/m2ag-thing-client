@@ -25,7 +25,7 @@ function tableInit(reload = true) {
             setHandlers('thinger-control', thingerActions)
         })
     }
-    fetch(`${api_url}/config`, fetchDataOptions('GET'))
+    fetch(`${api_url}/config`, getDataOptions)
         .then(response => response.json())
         .then(result => {
             modules.icomponents = result.data.hardware
@@ -83,16 +83,22 @@ function thingerButtonRemove(event) {
     const mod = document.getElementsByClassName('thinger-control list-group-item-primary')
     if (this.id === 'remove-components') {
         const stub = mod[0].id.slice(0, mod[0].id.length - '-components-installed'.length)
-        fetch(`${api_url}/components/${stub}`, fetchDataOptions('DELETE', JSON.stringify({})))
+        putDataOptions['data'] = JSON.stringify({})
+        putDataOptions['method'] = 'DELETE'
+        fetch(`${api_url}/components/${stub}`, putDataOptions)
             .then(response => response.json())
             .then(result => tableInit(false))
             .catch(error => console.log('error', error))
+        putDataOptions['method'] = 'PUT'
     } else {
         const stub = mod[0].id.slice(0, mod[0].id.length - '-things-installed'.length)
-        fetch(`${api_url}/things/${stub}`, fetchDataOptions('DELETE', JSON.stringify({})))
+        putDataOptions['data'] = JSON.stringify({})
+        putDataOptions['method'] = 'DELETE'
+        fetch(`${api_url}/things/${stub}`, putDataOptions)
             .then(response => response.json())
             .then(result => tableInit(false))
             .catch(error => console.log('error', error))
+         putDataOptions['method'] = 'PUT'
     }
 }
 
@@ -109,20 +115,23 @@ function thingerButtonAdd() {
             for (let i = 0; i < modules.components[stub].driver.length; i++) {
                 document.getElementById('advice-text').innerText = `installing ${modules.components[stub].driver[i]}`
                 $('#advice-toast').toast({delay: 5000}).toast('show')
-                fetch(`${api_url}/pip/${modules.components[stub].driver[i]}`, fetchDataOptions('PUT', JSON.stringify({})))
+                putDataOptions['data'] = JSON.stringify({})
+                fetch(`${api_url}/pip/${modules.components[stub].driver[i]}`, putDataOptions )
                     .then(response => response.json())
                     .then(result => $('#advice-toast').toast('hide'))
                     .catch(error => console.log('error', error))
             }
         }
         getModules(path + 'json').then(data => {
-            fetch(`${api_url}/config/components/${stub}`, fetchDataOptions('PUT', JSON.stringify(data)))
+            putDataOptions['data'] = JSON.stringify(data)
+            fetch(`${api_url}/config/components/${stub}`, putDataOptions)
                 .then(response => response.json())
                 .then(result => tableInit(false))
                 .catch(error => console.log('error', error))
         })
         getModules(path + 'py', 'text').then(data => {
-            fetch(`${api_url}/components/${stub}`, fetchDataOptions('PUT', JSON.stringify(data)))
+            putDataOptions['data'] = JSON.stringify(data)
+            fetch(`${api_url}/components/${stub}`, putDataOptions )
                 .then(response => response.json())
                 .catch(error => console.log('error', error))
         })
@@ -130,7 +139,8 @@ function thingerButtonAdd() {
         const stub = mod[0].id.slice(0, mod[0].id.length - '-things-available'.length)
         path = `things/${stub}/${stub}.`
         getModules(path + 'json').then(data => {
-            fetch(`${api_url}/config/things/${stub}`, fetchDataOptions('PUT', JSON.stringify(data)))
+            putDataOptions['body'] = JSON.stringify(data)
+            fetch(`${api_url}/config/things/${stub}`, putDataOptions)
                 .then(response => response.json())
                 .then(result => tableInit(false))
                 .catch(error => console.log('error', error))
@@ -139,8 +149,8 @@ function thingerButtonAdd() {
         //TODO: fix this for things that use generic
         //Generates not found error
         getModules(path + 'py', 'text').then(data => {
-
-            fetch(`${api_url}/things/${stub}`, fetchDataOptions('PUT', JSON.stringify(data)))
+            putDataOptions['data'] = JSON.stringify(data)
+            fetch(`${api_url}/things/${stub}`, putDataOptions )
                 .then(response => response.json())
                 .catch(error => console.log('error', error))
 
