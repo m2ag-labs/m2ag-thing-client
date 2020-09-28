@@ -166,7 +166,7 @@ function updateModule(evt) {
             break
         case 'accept':
         case 'delete':
-            putDataOptions['data'] = JSON.stringify(evt.detail.data)
+            putDataOptions['body'] = JSON.stringify(evt.detail.data)
             fetch(`${api_url}/${evt.detail.path}`, putDataOptions)
                 .then(response => response.json())
                 .then(result => buildTable(result, evt.detail.path))

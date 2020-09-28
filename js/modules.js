@@ -83,7 +83,7 @@ function thingerButtonRemove(event) {
     const mod = document.getElementsByClassName('thinger-control list-group-item-primary')
     if (this.id === 'remove-components') {
         const stub = mod[0].id.slice(0, mod[0].id.length - '-components-installed'.length)
-        putDataOptions['data'] = JSON.stringify({})
+        putDataOptions['body'] = JSON.stringify({})
         putDataOptions['method'] = 'DELETE'
         fetch(`${api_url}/components/${stub}`, putDataOptions)
             .then(response => response.json())
@@ -92,7 +92,7 @@ function thingerButtonRemove(event) {
         putDataOptions['method'] = 'PUT'
     } else {
         const stub = mod[0].id.slice(0, mod[0].id.length - '-things-installed'.length)
-        putDataOptions['data'] = JSON.stringify({})
+        putDataOptions['body'] = JSON.stringify({})
         putDataOptions['method'] = 'DELETE'
         fetch(`${api_url}/things/${stub}`, putDataOptions)
             .then(response => response.json())
@@ -115,7 +115,7 @@ function thingerButtonAdd() {
             for (let i = 0; i < modules.components[stub].driver.length; i++) {
                 document.getElementById('advice-text').innerText = `installing ${modules.components[stub].driver[i]}`
                 $('#advice-toast').toast({delay: 5000}).toast('show')
-                putDataOptions['data'] = JSON.stringify({})
+                putDataOptions['body'] = JSON.stringify({})
                 fetch(`${api_url}/pip/${modules.components[stub].driver[i]}`, putDataOptions )
                     .then(response => response.json())
                     .then(result => $('#advice-toast').toast('hide'))
@@ -123,14 +123,14 @@ function thingerButtonAdd() {
             }
         }
         getModules(path + 'json').then(data => {
-            putDataOptions['data'] = JSON.stringify(data)
+            putDataOptions['body'] = JSON.stringify(data)
             fetch(`${api_url}/config/components/${stub}`, putDataOptions)
                 .then(response => response.json())
                 .then(result => tableInit(false))
                 .catch(error => console.log('error', error))
         })
         getModules(path + 'py', 'text').then(data => {
-            putDataOptions['data'] = JSON.stringify(data)
+            putDataOptions['body'] = JSON.stringify(data)
             fetch(`${api_url}/components/${stub}`, putDataOptions )
                 .then(response => response.json())
                 .catch(error => console.log('error', error))
@@ -149,7 +149,7 @@ function thingerButtonAdd() {
         //TODO: fix this for things that use generic
         //Generates not found error
         getModules(path + 'py', 'text').then(data => {
-            putDataOptions['data'] = JSON.stringify(data)
+            putDataOptions['body'] = JSON.stringify(data)
             fetch(`${api_url}/things/${stub}`, putDataOptions )
                 .then(response => response.json())
                 .catch(error => console.log('error', error))
