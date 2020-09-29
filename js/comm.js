@@ -7,7 +7,7 @@ function getWebSocket(path, callbacks = {}, auth = null) {
     if(auth === null) {
         ws = new WebSocket(`${uri}${path}`)
     } else {
-        ws = new WebSocket(`${uri}${path}?Authorization=${auth}`)
+        ws = new WebSocket(`${uri}${path}?jwt=${auth}`)
     }
 
     if ('on_open' in callbacks) {

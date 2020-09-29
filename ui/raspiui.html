@@ -38,6 +38,7 @@
     const cols = 2 // 0 based
     //TODO:
     //Maybe move this back to api.js -- easier to keep them apart -- no authhash here -- what about expiring jwts?
+    let token
     let auth
     const thing_url = `${window.location.protocol}//${window.location.hostname}:8888`
     const requestHeaders = new Headers();
@@ -220,7 +221,7 @@
         }
         //are we doing websockets?
         if ('socket' in opts)
-            target_socket = getWebSocket(`/${opts['index']}`, {on_message: updateUi}, auth)
+            target_socket = getWebSocket(`/${opts['index']}`, {on_message: updateUi}, opts['jwt'])
         //get the starter values.
         pollThing()
     }

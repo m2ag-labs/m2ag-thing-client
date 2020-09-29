@@ -45,10 +45,6 @@ function mainInit() {
                     .catch(error => console.log('error', error))
                 })
             .catch(error => console.log('error', error))
-
-
-
-
     } else {
         manageModal('show')
     }
