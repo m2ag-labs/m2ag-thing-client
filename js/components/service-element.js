@@ -13,7 +13,7 @@
             this.polled = false;
             this.attachShadow({mode: 'open'})
                 .innerHTML = `
-                <link  href="css/bootstrap.min.css" rel="stylesheet">
+                <link  href="static/css/bootstrap.min.css" rel="stylesheet">
                 <ul class="list-group text-left">
                     <li class="list-group-item list-group-item-primary text-center">
                         <h5>${this.params.context}</h5>

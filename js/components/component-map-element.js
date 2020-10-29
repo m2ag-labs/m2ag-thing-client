@@ -14,7 +14,7 @@
             this.dirty = false
             this.attachShadow({mode: 'open'})
                 .innerHTML = `
-                <link  href="css/bootstrap.min.css" rel="stylesheet">
+                <link  href="static/css/bootstrap.min.css" rel="stylesheet">
                  <table class="table" id="detail_table">
                     <thead id="detail_table_head">
                     </thead>
@@ -23,14 +23,14 @@
                 </table>
                 `
             let row = ''
-            this.shadowRoot.querySelector("#detail_table_head").innerHTML = `<tr><th scope="col">Thing</th><th scope="col">Component</th><th scope="col"><img id="add_button"src="/images/1024px-Ambox_emblem_plus.svg.png" style="width: 24px; height: auto " alt=""></th></tr>`;
+            this.shadowRoot.querySelector("#detail_table_head").innerHTML = `<tr><th scope="col">Thing</th><th scope="col">Component</th><th scope="col"><img id="add_button"src="/static/images/1024px-Ambox_emblem_plus.svg.png" style="width: 24px; height: auto " alt=""></th></tr>`;
             for (const thing in this.data['component_map']) {
                 if (this.data['component_map'].hasOwnProperty(thing)) {
                     row += `<tr><td>${this.createOptionField(thing, 'thing', this.data['things'], thing)}</td>`
                     row += `<td>${this.createOptionField(this.data.component_map[thing], 'component', this.data['components'], thing)}</td>`
-                    row += `<td><img class="accept ${thing}_control" name=${thing} src="/images/72px-Dialog-accept.svg.png" style="width: 24px; height: auto; display: none " alt="">`
-                    row += `<img class="cancel ${thing}_control" name=${thing} src="/images/72px-Dialog-error-round.svg.png" style="width: 24px; height: auto; display: none " alt="">`
-                    row += `<td><img class="delete ${thing}_control" name=${thing} src="/images/72px-User-trash-full.svg.png" style="width: 24px; height: auto " alt="" ></td></tr>`
+                    row += `<td><img class="accept ${thing}_control" name=${thing} src="/static/images/72px-Dialog-accept.svg.png" style="width: 24px; height: auto; display: none " alt="">`
+                    row += `<img class="cancel ${thing}_control" name=${thing} src="/static/images/72px-Dialog-error-round.svg.png" style="width: 24px; height: auto; display: none " alt="">`
+                    row += `<td><img class="delete ${thing}_control" name=${thing} src="/static/images/72px-User-trash-full.svg.png" style="width: 24px; height: auto " alt="" ></td></tr>`
                 }
             }
             this.shadowRoot.querySelector("#detail_table_body").innerHTML = row
@@ -191,9 +191,11 @@
             } else {
                 installed = Object.values(this.data.component_map);
             }
-
+            //Only one instance of thing -- services can support multiple things
             for (let i = 0; i < options.length; i++) {
-                if (!installed.includes(options[i])) {
+                if (field === 'thing' && !installed.includes(options[i])) {
+                    more_options += `<option value="${options[i]}">${options[i]}</option>`
+                } else {
                     more_options += `<option value="${options[i]}">${options[i]}</option>`
                 }
             }
@@ -222,8 +224,8 @@
                 let row = "";
                 row += `<tr><td>${this.createOptionField('new', 'thing', this.data.things, 'new')}</td>`;
                 row += `<td>${this.createOptionField('new', 'component', this.data.components, 'new')}</td>`;
-                row += `<td><img id="new-save" src="/images/72px-Dialog-accept.svg.png" style="width: 24px; height: auto " alt="">`;
-                row += `<img id="new-cancel" src="/images/72px-Dialog-error-round.svg.png" style="width: 24px; height: auto " alt=""></td></tr>`
+                row += `<td><img id="new-save" src="/static/images/72px-Dialog-accept.svg.png" style="width: 24px; height: auto " alt="">`;
+                row += `<img id="new-cancel" src="/static/images/72px-Dialog-error-round.svg.png" style="width: 24px; height: auto " alt=""></td></tr>`
                 //todo -- try append:
                 this.shadowRoot.querySelector('#detail_table_body').innerHTML = rows + row;
                 this.shadowRoot.querySelector('#new-save').addEventListener('click', this.newSaveComponentMap.bind(this))

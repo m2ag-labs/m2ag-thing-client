@@ -12,7 +12,7 @@
             this.params = params;
             this.attachShadow({mode: 'open'})
                 .innerHTML = `
-                <link  href="css/bootstrap.min.css" rel="stylesheet">
+                <link  href="static/css/bootstrap.min.css" rel="stylesheet">
                 
                 `
         }

@@ -37,8 +37,7 @@ function mainInit() {
             .then(response => response.json())
             .then(result => {
                 jwt_token = result.data['token']
-                const auth = `Bearer ${jwt_token}`
-                thingHeaders.append("Authorization", auth);
+                thingHeaders.append("Authorization", "Bearer " + jwt_token);
                 fetch(`${thing_url}/`, getThingOptions)
                     .then(response => response.json())
                     .then(result => uiInit(result))
@@ -69,7 +68,7 @@ function uiInit(thing) {
         if (i === 0) {
             first = false
             //TODO: set to fist thing
-            document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
+            document.getElementById('ui_frame').src = `${window.location.origin}/static/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
             ui_html = createUiLi(thing[i].title, i, true)
         } else {
             ui_html += createUiLi(thing[i].title, i, false)
@@ -98,7 +97,7 @@ function createUiLi(tag, index, selected = false) {
 function uiActionHandler() {
     let idx = this.id.split('.')
     document.getElementById('ui_frame').src =
-        `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
+        `${window.location.origin}/static/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
 }
 
 /**

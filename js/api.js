@@ -27,7 +27,8 @@ thingHeaders.append("Content-Type", "application/json");
 const getThingOptions = {
     method: 'GET',
     headers: thingHeaders,
-    redirect: 'follow'
+    redirect: 'follow',
+    credentials: 'omit'
 };
 /**
  * use for post too
