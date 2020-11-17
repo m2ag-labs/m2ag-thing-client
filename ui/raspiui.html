@@ -25,7 +25,6 @@
 <script src="../js/vendor/jquery.min.js"></script>
 <script src="../js/vendor/popper-lite.min.js"></script>
 <script src="../js/vendor/bootstrap.min.js"></script>
-
 <script src="js/gauge.min.js"></script>
 <script src="../js/comm.js"></script>
 <script>
@@ -55,7 +54,6 @@
         redirect: 'follow'
     }
 
-
     function init() {
         //Thing to generate is in url
         //?index=<index>&{ poll : interval} / { socket : true }&jwt=<token>
@@ -68,18 +66,17 @@
         }
         //get the defaults from the thing and setup fields
         //get bearer token from the query string
-        if(opts['jwt'] !== undefined && opts['jwt'] !== '') {
+        if (opts['jwt'] !== undefined && opts['jwt'] !== '') {
             auth = `Bearer ${opts['jwt']}`
             requestHeaders.append("Authorization", auth);
-             fetch(`${thing_url}/${opts.index}`, getOptions)
-            .then(response => response.json())
-            .then(result => setDefaults(result))
-            .catch(error => console.log('error', error))
+            fetch(`${thing_url}/${opts.index}`, getOptions)
+                .then(response => response.json())
+                .then(result => setDefaults(result))
+                .catch(error => console.log('error', error))
         } else {
             alert('missing auth token') // gotta have a token
         }
     }
-
 
     function pollThing() {
         fetch(`${thing_url}/${opts.index}/properties`, getOptions)
@@ -113,19 +110,26 @@
         }
     }
 
+    /*
+     * Makes the text detail look like the gauges.
+     */
     class TextDetail {
-        constructor(id, readOnly = true, type = 'alpha') {
+        constructor(id, data) {
+            this.data = data
             this.target = id  //this is the property name
-            this.readOnly = readOnly
-            switch (type) {
+            if (!this.data.readOnly)
+                document.getElementById(`${this.target}_input_control`).addEventListener('change', this.update.bind(this))
+            switch (this.data.type) {
                 case 'boolean':
                     this.type = 'checkbox' //matches type in element
                     break
+                case 'number':
+                    this.type = 'float'
+                    break
                 default:
-                    this.type = type
+                    this.type = this.data.type
             }
-            if (!readOnly)
-                document.getElementById(`${id}_input`).addEventListener('click', this.update)
+
         }
 
         get value() {
@@ -134,39 +138,61 @@
 
         set value(value) {
             //if the input control is not set, set correctly
-            if (!this.readOnly) {
-                let input = document.getElementById(`${this.target}_input`)
+            if (!this.data.readOnly) {
+                //changes display control
+                let input = document.getElementById(`${this.target}_input_control`)
                 switch (this.type) {
                     case 'checkbox': //Type boolean
                         input.checked = value
+                        break
+                    case 'integer':
+                    case 'float':
+                        if ('minimum' in this.data && 'maximum' in this.data) {
+                            input.value = value
+                        }
+                        break
+                    case 'string':
+                        if ('enum' in this.data) {
+                            input.value = value
+                        }
                         break
                     default:
                         break
                 }
             }
+            //changes display
             document.getElementById(this.target + "_value").innerText = value
         }
 
         update() {
             //use rest to update property
-            let id = this.id.substring(0, this.id.length - "_input".length)
-            let input = document.getElementById(`${id}_input`)
-            let val
+            let input = document.getElementById(`${this.target}_input_control`)
+            let val = ""
             switch (this.type) {
                 case 'checkbox': //Type boolean
                     val = input.checked
                     break
+                case 'integer':
+                    val = parseInt(input.value)
+                    break;
+                case 'float':
+                    val = parseFloat(input.value)
+                    break;
                 default:
+                    val = input.value
                     break
             }
-            let bdy = {}
-            bdy[id] = val //Doesn't like it if I don't do it this way -- makes bad request
-            putOptions.body = JSON.stringify(bdy)
-            fetch(`${thing_url}/${opts.index}/properties/${id}`, putOptions)
-                .then(response => response.json())
-                .then(result => updateUi(result))
-                .catch(error => console.log('error', error))
+            if (val !== "") {
+                let bdy = {}
+                bdy[this.target] = val //Doesn't like it if I don't do it this way -- makes bad request
+                putOptions.body = JSON.stringify(bdy)
+                fetch(`${thing_url}/${opts.index}/properties/${this.target}`, putOptions)
+                    .then(response => response.json())
+                    .then(result => updateUi(result))
+                    .catch(error => console.log('error', error))
+            }
         }
+
     }
 
 
@@ -175,20 +201,17 @@
      * @param thing
      */
     function setDefaults(thing) {
-        //console.log(data);
         let data = thing['properties']
-        //get the properties -- generate live display element for each
         let idx = 0
         for (const param in data) {
             if (data.hasOwnProperty(param)) {
-                //Create the div
-                //do we have a vendor attribute?
-                let style = 'alpha' //alpha numeric readonly
+                let style = 'alpha' //alpha numeric
                 if ('vendor' in data[param] && 'style' in data[param].vendor) {
                     style = data[param]['vendor']['style']
                 }
                 let card = getCard(param, style, data[param])
-
+                //What is the heights of the columns?
+                //
                 document.getElementById(`column_${idx++}`).appendChild(card);
                 if (idx > cols) idx = 0
                 //These are kinda the property controllers -- creates the gauge/input and holds a reference.
@@ -199,20 +222,17 @@
                     case 'radial':
                         props[param] = getRadial(data[param], data[param].title)
                         break
-                    case 'alpha':
                     default:
-                        props[param] = new TextDetail(param, data[param].readOnly, data[param].type)
+                        // get the type from description.
+                        props[param] = new TextDetail(param, data[param])
                         break
                 }
 
-                //Create the translator function if one is requested
                 if ('vendor' in data[param] && 'translator' in data[param].vendor) {
                     translators[param] = new Function("value", `return ${data[param].vendor.translator}`);
                 }
             }
         }
-
-
         //Set up update stuff
         if ('poll' in opts) {
             //If we are polling -- no faster than slowest gauge update
@@ -249,47 +269,56 @@
 
         //Do we want a gauge or text/control ?
         let element
-        let html
         switch (style) {
             case 'radial':
             case 'linear':
                 element = document.createElement('canvas');
                 element.id = param;
                 //TODO: will there ever be gauges that are not read only?
-                //maybe a slider and a gauge.
                 break
             default:
+                let html
                 element = document.createElement('div')
                 //is this readonly?
-                if (data.readOnly) {
-                    element.innerHTML = `<div id="${param}_value" class="card-text" style="overflow: scroll"></div>`
-                } else {
-                    html = `<div id="${param}_value" class="card-text" style="overflow: scroll"></div>`
+                html = `<div id="${param}_value" class="card-text" style="overflow: scroll"></div>`
+                if (!data.readOnly) {
                     switch (data.type) {
                         case 'boolean':
                             html += `<div class="custom-control custom-switch">
-                                        <input autocomplete="${param}-switch" class="custom-control-input param_control"
+                                        <input autocomplete="${param}-switch" class="custom-control-input"
                                                id="${param}_input" type="checkbox">
                                         <label class="custom-control-label" for="${param}_input"></label>
                                     </div>`
                             break
-                        case 'numeric':
-                            //TODO: add a slider -- with min and max values
+                        case 'number':
+                        case 'integer':
+                            if ('minimum' in data && 'maximum' in data) {
+                                html += `<div style="alignment:center;"><input type="range" id="${param}_input_control"
+                                      min="${data['minimum']}" max="${data['maximum']}" value=""></div>
+                                      `
+                            } else {
+                                html += `<div><input id="${param}_input_control" style="text-align:center;"></div>`
+                            }
                             break
-                        case 'string':
                         default:
-                            html += `<input id="${param}_input" class="param_control">`
+                            if ('enum' in data) {
+                                html += `<div><select id="${param}_input_control">`
+                                for (let i of data.enum) {
+                                    html += `<option value="${i}">${i}</option>`
+                                }
+                                html += `</select></div>`
+                                break
+                            }
                             break
-
                     }
-                    element.innerHTML = html
+
                 }
+                element.innerHTML = html
                 break
         }
         cb.appendChild(element)
         card.appendChild(cb)
         return card
-
     }
 
     /**
