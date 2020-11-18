@@ -32,6 +32,12 @@ function mainInit() {
         treeInit()
         commInit()
 
+        let GE = customElements.get('service-element')
+
+        let thing = new GE({context: 'm2ag-thing'})
+        thing.id = 'm2ag-thing';
+        document.getElementById('service-status-list').appendChild(thing)
+
         //get a valid jwt token from the sever, set in options, call fetch
         fetch(`${api_url}/auth`, getDataOptions)
             .then(response => response.json())
@@ -47,17 +53,6 @@ function mainInit() {
     } else {
         manageModal('show')
     }
-
-    //Set iframes, turn on controls, etc.
-    //TODO: check if ui is enabled.
-    //TODO: change to ui by jstree if one is available.
-    //Add thing one always
-    let GE = customElements.get('service-element')
-
-    let thing = new GE({context: 'm2ag-thing'})
-    thing.id = 'm2ag-thing';
-    document.getElementById('service-status-list').appendChild(thing)
-
 }
 
 function uiInit(thing) {
@@ -131,7 +126,6 @@ function manageModal(mode, dialog = "connect_menu") {
             document.getElementById("clear_login").disabled = false;
             document.getElementById("save_login").disabled = true;
         }
-
         if (mode === 'show') {
             $('#connect_modal').modal('show');
         } else {
@@ -217,7 +211,7 @@ function mainActionHandler() {
         case 'clear_login':
             manageLocalStorage('clear')
             auth_hash = undefined
-            manageModal('hide')
+            location.reload()
             break
         case 'save_password':
             const pw_1 = document.getElementById("password_1").value;
@@ -246,8 +240,12 @@ function mainActionHandler() {
             }
             break;
         case 'pick_menu':
-            thingerInit()
-            $("#pick_modal").modal("show")
+            if(auth_hash !== undefined) {
+                thingerInit()
+                $("#pick_modal").modal("show")
+            } else {
+                manageModal('show')
+            }
             break;
         default:
             console.log(this.id);

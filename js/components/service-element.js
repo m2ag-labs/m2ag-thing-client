@@ -92,9 +92,10 @@
         set status(data) {
             //TODO: error check this.
             let value = data.data;
+            //TODO: what about fails
             if (value !== "") {
-                let isRunning = value.split("\n")[2].trim().indexOf(`inactive`) === -1
-                let isEnabled = value.split("\n")[1].trim().indexOf(`service; disabled;`) === -1
+                let isRunning = value.split("\n")[2].trim().indexOf(`(running)`) > -1
+                let isEnabled = value.split("\n")[1].trim().indexOf(`service; enabled;`) > -1
 
                 if (isRunning !== this.running) this.running = isRunning;
                 if (isEnabled !== this.enabled) this.enabled = isEnabled;

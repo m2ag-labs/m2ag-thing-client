@@ -32,8 +32,8 @@
                            id="pills-config-tab" role="tab">config</a>
                     </li>
                     <li class="nav-item ui_display">
-                        <a aria-controls="pills-ui" aria-selected="false" class="nav-link" data-toggle="pill" href="#ui"
-                           id="pills-ui-tab" role="tab"> ui </a>
+                        <a aria-controls="pills-ui" aria-selected="false" class="nav-link control_action" data-toggle="pill" href="#ui"
+                           id="pills-ui-tab" role="tab">things</a>
                     </li>
                 </ul>
             </li>
@@ -43,8 +43,6 @@
                    role="button">utils</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item control_action" id="connect_menu">credentials</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item control_action" id="comm_menu">comm dialog</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item control_action" id="pick_menu">add/remove modules</a>
                 </div>
@@ -127,63 +125,7 @@
     <!-- message toast -->
 </div> <!-- container main content-->
 
-<!-- manual commands modal -->
-<div class="modal fade" id="comm_modal" role="dialog">
-    <div class="modal-dialog">
 
-        <!-- Modal content-->
-        <div class="modal-content" style="height: 750px; width: 500px;">
-            <div class="modal-header">
-                <h5 class="modal-title">websocket comm</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="col-md-12 form-group">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div>
-                                <label for="thing_index"></label>
-                                <input autocomplete="thing-index" id="thing_index" placeholder="/0,/1 etc."
-                                       type="text"><br>
-                                <button class="comm_action btn btn-success" id="connect_wss"
-                                        type="button">
-                                    connect
-                                </button>
-                                <button class="comm_action btn btn-danger" id="disconnect_wss"
-                                        type="button">
-                                    disconnect
-                                </button>
-                            </div>
-                            <div>
-                                <label for="command_area"></label>
-                                <textarea class="form-control"
-                                          id="command_area" placeholder="command" rows="5"></textarea>
-
-                                <button class="comm_action btn btn-primary" id="publish_message"
-                                        type="button">
-                                    Send
-                                </button>
-                                <button class="comm_action btn btn-primary" id="clear_response"
-                                        type="button">
-                                    Clear
-                                </button>
-                            </div>
-
-                            <label for="status_area"></label>
-                            <textarea class="form-control" id="status_area" placeholder="response" readonly
-                                      rows="10"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-
-    </div>
-</div>
 <!-- pw modal -->
 <div class="modal" id="connect_modal" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
