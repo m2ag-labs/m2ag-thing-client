@@ -14,7 +14,7 @@
             this.dirty = false
             this.attachShadow({mode: 'open'})
                 .innerHTML = `
-                <link  href="static/css/bootstrap.min.css" rel="stylesheet">
+                <link  href="css/bootstrap.min.css" rel="stylesheet">
                  <table class="table" id="detail_table">
                     <thead id="detail_table_head">
                     </thead>
@@ -26,9 +26,9 @@
 
 
             let head = `<tr><th scope="col">`
-            head += `<img id="accept" src="/static/images/72px-Dialog-accept.svg.png" style="width: 24px; height: auto; display: none" alt="">`;
-            head += `<img id="cancel" src="/static/images/72px-Dialog-error-round.svg.png" style="width: 24px; height: auto; display: none; margin-left: 5%; margin-right: 5%" alt="">`
-            head += `<img id="delete" src="/static/images/72px-User-trash-full.svg.png" style="width: 24px; height: auto; display: none; margin-right: 5%" alt="" >Component: ${this.ctx}</th></tr>`
+            head += `<img id="accept" src="/images/72px-Dialog-accept.svg.png" style="width: 24px; height: auto; display: none" alt="">`;
+            head += `<img id="cancel" src="/images/72px-Dialog-error-round.svg.png" style="width: 24px; height: auto; display: none; margin-left: 5%; margin-right: 5%" alt="">`
+            head += `<img id="delete" src="/images/72px-User-trash-full.svg.png" style="width: 24px; height: auto; display: none; margin-right: 5%" alt="" >Component: ${this.ctx}</th></tr>`
             let row = `<tr><td><pre id='module_content'>${JSON.stringify(this.data, null, 1)}</pre></td></tr>`;
             this.shadowRoot.querySelector("#detail_table_head").innerHTML = head
             this.shadowRoot.querySelector("#detail_table_body").innerHTML = row

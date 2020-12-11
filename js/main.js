@@ -3,6 +3,11 @@ let auth_hash;
 let jwt_token;
 let poll_targets = [];
 
+const KEYCODE = {
+        SPACE: 32,
+        ENTER: 13,
+    };
+
 window.addEventListener("load", mainInit, false)
 
 function mainInit() {
@@ -11,6 +16,12 @@ function mainInit() {
     for (let i = 0; i < controls.length; i++) {
         controls[i].addEventListener('click', mainActionHandler, false)
     }
+    //Keypress events for password:
+    document.getElementById("connect_password").addEventListener('keypress', mainActionHandler)
+
+
+
+
     manageLocalStorage('load') //sets dataOptions dataHeader too
     if (auth_hash !== undefined) {
         fetch(`${api_url}/config`, getDataOptions)
@@ -63,7 +74,7 @@ function uiInit(thing) {
         if (i === 0) {
             first = false
             //TODO: set to fist thing
-            document.getElementById('ui_frame').src = `${window.location.origin}/static/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
+            document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
             ui_html = createUiLi(thing[i].title, i, true)
         } else {
             ui_html += createUiLi(thing[i].title, i, false)
@@ -92,7 +103,7 @@ function createUiLi(tag, index, selected = false) {
 function uiActionHandler() {
     let idx = this.id.split('.')
     document.getElementById('ui_frame').src =
-        `${window.location.origin}/static/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
+        `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
 }
 
 /**
@@ -167,12 +178,10 @@ function manageLocalStorage(mode = 'load') {
                 "hash": auth_hash
             };
             localStorage.setItem('client_config', JSON.stringify(config));
-            fetch(`${api_url}/config`, getDataOptions)
+            /*fetch(`${api_url}/config`, getDataOptions)
                 .then(response => response.json())
                 .then(result => create_device_tree(result))
-                .catch(error => console.log('error', error))
-
-            window.location.reload()
+                .catch(error => console.log('error', error))*/
             break;
         case 'clear':
             localStorage.setItem('client_config', JSON.stringify(config));
@@ -201,16 +210,18 @@ function mainActionHandler() {
             manageModal('show', this.id);
             break;
         case 'save_login':
-            if (document.getElementById('connect_name').value !== '' && document.getElementById('connect_password').value !== '') {
-                manageLocalStorage('save')
-                manageModal('hide')
-            } else {
-                alert("Please enter a username and password")
+        case 'connect_password':
+            if(auth_hash === undefined) {
+                if (document.getElementById('connect_name').value !== '' && document.getElementById('connect_password').value !== '') {
+                    manageLocalStorage('save')
+                    location.reload()
+                } else {
+                    alert("Please enter a username and password")
+                }
             }
             break;
         case 'clear_login':
             manageLocalStorage('clear')
-            auth_hash = undefined
             location.reload()
             break
         case 'save_password':
