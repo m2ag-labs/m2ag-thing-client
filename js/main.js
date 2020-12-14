@@ -17,7 +17,7 @@ function mainInit() {
         controls[i].addEventListener('click', mainActionHandler, false)
     }
     //Keypress events for password:
-    document.getElementById("connect_password").addEventListener('keypress', mainActionHandler)
+    //document.getElementById("connect_password").addEventListener('keypress', mainActionHandler)
 
 
 
@@ -253,6 +253,7 @@ function mainActionHandler() {
         case 'pick_menu':
             if(auth_hash !== undefined) {
                 thingerInit()
+                $("#pick_modal").modal("show")
                 $("#pick_modal").modal("show")
             } else {
                 manageModal('show')
