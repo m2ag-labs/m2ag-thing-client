@@ -22,18 +22,20 @@
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div id="navbarSupportedContent" class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <ul id="pills-tab" class="nav nav-pills mb-3" role="tablist">
                     <li class="nav-item">
-                        <a aria-controls="pills-config" aria-selected="true" class="nav-link active" data-toggle="pill"
-                           href="#config"
-                           id="pills-config-tab" role="tab">config</a>
+                        <a id="pills-config-tab" aria-controls="pills-config" aria-selected="true"
+                           class="nav-link active"
+                           data-toggle="pill"
+                           href="#config" role="tab">config</a>
                     </li>
                     <li class="nav-item ui_display">
-                        <a aria-controls="pills-ui" aria-selected="false" class="nav-link control_action" data-toggle="pill" href="#ui"
-                           id="pills-ui-tab" role="tab">things</a>
+                        <a id="pills-ui-tab" aria-controls="pills-ui" aria-selected="false"
+                           class="nav-link control_action" data-toggle="pill"
+                           href="#ui" role="tab">things</a>
                     </li>
                 </ul>
             </li>
@@ -42,14 +44,14 @@
                    href="#"
                    role="button">utils</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item control_action" id="connect_menu">credentials</a>
+                    <a id="connect_menu" class="dropdown-item control_action">credentials</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item control_action" id="pick_menu">add/remove modules</a>
+                    <a id="pick_menu" class="dropdown-item control_action">add/remove modules</a>
                 </div>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link control_action" href="#" id="about_link">about <span class="sr-only">(current)</span></a>
+                <a id="about_link" class="nav-link control_action" href="#">about <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="https://m2aglabs.com" target="_new">m2ag.labs<span
@@ -61,17 +63,26 @@
 
 
 <div class="container-fluid">
-    <div class="tab-content" id="pills-config-content">
+    <div id="pills-config-content" class="tab-content">
         <!--config page-->
-        <div aria-labelledby="pills-config-tab" class="tab-pane fade show active" id="config" role="tabpanel">
+        <div id="config" aria-labelledby="pills-config-tab" class="tab-pane fade show active" role="tabpanel">
             <div class="row vw-100">
                 <div class="col-md-3">
                     <div class="card">
-                        <div class="card-body" id="service-status-list">
-                            <div class="custom-control custom-switch text-center">
-                                <input autocomplete="poll-switch" class="custom-control-input control_action"
-                                       id="poll_switch" type="checkbox">
-                                <label class="custom-control-label" for="poll_switch">poll status</label>
+                        <div id="service-status-list" class="card-body text-center">
+                            <div id="serviceApp">
+                                <div v-if="this.services.length" class="custom-control custom-switch">
+                                    <input autocomplete="poll-switch" class="custom-control-input"
+                                           id="service-poll" type="checkbox" v-model="this.polling"
+                                            @change="this.pollServices()" >
+                                    <label class="custom-control-label" for="service-poll">
+                                        {{ this.polling ? "polling" : "not polling" }}</label>
+                                </div>
+                                <service-element
+                                        v-for="service in this.services"
+                                        v-bind:context="service"
+                                        :ref="service">
+                                </service-element>
                             </div>
                         </div>
                     </div>
@@ -94,12 +105,12 @@
 
                 <div class="col-md-5">
                     <div class="card">
-                        <div class="card-body" id="tree-detail-card">
+                        <div id="tree-detail-card" class="card-body">
                             <ul class="list-group text-left">
                                 <li class="list-group-item list-group-item-primary text-center">
                                     <h5 class="card-title">detail</h5>
                                 </li>
-                                <li class="list-group-item text-center" id="detail_table_li" style="overflow: scroll;">
+                                <li id="detail_table_li" class="list-group-item text-center" style="overflow: scroll;">
 
                                 </li>
                             </ul>
@@ -109,10 +120,10 @@
             </div>
         </div>
         <!--ui iframe panel -->
-        <div aria-labelledby="pills-ui-tab" class="tab-pane fade show" id="ui" role="tabpanel">
+        <div id="ui" aria-labelledby="pills-ui-tab" class="tab-pane fade show" role="tabpanel">
             <div class="card">
                 <nav class="navbar navbar-expand-sm navbar-light bg-light">
-                    <ul class="nav nav-pills mb-3" role="tablist" id="ui-tab-list"></ul>
+                    <ul id="ui-tab-list" class="nav nav-pills mb-3" role="tablist"></ul>
                 </nav>
                 <div class="card-body">
                     <iframe id="ui_frame" src=""
@@ -126,7 +137,7 @@
 
 
 <!-- pw modal -->
-<div class="modal" id="connect_modal" role="dialog" tabindex="-1">
+<div id="connect_modal" class="modal" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -136,47 +147,48 @@
                 </button>
             </div>
             <div class="modal-body">
-                <ul class="nav nav-pills" id="mpills-tab" role="tablist">
+                <ul id="mpills-tab" class="nav nav-pills" role="tablist">
                     <li class="nav-item">
-                        <a aria-controls="mpills-connect" aria-selected="true" class="nav-link active"
+                        <a id="mpills-connect-tab" aria-controls="mpills-connect" aria-selected="true"
+                           class="nav-link active"
                            data-toggle="pill"
-                           href="#credentials"
-                           id="mpills-connect-tab" role="tab">credentials</a>
+                           href="#credentials" role="tab">credentials</a>
                     </li>
                     <li class="nav-item">
-                        <a aria-controls="mpills-comm" aria-selected="false" class="nav-link" data-toggle="pill"
-                           href="#mpills-comm"
-                           id="mpills-set-password-tab" role="tab">set password</a>
+                        <a id="mpills-set-password-tab" aria-controls="mpills-comm" aria-selected="false"
+                           class="nav-link"
+                           data-toggle="pill"
+                           href="#mpills-comm" role="tab">set password</a>
                     </li>
                 </ul>
-                <div class="tab-content" id="mpills-tabContent">
-                    <div aria-labelledby="pills-connect-tab" class="tab-pane fade show active" id="credentials"
+                <div id="mpills-tabContent" class="tab-content">
+                    <div id="credentials" aria-labelledby="pills-connect-tab" class="tab-pane fade show active"
                          role="tabpanel">
                         <div class="card">
                             <div class="card-body">
                                 <p class="card-text">
                                 <ul class="list-group text-left">
-                                    <li class="list-group-item  text-center" id="mconnect_info_display">
+                                    <li id="mconnect_info_display" class="list-group-item  text-center">
                                         <form>
                                             <div class="form-group">
                                                 <label for="connect_name">user id</label>
-                                                <input aria-describedby="connect_name_help" autocomplete="username"
-                                                       class="form-control"
-                                                       id="connect_name" type="text">
-                                                <small class="form-text text-muted" id="connect_name_help">usually this
+                                                <input id="connect_name" aria-describedby="connect_name_help"
+                                                       autocomplete="username"
+                                                       class="form-control" type="text">
+                                                <small id="connect_name_help" class="form-text text-muted">usually this
                                                     will be pi</small>
                                             </div>
                                             <div class="form-group">
                                                 <label for="connect_password">password</label>
-                                                <input autocomplete="current-password" class="form-control"
-                                                       id="connect_password"
+                                                <input id="connect_password" autocomplete="current-password"
+                                                       class="form-control"
                                                        type="password">
                                             </div>
                                             <div>
-                                                <button class="control_action btn btn-primary" id="save_login"
+                                                <button id="save_login" class="control_action btn btn-primary"
                                                         type="button">login
                                                 </button>
-                                                <button class="control_action btn btn-danger" id="clear_login"
+                                                <button id="clear_login" class="control_action btn btn-danger"
                                                         type="button">log out
                                                 </button>
                                             </div>
@@ -186,32 +198,32 @@
                             </div>
                         </div>
                     </div> <!-- connect tab -->
-                    <div aria-labelledby="pills-set-password-tab" class="tab-pane fade" id="mpills-comm"
+                    <div id="mpills-comm" aria-labelledby="pills-set-password-tab" class="tab-pane fade"
                          role="tabpanel">
                         <div class="card">
                             <div class="card-body">
                                 <p class="card-text">
                                 <ul class="list-group text-left">
-                                    <li class="list-group-item  text-center" id="connect_info_display">
+                                    <li id="connect_info_display" class="list-group-item  text-center">
                                         <form>
                                             <div class="form-group">
-                                                <label for="emailfield"></label><input autocomplete="username"
-                                                                                       id="emailfield"
+                                                <label for="emailfield"></label><input id="emailfield"
+                                                                                       autocomplete="username"
                                                                                        style="display: none;"
                                                                                        type="text" value="">
                                                 <label for="password_1">enter new password</label>
-                                                <input autocomplete="new-password" class="form-control" id="password_1"
+                                                <input id="password_1" autocomplete="new-password" class="form-control"
                                                        type="password" value="">
                                             </div>
                                             <div class="form-group">
                                                 <label for="password_2">enter it again</label>
-                                                <input autocomplete="new-password" class="form-control"
-                                                       id="password_2" type="password" value="">
+                                                <input id="password_2" autocomplete="new-password"
+                                                       class="form-control" type="password" value="">
                                             </div>
                                         </form>
                                     </li>
                                     <li class="list-group-item  text-center">
-                                        <button class="btn btn-primary control_action" id="save_password" type="button">
+                                        <button id="save_password" class="btn btn-primary control_action" type="button">
                                             save password
                                         </button>
                                     </li>
@@ -225,7 +237,7 @@
     </div>
 </div>
 <!-- add components modal -->
-<div class="modal" id="pick_modal" role="dialog" tabindex="-1">
+<div id="pick_modal" class="modal" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -251,7 +263,7 @@
 
                 <div class="tab-content text-center">
 
-                    <div aria-labelledby="pills-components-tab" class="tab-pane fade show active" id="components"
+                    <div id="components" aria-labelledby="pills-components-tab" class="tab-pane fade show active"
                          role="tabpanel">
 
                         <div class="card">
@@ -262,21 +274,21 @@
                                         <div class="row">
                                             <div class="col-6">
                                                 <h6>available</h6>
-                                                <ul class="list-group" id="components-available">
+                                                <ul id="components-available" class="list-group">
 
                                                 </ul>
-                                                <button class="btn btn-success thinger-button-add" id="add-components"
+                                                <button id="add-components" class="btn btn-success thinger-button-add"
                                                         style="display: none;" type="button">
                                                     add
                                                 </button>
                                             </div>
                                             <div class="col-6">
                                                 <h6>installed</h6>
-                                                <ul class="list-group" id="components-installed">
+                                                <ul id="components-installed" class="list-group">
 
                                                 </ul>
-                                                <button class="btn btn-danger thinger-button-remove"
-                                                        id="remove-components"
+                                                <button id="remove-components"
+                                                        class="btn btn-danger thinger-button-remove"
                                                         style="display: none;" type="button">
                                                     remove
                                                 </button>
@@ -290,7 +302,7 @@
 
                     </div> <!-- components tab -->
 
-                    <div aria-labelledby="pills-set-things-tab" class="tab-pane fade" id="things"
+                    <div id="things" aria-labelledby="pills-set-things-tab" class="tab-pane fade"
                          role="tabpanel">
 
                         <div class="card">
@@ -301,20 +313,20 @@
                                         <div class="row">
                                             <div class="col-6">
                                                 <h6>available</h6>
-                                                <ul class="list-group" id="things-available">
+                                                <ul id="things-available" class="list-group">
 
                                                 </ul>
-                                                <button class="btn btn-success thinger-button-add" id="add-things"
+                                                <button id="add-things" class="btn btn-success thinger-button-add"
                                                         style="display: none;" type="button">
                                                     add
                                                 </button>
                                             </div>
                                             <div class="col-6">
                                                 <h6>installed</h6>
-                                                <ul class="list-group" id="things-installed">
+                                                <ul id="things-installed" class="list-group">
 
                                                 </ul>
-                                                <button class="btn btn-danger thinger-button-remove" id="remove-things"
+                                                <button id="remove-things" class="btn btn-danger thinger-button-remove"
                                                         style="display: none;" type="button">
                                                     remove
                                                 </button>
@@ -337,7 +349,7 @@
     <div aria-atomic="true" aria-live="polite" class="d-flex justify-content-center align-items-sm-baseline"
          style="min-height: 200px;">
         <!-- Then put toasts within -->
-        <div aria-atomic="true" aria-live="assertive" class="toast" id="advice-toast" role="alert">
+        <div id="advice-toast" aria-atomic="true" aria-live="assertive" class="toast" role="alert">
             <div class="toast-header">
                 <img alt="" class="rounded mr-2" src="">
                 <strong class="mr-auto">driver required</strong>
@@ -353,30 +365,29 @@
     </div>
 </div>
 <!-- message toast -->
-<div aria-atomic="true" aria-live="assertive" class="toast" id="message-toast" role="alert"
+<div id="message-toast" aria-atomic="true" aria-live="assertive" class="toast" role="alert"
      style="position: absolute; top: 10%; right: 5%; min-width: 300px;">
     <div class="toast-header">
         <img alt="" class="rounded mr-2" src="">
-        <strong class="mr-auto" id="message-toast-title">title</strong>
-        <small class="text-muted" id="message-toast-subtitle">subtitle</small>
+        <strong id="message-toast-title" class="mr-auto">title</strong>
+        <small id="message-toast-subtitle" class="text-muted">subtitle</small>
         <button aria-label="Close" class="ml-2 mb-1 close" data-dismiss="toast" type="button">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    <div class="toast-body" id="message-toast-content">
+    <div id="message-toast-content" class="toast-body">
         This is the toast message
     </div>
 </div>
 
-
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://unpkg.com/vue@next"></script>
 <script src="js/vendor/jquery.min.js"></script>
 <script src="js/vendor/popper-lite.min.js"></script>
 <script src="js/vendor/bootstrap.min.js"></script>
 <!-- need jquery.min -- slim will not work -->
 <script src="js/vendor/jstree.min.js"></script>
 
-<script src="js/components/service-element.js"></script>
 <script src="js/components/component-map-element.js"></script>
 <script src="js/components/module-detail-element.js"></script>
 <script src="js/tree.js"></script><!-- js tree  -->
@@ -384,6 +395,12 @@
 <script src="js/comm.js"></script><!-- web socket comm -->
 <script src="js/modules.js"></script><!--code to add/remove things -->
 <script src="js/main.js"></script><!-- main -->
+<script src="./apps/serviceList.js"></script>
+<script src="./components/ServiceElement.js"></script>
+<script>
+    //mount everything last
+    const serviceApp = serviceList.mount('#serviceApp')
+</script>
 </body>
 </html>
 

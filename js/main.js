@@ -1,12 +1,5 @@
-let poll_enable = false;
 let auth_hash;
 let jwt_token;
-let poll_targets = [];
-
-const KEYCODE = {
-        SPACE: 32,
-        ENTER: 13,
-    };
 
 window.addEventListener("load", mainInit, false)
 
@@ -16,39 +9,19 @@ function mainInit() {
     for (let i = 0; i < controls.length; i++) {
         controls[i].addEventListener('click', mainActionHandler, false)
     }
-    //Keypress events for password:
-    //document.getElementById("connect_password").addEventListener('keypress', mainActionHandler)
-
-
-
 
     manageLocalStorage('load') //sets dataOptions dataHeader too
     if (auth_hash !== undefined) {
         fetch(`${api_url}/config`, getDataOptions)
             .then(response => response.json())
             .then(result => {
+
                 create_device_tree(result)
-                if ('features' in result.data) {
-                    let GE = customElements.get('service-element')
-                    for (let i = 0; i < result.data['features'].length; i++) {
-                        const id = result.data['features'][i]
-                        thing = new GE({context: id})
-                        thing.id = id
-                        document.getElementById('service-status-list').appendChild(thing)
-                    }
-                }
             })
             .catch(error => console.log('error', error))
         //add the device tree handler here to avoid multiple addition
         treeInit()
         commInit()
-
-        let GE = customElements.get('service-element')
-
-        let thing = new GE({context: 'm2ag-thing'})
-        thing.id = 'm2ag-thing';
-        document.getElementById('service-status-list').appendChild(thing)
-
         //get a valid jwt token from the sever, set in options, call fetch
         fetch(`${api_url}/auth`, getDataOptions)
             .then(response => response.json())
@@ -104,28 +77,6 @@ function uiActionHandler() {
     let idx = this.id.split('.')
     document.getElementById('ui_frame').src =
         `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
-}
-
-/**
- *  Poll the services to get realtime status
- *  If not polled last reported time is displayed
- */
-function pollStatus() {
-    if (poll_targets.length === 0) {
-        poll_targets = document.getElementsByTagName('service-element')
-    }
-    if (poll_targets.length > 0) {
-        for (let i = 0; i < poll_targets.length; i++) {
-            poll_targets[i].poll(true)
-        }
-        if (poll_enable) {
-            setTimeout(pollStatus, 3000)
-        } else {
-            for (let i = 0; i < poll_targets.length; i++) {
-                poll_targets[i].poll(false)
-            }
-        }
-    }
 }
 
 function manageModal(mode, dialog = "connect_menu") {
@@ -242,18 +193,9 @@ function mainActionHandler() {
         case 'about_link':
             alert("m2ag.labs thing client version 1.0. Usage info available at m2aglabs.com"); // jshint ignore:line
             break;
-        case 'poll_switch':
-            if (document.getElementById('poll_switch').checked) {
-                poll_enable = true;
-                pollStatus();
-            } else {
-                poll_enable = false;
-            }
-            break;
         case 'pick_menu':
             if(auth_hash !== undefined) {
                 thingerInit()
-                $("#pick_modal").modal("show")
                 $("#pick_modal").modal("show")
             } else {
                 manageModal('show')
