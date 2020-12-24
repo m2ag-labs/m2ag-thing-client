@@ -29,12 +29,12 @@
                     <li class="nav-item">
                         <a id="pills-config-tab" aria-controls="pills-config" aria-selected="true"
                            class="nav-link active"
-                           data-toggle="pill"
-                           href="#config" role="tab">config</a>
+                           data-toggle="pill" href="#config"
+                           role="tab" s>config</a>
                     </li>
                     <li class="nav-item ui_display">
                         <a id="pills-ui-tab" aria-controls="pills-ui" aria-selected="false"
-                           class="nav-link control_action" data-toggle="pill"
+                           class="nav-link" data-toggle="pill"
                            href="#ui" role="tab">things</a>
                     </li>
                 </ul>
@@ -67,27 +67,28 @@
         <!--config page-->
         <div id="config" aria-labelledby="pills-config-tab" class="tab-pane fade show active" role="tabpanel">
             <div class="row vw-100">
+                <!-- service list card -->
                 <div class="col-md-3">
                     <div class="card">
                         <div id="service-status-list" class="card-body text-center">
                             <div id="serviceApp">
                                 <div v-if="this.services.length" class="custom-control custom-switch">
-                                    <input autocomplete="poll-switch" class="custom-control-input"
-                                           id="service-poll" type="checkbox" v-model="this.polling"
-                                            @change="this.pollServices()" >
+                                    <input id="service-poll" v-model="this.polling"
+                                           autocomplete="poll-switch" class="custom-control-input" type="checkbox"
+                                           @change="this.pollServices()">
                                     <label class="custom-control-label" for="service-poll">
                                         {{ this.polling ? "polling" : "not polling" }}</label>
                                 </div>
                                 <service-element
                                         v-for="service in this.services"
-                                        v-bind:context="service"
-                                        :ref="service">
+                                        :ref="service"
+                                        v-bind:context="service">
                                 </service-element>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <!-- jstree card -->
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
@@ -102,18 +103,94 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- detail card -->
                 <div class="col-md-5">
                     <div class="card">
                         <div id="tree-detail-card" class="card-body">
-                            <ul class="list-group text-left">
-                                <li class="list-group-item list-group-item-primary text-center">
-                                    <h5 class="card-title">detail</h5>
-                                </li>
-                                <li id="detail_table_li" class="list-group-item text-center" style="overflow: scroll;">
-
-                                </li>
-                            </ul>
+                            <div id="deviceDetailApp">
+                                <ul class="list-group text-left">
+                                    <li class="list-group-item list-group-item-primary text-center">
+                                        <h5 class="card-title">{{ title }}</h5>
+                                    </li>
+                                    <li class="list-group-item text-center">
+                                        {{ selected }}
+                                    </li>
+                                    <li v-show="isDirty" class="list-group-item text-center">
+                                        <img alt="accept"
+                                             src="./images/72px-Dialog-accept.svg.png"
+                                             style="width: 24px; height: auto; margin-left: 10%; margin-right: 10%;"
+                                             @click="this.saveModule()">
+                                        <img alt="cancel"
+                                             src="./images/72px-Dialog-error-round.svg.png"
+                                             style="width: 24px; height: auto; margin-left: 10%; margin-right: 10%;"
+                                             @click="this.cancelModuleAction()">
+                                    </li>
+                                    <li id="detail_li" class="list-group-item text-justify"
+                                        style="overflow: scroll;">
+                                        <div v-if="selected === 'config/component_map'">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">Thing</th>
+                                                    <th scope="col">Component</th>
+                                                    <th scope="col">
+                                                         <img alt="add"
+                                                             v-show="!isDirty"
+                                                             src="/images/1024px-Ambox_emblem_plus.svg.png"
+                                                             style="width: 24px; height: auto;"
+                                                             @click="this.addModule()">
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(key, component) in current_module.component_map" :key="key">
+                                                    <td>
+                                                        <label>
+                                                            <select class="custom-select"
+                                                                    :id="component"
+                                                                    @change="this.optionChange(component)">
+                                                                <option v-for="(item) in this.thingOptions(component)"
+                                                                        :selected="item === component"
+                                                                        :value="item">
+                                                                    {{ item }}
+                                                                </option>
+                                                            </select>
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <label>
+                                                            <select class="custom-select"
+                                                                    :id="`${component}_component`"
+                                                                    @change="this.optionChange(component)">
+                                                                <option value="component">component</option>
+                                                                <option v-for="(item) in current_module.components"
+                                                                        :selected="item === key"
+                                                                        :value="item">
+                                                                    {{ item }}
+                                                                </option>
+                                                            </select>
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <img alt="delete"
+                                                             v-show="!isDirty"
+                                                             src="/images/72px-User-trash-full.svg.png"
+                                                             style="width: 24px; height: auto; margin-right: 5%"
+                                                             @click="this.deleteModule(component)">
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div v-else-if="selected !==''">
+                                            <div :contenteditable="isDirty"
+                                                 @click="this.isDirty = true">
+                                                <pre id="current_module_edit">{{ this.current_module }}</pre>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -387,19 +464,18 @@
 <script src="js/vendor/bootstrap.min.js"></script>
 <!-- need jquery.min -- slim will not work -->
 <script src="js/vendor/jstree.min.js"></script>
-
-<script src="js/components/component-map-element.js"></script>
-<script src="js/components/module-detail-element.js"></script>
 <script src="js/tree.js"></script><!-- js tree  -->
 <script src="js/api.js"></script><!-- rest calls -->
 <script src="js/comm.js"></script><!-- web socket comm -->
 <script src="js/modules.js"></script><!--code to add/remove things -->
 <script src="js/main.js"></script><!-- main -->
 <script src="./apps/serviceList.js"></script>
+<script src="./apps/deviceDetail.js"></script>
 <script src="./components/ServiceElement.js"></script>
 <script>
     //mount everything last
     const serviceApp = serviceList.mount('#serviceApp')
+    const deviceDetailApp = deviceDetail.mount('#deviceDetailApp')
 </script>
 </body>
 </html>

@@ -25,7 +25,7 @@ const serviceList = Vue.createApp({
         }
     },
     created() {
-        setTimeout(this.getStatus, 1000)
+        setTimeout(this.getStatus, 250)
     }
 })
 

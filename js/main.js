@@ -15,11 +15,9 @@ function mainInit() {
         fetch(`${api_url}/config`, getDataOptions)
             .then(response => response.json())
             .then(result => {
-
                 create_device_tree(result)
             })
             .catch(error => console.log('error', error))
-        //add the device tree handler here to avoid multiple addition
         treeInit()
         commInit()
         //get a valid jwt token from the sever, set in options, call fetch
