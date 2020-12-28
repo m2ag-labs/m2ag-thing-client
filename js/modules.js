@@ -28,8 +28,8 @@ function tableInit(reload = true) {
     fetch(`${api_url}/config`, getDataOptions)
         .then(response => response.json())
         .then(result => {
-            modules.icomponents = result.data.hardware
-            buildTarget(result.data.hardware, 'components-installed')
+            modules.icomponents = result.data.components
+            buildTarget(result.data.components, 'components-installed')
             modules.ithings = result.data.things
             buildTarget(result.data.things, 'things-installed')
             setHandlers('thinger-control', thingerActions)
@@ -98,7 +98,7 @@ function thingerButtonRemove(event) {
             .then(response => response.json())
             .then(result => tableInit(false))
             .catch(error => console.log('error', error))
-         putDataOptions['method'] = 'PUT'
+        putDataOptions['method'] = 'PUT'
     }
 }
 
@@ -116,7 +116,7 @@ function thingerButtonAdd() {
                 document.getElementById('advice-text').innerText = `installing ${modules.components[stub].driver[i]}`
                 $('#advice-toast').toast({delay: 5000}).toast('show')
                 putDataOptions['body'] = JSON.stringify({})
-                fetch(`${api_url}/pip/${modules.components[stub].driver[i]}`, putDataOptions )
+                fetch(`${api_url}/pip/${modules.components[stub].driver[i]}`, putDataOptions)
                     .then(response => response.json())
                     .then(result => $('#advice-toast').toast('hide'))
                     .catch(error => console.log('error', error))
@@ -131,7 +131,7 @@ function thingerButtonAdd() {
         })
         getModules(path + 'py', 'text').then(data => {
             putDataOptions['body'] = JSON.stringify(data)
-            fetch(`${api_url}/components/${stub}`, putDataOptions )
+            fetch(`${api_url}/components/${stub}`, putDataOptions)
                 .then(response => response.json())
                 .catch(error => console.log('error', error))
         })
@@ -150,7 +150,7 @@ function thingerButtonAdd() {
         //Generates not found error
         getModules(path + 'py', 'text').then(data => {
             putDataOptions['body'] = JSON.stringify(data)
-            fetch(`${api_url}/things/${stub}`, putDataOptions )
+            fetch(`${api_url}/things/${stub}`, putDataOptions)
                 .then(response => response.json())
                 .catch(error => console.log('error', error))
 
@@ -165,11 +165,16 @@ function thingerButtonAdd() {
 
 function buildTarget(data, target) {
     let list = ""
-    for (const ele in data) {
-        if (data.hasOwnProperty(ele)) {
-            list += getLi(ele, target)
+    if (Array.isArray(data)) {
+        for (const ele in data) {
+            list += getLi(data[ele], target)
         }
-
+    } else {
+        for (const ele in data) {
+            if (data.hasOwnProperty(ele)) {
+                list += getLi(ele, target)
+            }
+        }
     }
     document.getElementById(target).innerHTML = list
 }

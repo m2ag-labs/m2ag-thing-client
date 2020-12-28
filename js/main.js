@@ -122,8 +122,8 @@ function manageLocalStorage(mode = 'load') {
             auth_hash = btoa(document.getElementById('connect_name').value + ":" + document.getElementById('connect_password').value);
             dataHeaders.set("Authorization", 'Basic ' + auth_hash)
             config = {
-                "name": document.getElementById("connect_name").value,
-                "pw": document.getElementById("connect_password").value,
+                //"name": document.getElementById("connect_name").value,
+                //"pw": document.getElementById("connect_password").value,
                 "hash": auth_hash
             };
             localStorage.setItem('client_config', JSON.stringify(config));
