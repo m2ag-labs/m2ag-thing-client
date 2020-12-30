@@ -14,13 +14,13 @@
 <body>
 <div class="container-fluid">
     <!--ui page -->
-    <div class="row vw-100" id="container_row">
-        <div class="col-md-4" id="column_0"></div>
-        <div class="col-md-4" id="column_1"></div>
-        <div class="col-md-4" id="column_2"></div>
+    <div id="container_row" class="row vw-100">
+        <div id="column_0" class="col-md-4"></div>
+        <div id="column_1" class="col-md-4"></div>
+        <div id="column_2" class="col-md-4"></div>
     </div>
     <!-- manual commands modal -->
-    <div class="modal fade" id="comm_modal" role="dialog">
+    <div id="comm_modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
             <!-- Modal content-->
@@ -37,34 +37,34 @@
                             <div class="panel-body">
                                 <div>
                                     <label for="thing_index"></label>
-                                    <input autocomplete="thing-index" id="thing_index" placeholder="/0,/1 etc."
+                                    <input id="thing_index" autocomplete="thing-index" placeholder="/0,/1 etc."
                                            type="text"><br>
-                                    <button class="comm_action btn btn-success" id="connect_wss"
+                                    <button id="connect_wss" class="comm_action btn btn-success"
                                             type="button">
                                         connect
                                     </button>
-                                    <button class="comm_action btn btn-danger" id="disconnect_wss"
+                                    <button id="disconnect_wss" class="comm_action btn btn-danger"
                                             type="button">
                                         disconnect
                                     </button>
                                 </div>
                                 <div>
                                     <label for="command_area"></label>
-                                    <textarea class="form-control"
-                                              id="command_area" placeholder="command" rows="5"></textarea>
+                                    <textarea id="command_area"
+                                              class="form-control" placeholder="command" rows="5"></textarea>
 
-                                    <button class="comm_action btn btn-primary" id="publish_message"
+                                    <button id="publish_message" class="comm_action btn btn-primary"
                                             type="button">
                                         Send
                                     </button>
-                                    <button class="comm_action btn btn-primary" id="clear_response"
+                                    <button id="clear_response" class="comm_action btn btn-primary"
                                             type="button">
                                         Clear
                                     </button>
                                 </div>
 
                                 <label for="status_area"></label>
-                                <textarea class="form-control" id="status_area" placeholder="response" readonly
+                                <textarea id="status_area" class="form-control" placeholder="response" readonly
                                           rows="10"></textarea>
                             </div>
                         </div>
