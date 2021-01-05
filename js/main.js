@@ -1,25 +1,23 @@
 let auth_hash;
 let jwt_token;
 
-window.addEventListener("load", mainInit, false)
-
 function mainInit() {
 
     let controls = document.getElementsByClassName('control_action')
     for (let i = 0; i < controls.length; i++) {
         controls[i].addEventListener('click', mainActionHandler, false)
     }
-
+    let server_ui
     manageLocalStorage('load') //sets dataOptions dataHeader too
     if (auth_hash !== undefined) {
         fetch(`${api_url}/config`, getDataOptions)
             .then(response => response.json())
             .then(result => {
                 create_device_tree(result)
+                server_ui = result.data.server.ui
             })
             .catch(error => console.log('error', error))
         treeInit()
-        commInit()
         //get a valid jwt token from the sever, set in options, call fetch
         fetch(`${api_url}/auth`, getDataOptions)
             .then(response => response.json())
@@ -28,7 +26,7 @@ function mainInit() {
                 thingHeaders.append("Authorization", "Bearer " + jwt_token);
                 fetch(`${thing_url}/`, getThingOptions)
                     .then(response => response.json())
-                    .then(result => uiInit(result))
+                    .then(result => uiInit(result, server_ui))
                     .catch(error => console.log('error', error))
                 })
             .catch(error => console.log('error', error))
@@ -37,20 +35,28 @@ function mainInit() {
     }
 }
 
-function uiInit(thing) {
-    //ui-tab-list -- append to there
-    let first = true
+function uiInit(thing, server_ui = undefined) {
     let ui_html = ''
+    //ui-tab-list -- append to there
+    //When server ui is defined, make it the default
+    //Key is ui name, array is modules things need to be passed to ui.
+
     for (let i = 0; i < thing.length; i++) {
-        if (i === 0) {
-            first = false
+        if (i === 0 && server_ui === undefined) {
             //TODO: set to fist thing
-            document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
-            ui_html = createUiLi(thing[i].title, i, true)
+           // document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
+            ui_html = createUiLi(thing[i].title, i, false)
         } else {
             ui_html += createUiLi(thing[i].title, i, false)
         }
 
+    }
+    //Custom marker flags ui
+    if(server_ui !== undefined){
+        const ui_file = Object.keys(server_ui)[0]
+        const index = server_ui[ui_file][0]
+        // document.getElementById('ui_frame').src = `${window.location.origin}/ui/${ui_file}.html?index=${index}&socket=true&jwt=${jwt_token}`
+        ui_html += createUiLi(`custom.${ui_file}`, index, false)
     }
     document.getElementById('ui-tab-list').innerHTML = ui_html
 
@@ -63,7 +69,7 @@ function uiInit(thing) {
 
 function createUiLi(tag, index, selected = false) {
     return `<li class="nav-item ui-select"  id="${tag}.${index}">
-                <a aria-controls="${tag}" aria-selected="${selected.toString()}" class="nav-link ${selected ? 'active' : ''}"
+                <a aria-controls="${tag}" aria-selected="${selected.toString()}" class="nav-link"
                    data-toggle="pill"
                    href="#"
                    role="tab">${tag}</a>
@@ -73,8 +79,13 @@ function createUiLi(tag, index, selected = false) {
 
 function uiActionHandler() {
     let idx = this.id.split('.')
-    document.getElementById('ui_frame').src =
-        `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
+    if(idx[0] !== 'custom') {
+        document.getElementById('ui_frame').src =
+            `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
+    } else {
+        document.getElementById('ui_frame').src =
+            `${window.location.origin}/ui/${idx[1]}.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
+    }
 }
 
 function manageModal(mode, dialog = "connect_menu") {
@@ -205,7 +216,7 @@ function mainActionHandler() {
     }
 }
 
-
+window.addEventListener("load", mainInit, false)
 
 
 
