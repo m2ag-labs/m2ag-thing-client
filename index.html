@@ -9,7 +9,7 @@
     <link href="siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="css/jstree/style.min.css" rel="stylesheet"/>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
     <!--link href="css/main.css" rel="stylesheet">  there is nothing there -->
     <title>m2ag.labs.thing</title>
 </head>
@@ -117,11 +117,11 @@
                                     </li>
                                     <li v-show="isDirty" class="list-group-item text-center">
                                         <img alt="accept"
-                                             src="./images/72px-Dialog-accept.svg.png"
+                                             src="css/images/72px-Dialog-accept.svg.png"
                                              style="width: 24px; height: auto; margin-left: 10%; margin-right: 10%;"
                                              @click="this.saveModule()">
                                         <img alt="cancel"
-                                             src="./images/72px-Dialog-error-round.svg.png"
+                                             src="css/images/72px-Dialog-error-round.svg.png"
                                              style="width: 24px; height: auto; margin-left: 10%; margin-right: 10%;"
                                              @click="this.cancelModuleAction()">
                                     </li>
@@ -136,7 +136,7 @@
                                                     <th scope="col">
                                                          <img alt="add"
                                                              v-show="!isDirty"
-                                                             src="/images/1024px-Ambox_emblem_plus.svg.png"
+                                                             src="css/images/1024px-Ambox_emblem_plus.svg.png"
                                                              style="width: 24px; height: auto;"
                                                              @click="this.addModule()">
                                                     </th>
@@ -174,7 +174,7 @@
                                                     <td>
                                                         <img alt="delete"
                                                              v-show="!isDirty"
-                                                             src="/images/72px-User-trash-full.svg.png"
+                                                             src="css/images/72px-User-trash-full.svg.png"
                                                              style="width: 24px; height: auto; margin-right: 5%"
                                                              @click="this.deleteModule(component)">
                                                     </td>
@@ -470,9 +470,9 @@
 <script src="js/comm.js"></script><!-- web socket comm -->
 <script src="js/modules.js"></script><!--code to add/remove things -->
 <script src="js/main.js"></script><!-- main -->
-<script src="./apps/serviceList.js"></script>
-<script src="./apps/deviceDetail.js"></script>
-<script src="./components/ServiceElement.js"></script>
+<script src="js/apps/serviceList.js"></script>
+<script src="js/apps/deviceDetail.js"></script>
+<script src="js/components/ServiceElement.js"></script>
 <script>
     //mount everything last
     const serviceApp = serviceList.mount('#serviceApp')
