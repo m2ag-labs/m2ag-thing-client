@@ -52,7 +52,7 @@ function uiInit(thing, server_ui = undefined) {
 
     }
     //Custom marker flags ui
-    if(server_ui !== undefined){
+    if(server_ui !== undefined && server_ui !== 'none'){
         const ui_file = Object.keys(server_ui)[0]
         const index = server_ui[ui_file][0]
         // document.getElementById('ui_frame').src = `${window.location.origin}/ui/${ui_file}.html?index=${index}&socket=true&jwt=${jwt_token}`
