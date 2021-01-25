@@ -28,7 +28,7 @@ function mainInit() {
                     .then(response => response.json())
                     .then(result => uiInit(result, server_ui))
                     .catch(error => console.log('error', error))
-                })
+            })
             .catch(error => console.log('error', error))
     } else {
         manageModal('show')
@@ -44,7 +44,7 @@ function uiInit(thing, server_ui = undefined) {
     for (let i = 0; i < thing.length; i++) {
         if (i === 0 && server_ui === undefined) {
             //TODO: set to fist thing
-           // document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
+            // document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
             ui_html = createUiLi(thing[i].title, i, false)
         } else {
             ui_html += createUiLi(thing[i].title, i, false)
@@ -52,7 +52,7 @@ function uiInit(thing, server_ui = undefined) {
 
     }
     //Custom marker flags ui
-    if(server_ui !== undefined && server_ui !== 'none'){
+    if (server_ui !== undefined && server_ui !== 'none') {
         const ui_file = Object.keys(server_ui)[0]
         const index = server_ui[ui_file][0]
         // document.getElementById('ui_frame').src = `${window.location.origin}/ui/${ui_file}.html?index=${index}&socket=true&jwt=${jwt_token}`
@@ -79,7 +79,7 @@ function createUiLi(tag, index, selected = false) {
 
 function uiActionHandler() {
     let idx = this.id.split('.')
-    if(idx[0] !== 'custom') {
+    if (idx[0] !== 'custom') {
         document.getElementById('ui_frame').src =
             `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
     } else {
@@ -171,7 +171,7 @@ function mainActionHandler() {
             break;
         case 'save_login':
         case 'connect_password':
-            if(auth_hash === undefined) {
+            if (auth_hash === undefined) {
                 if (document.getElementById('connect_name').value !== '' && document.getElementById('connect_password').value !== '') {
                     manageLocalStorage('save')
                     location.reload()
@@ -190,7 +190,7 @@ function mainActionHandler() {
             if (pw_1 !== "" && pw_1 === pw_2) {
                 let data = {user: document.getElementById("connect_name").value, password: pw_1};
                 putDataOptions['data'] = JSON.stringify(data)
-                fetch(`${api_url}/password`, putDataOptions )
+                fetch(`${api_url}/password`, putDataOptions)
                     .then(response => response.json())
                     .then(() => setPassword())
                     .catch(error => console.log('error', error))
@@ -203,9 +203,23 @@ function mainActionHandler() {
             alert("m2ag.labs thing client version 1.0. Usage info available at m2aglabs.com"); // jshint ignore:line
             break;
         case 'pick_menu':
-            if(auth_hash !== undefined) {
+            if (auth_hash !== undefined) {
                 thingerInit()
                 $("#pick_modal").modal("show")
+            } else {
+                manageModal('show')
+            }
+            break;
+        case 'token_menu':
+            if (auth_hash !== undefined) {
+                fetch(`${api_url}/auth`, getDataOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        document.getElementById('thing_url').innerText = thing_url
+                        document.getElementById('jwt_token').innerText = result['data']['token']
+                    })
+                    .catch(error => console.log('error', error))
+                $("#jwt_modal").modal("show")
             } else {
                 manageModal('show')
             }

@@ -30,12 +30,12 @@
                         <a id="pills-config-tab" aria-controls="pills-config" aria-selected="true"
                            class="nav-link active"
                            data-toggle="pill" href="#config"
-                           role="tab">   config   </a>
+                           role="tab"> config </a>
                     </li>
                     <li class="nav-item">
                         <a id="pills-ui-tab" aria-controls="pills-ui" aria-selected="false"
                            class="nav-link" data-toggle="pill"
-                           href="#ui" role="tab">   things   </a>
+                           href="#ui" role="tab"> things </a>
                     </li>
                 </ul>
             </li>
@@ -47,6 +47,8 @@
                     <a id="connect_menu" class="dropdown-item control_action">credentials</a>
                     <div class="dropdown-divider"></div>
                     <a id="pick_menu" class="dropdown-item control_action">add/remove modules</a>
+                    <div class="dropdown-divider"></div>
+                    <a id="token_menu" class="dropdown-item control_action">get jwt</a>
                 </div>
             </li>
 
@@ -134,8 +136,8 @@
                                                     <th scope="col">Thing</th>
                                                     <th scope="col">Component</th>
                                                     <th scope="col">
-                                                         <img alt="add"
-                                                             v-show="!isDirty"
+                                                        <img v-show="!isDirty"
+                                                             alt="add"
                                                              src="css/images/1024px-Ambox_emblem_plus.svg.png"
                                                              style="width: 24px; height: auto;"
                                                              @click="this.addModule()">
@@ -146,8 +148,8 @@
                                                 <tr v-for="(key, component) in current_module.component_map" :key="key">
                                                     <td>
                                                         <label>
-                                                            <select class="custom-select"
-                                                                    :id="component"
+                                                            <select :id="component"
+                                                                    class="custom-select"
                                                                     @change="this.optionChange(component)">
                                                                 <option v-for="(item) in this.thingOptions(component)"
                                                                         :selected="item === component"
@@ -159,8 +161,8 @@
                                                     </td>
                                                     <td>
                                                         <label>
-                                                            <select class="custom-select"
-                                                                    :id="`${component}_component`"
+                                                            <select :id="`${component}_component`"
+                                                                    class="custom-select"
                                                                     @change="this.optionChange(component)">
                                                                 <option value="component">component</option>
                                                                 <option v-for="(item) in current_module.components"
@@ -172,10 +174,10 @@
                                                         </label>
                                                     </td>
                                                     <td>
-                                                        <img alt="delete"
-                                                             v-show="!isDirty"
+                                                        <img v-show="!isDirty"
+                                                             alt="delete"
                                                              src="css/images/72px-User-trash-full.svg.png"
-                                                             style="width: 24px; height: auto; margin-right: 5%"
+                                                             style="width: 24px; height: auto; margin-right: 5%;"
                                                              @click="this.deleteModule(component)">
                                                     </td>
                                                 </tr>
@@ -437,6 +439,40 @@
             </div>
             <div class="toast-body">
                 <span id="advice-text"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- pw modal -->
+<div id="jwt_modal" class="modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">jwt</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                        <ul class="list-group text-left">
+                            <li class="list-group-item list-group-item-primary  text-center">
+                                thing url
+                            </li>
+                            <li class="list-group-item  text-center">
+                                <span id="thing_url"></span>
+                            </li>
+                            <li class="list-group-item  list-group-item-primary text-center">
+                                jwt
+                            </li>
+                            <li class="list-group-item  text-center">
+                                <span id="jwt_token"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
