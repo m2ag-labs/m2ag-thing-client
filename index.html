@@ -49,6 +49,8 @@
                     <a id="pick_menu" class="dropdown-item control_action">add/remove modules</a>
                     <div class="dropdown-divider"></div>
                     <a id="token_menu" class="dropdown-item control_action">get jwt</a>
+                    <div class="dropdown-divider"></div>
+                    <a id="thing_ui_menu" class="dropdown-item control_action">get thing url</a>
                 </div>
             </li>
 
@@ -443,7 +445,7 @@
         </div>
     </div>
 </div>
-<!-- pw modal -->
+<!-- jwt modal -->
 <div id="jwt_modal" class="modal" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -469,6 +471,34 @@
                             </li>
                             <li class="list-group-item  text-center">
                                 <span id="jwt_token"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- jwt modal -->
+<div id="thing_ui_modal" class="modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">thing ui</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                        <ul class="list-group text-left">
+                            <li class="list-group-item list-group-item-primary  text-center">
+                                thing ui url
+                            </li>
+                            <li class="list-group-item  text-center">
+                                <span id="thing_ui_url"></span>
                             </li>
                         </ul>
                     </div>

@@ -224,6 +224,19 @@ function mainActionHandler() {
                 manageModal('show')
             }
             break;
+        case 'thing_ui_menu':
+            if (auth_hash !== undefined) {
+                const src = document.getElementById('ui_frame').src
+                if(src.includes('index.html')){
+                    document.getElementById('thing_ui_url').innerText = "select a thing and try again"
+                } else {
+                    document.getElementById('thing_ui_url').innerText = src
+                }
+                $("#thing_ui_modal").modal("show")
+            } else {
+                manageModal('show')
+            }
+            break;
         default:
             console.log(this.id);
             break;
