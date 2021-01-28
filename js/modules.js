@@ -12,7 +12,6 @@ function thingerInit() {
 
 function tableInit(reload = true) {
     if (reload) {
-
         getModules('components/components.json').then(data => {
             modules.components = data
             buildTarget(data, 'components-available')
@@ -33,6 +32,7 @@ function tableInit(reload = true) {
             modules.ithings = result.data.things
             buildTarget(result.data.things, 'things-installed')
             setHandlers('thinger-control', thingerActions)
+            //TODO: update component_map list now
         })
         .catch(error => console.log('error', error))
 
@@ -87,7 +87,8 @@ function thingerButtonRemove(event) {
         putDataOptions['method'] = 'DELETE'
         fetch(`${api_url}/components/${stub}`, putDataOptions)
             .then(response => response.json())
-            .then(result => tableInit(false))
+            .then(result => { tableInit(false)
+                            deviceDetailApp.setModule('config/component_map')})
             .catch(error => console.log('error', error))
         putDataOptions['method'] = 'PUT'
     } else {
@@ -96,7 +97,8 @@ function thingerButtonRemove(event) {
         putDataOptions['method'] = 'DELETE'
         fetch(`${api_url}/things/${stub}`, putDataOptions)
             .then(response => response.json())
-            .then(result => tableInit(false))
+            .then(result => { tableInit(false)
+                            deviceDetailApp.setModule('config/component_map')})
             .catch(error => console.log('error', error))
         putDataOptions['method'] = 'PUT'
     }
@@ -132,7 +134,7 @@ function thingerButtonAdd() {
         getModules(path + 'py', 'text').then(data => {
             putDataOptions['body'] = JSON.stringify(data)
             fetch(`${api_url}/components/${stub}`, putDataOptions)
-                .then(response => response.json())
+                .then(response => deviceDetailApp.setModule('config/component_map'))
                 .catch(error => console.log('error', error))
         })
     } else {
@@ -151,16 +153,14 @@ function thingerButtonAdd() {
         getModules(path + 'py', 'text').then(data => {
             putDataOptions['body'] = JSON.stringify(data)
             fetch(`${api_url}/things/${stub}`, putDataOptions)
-                .then(response => response.json())
+                .then(deviceDetailApp.setModule('config/component_map'))
                 .catch(error => console.log('error', error))
-
 
         }).catch(error => {
             // console.log(error)
             //Nothing to do here -- most things won't have a py helper.
         })
     }
-
 }
 
 function buildTarget(data, target) {
