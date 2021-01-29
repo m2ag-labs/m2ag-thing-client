@@ -1,5 +1,6 @@
 let auth_hash;
 let jwt_token;
+let server_ui
 
 function mainInit() {
 
@@ -7,7 +8,6 @@ function mainInit() {
     for (let i = 0; i < controls.length; i++) {
         controls[i].addEventListener('click', mainActionHandler, false)
     }
-    let server_ui
     manageLocalStorage('load') //sets dataOptions dataHeader too
     if (auth_hash !== undefined) {
         fetch(`${api_url}/config`, getDataOptions)
@@ -15,8 +15,7 @@ function mainInit() {
             .then(result => {
                 create_device_tree(result)
                 server_ui = result.data.server.ui
-            })
-            .catch(error => console.log('error', error))
+            }).catch(error => console.log('error', error))
         treeInit()
         //get a valid jwt token from the sever, set in options, call fetch
         fetch(`${api_url}/auth`, getDataOptions)
@@ -24,15 +23,18 @@ function mainInit() {
             .then(result => {
                 jwt_token = result.data['token']
                 thingHeaders.append("Authorization", "Bearer " + jwt_token);
-                fetch(`${thing_url}/`, getThingOptions)
-                    .then(response => response.json())
-                    .then(result => uiInit(result, server_ui))
-                    .catch(error => console.log('error', error))
             })
             .catch(error => console.log('error', error))
     } else {
         manageModal('show')
     }
+}
+
+function uiLoad() {
+    fetch(`${thing_url}/`, getThingOptions)
+        .then(response => response.json())
+        .then(result => uiInit(result, server_ui))
+        .catch(error => console.log('error', error))
 }
 
 function uiInit(thing, server_ui = undefined) {
@@ -58,6 +60,7 @@ function uiInit(thing, server_ui = undefined) {
         // document.getElementById('ui_frame').src = `${window.location.origin}/ui/${ui_file}.html?index=${index}&socket=true&jwt=${jwt_token}`
         ui_html += createUiLi(`custom.${ui_file}`, index, false)
     }
+    // add a refresh link --
     document.getElementById('ui-tab-list').innerHTML = ui_html
 
     let controls = document.getElementsByClassName('ui-select')
@@ -227,7 +230,7 @@ function mainActionHandler() {
         case 'thing_ui_menu':
             if (auth_hash !== undefined) {
                 const src = document.getElementById('ui_frame').src
-                if(src.includes('index.html')){
+                if (src.includes('index.html')) {
                     document.getElementById('thing_ui_url').innerText = "select a thing and try again"
                 } else {
                     document.getElementById('thing_ui_url').innerText = src
@@ -237,6 +240,9 @@ function mainActionHandler() {
                 manageModal('show')
             }
             break;
+        case 'things_tab':
+            uiLoad()
+            break
         default:
             console.log(this.id);
             break;
