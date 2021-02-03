@@ -15,7 +15,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">m2ag.labs.thing</a>
+    <a class="navbar-brand" href="#">m2ag.labs.thing.builder</a>
     <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
             class="navbar-toggler"
             data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
@@ -23,7 +23,7 @@
     </button>
 
     <div id="navbarSupportedContent" class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-sm-auto">
             <li class="nav-item">
                 <ul id="pills-tab" class="nav nav-pills mb-3" role="tablist">
                     <li class="nav-item">
@@ -46,20 +46,23 @@
                 <div class="dropdown-menu">
                     <a id="connect_menu" class="dropdown-item control_action">credentials</a>
                     <div class="dropdown-divider"></div>
-                    <a id="pick_menu" class="dropdown-item control_action">add/remove modules</a>
+                    <a id="pick_menu" class="dropdown-item control_action">modules</a>
                     <div class="dropdown-divider"></div>
-                    <a id="token_menu" class="dropdown-item control_action">get jwt</a>
+                    <a id="token_menu" class="dropdown-item control_action">jwt</a>
                     <div class="dropdown-divider"></div>
-                    <a id="thing_ui_menu" class="dropdown-item control_action">get thing url</a>
+                    <a id="thing_ui_menu" class="dropdown-item control_action">thing url</a>
                 </div>
             </li>
-
-            <li class="nav-item">
-                <a id="about_link" class="nav-link control_action" href="#">about <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="https://m2aglabs.com" target="_new">m2ag.labs<span
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+                   href="#"
+                   role="button">about</a>
+                <div class="dropdown-menu">
+                    <a id="about_link" class="nav-link control_action" href="#">version<span class="sr-only">(current)</span></a>
+                    <div class="dropdown-divider"></div>
+                    <a class="nav-link" href="https://m2aglabs.com" target="_new">m2ag.labs<span
                         class="sr-only">(current)</span></a>
+                </div>
             </li>
         </ul>
     </div>
@@ -76,6 +79,11 @@
                     <div class="card">
                         <div id="service-status-list" class="card-body text-center">
                             <div id="serviceApp">
+                                <service-element
+                                        v-for="service in this.services"
+                                        :ref="service"
+                                        v-bind:context="service">
+                                </service-element>
                                 <div v-if="this.services.length" class="custom-control custom-switch">
                                     <input id="service-poll" v-model="this.polling"
                                            autocomplete="poll-switch" class="custom-control-input" type="checkbox"
@@ -83,11 +91,6 @@
                                     <label class="custom-control-label" for="service-poll">
                                         {{ this.polling ? "polling" : "not polling" }}</label>
                                 </div>
-                                <service-element
-                                        v-for="service in this.services"
-                                        :ref="service"
-                                        v-bind:context="service">
-                                </service-element>
                             </div>
                         </div>
                     </div>
@@ -493,8 +496,8 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                    <div id="thing_ui_url"></div>
-                        </div>
+                        <div id="thing_ui_url"></div>
+                    </div>
                 </div>
             </div>
         </div>

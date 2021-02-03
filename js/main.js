@@ -1,9 +1,10 @@
+const version_info = 'alpha 6, 1/22/21'
 let auth_hash;
 let jwt_token;
 let server_ui
 
 function mainInit() {
-
+    document.title = window.location.hostname
     let controls = document.getElementsByClassName('control_action')
     for (let i = 0; i < controls.length; i++) {
         controls[i].addEventListener('click', mainActionHandler, false)
@@ -203,7 +204,7 @@ function mainActionHandler() {
             }
             break;
         case 'about_link':
-            alert("m2ag.labs thing client version 1.0. Usage info available at m2aglabs.com"); // jshint ignore:line
+            alert(`m2ag.labs thing builder ${version_info} `); // jshint ignore:line
             break;
         case 'pick_menu':
             if (auth_hash !== undefined) {
