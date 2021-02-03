@@ -116,34 +116,41 @@
                                     <li class="list-group-item list-group-item-primary text-center">
                                         <h5 class="card-title">{{ title }}</h5>
                                     </li>
-                                    <li class="list-group-item text-center">
-                                        {{ selected }}
-                                    </li>
-                                    <li v-show="isDirty" class="list-group-item text-center">
-                                        <img alt="accept"
-                                             src="css/images/72px-Dialog-accept.svg.png"
-                                             style="width: 24px; height: auto; margin-left: 10%; margin-right: 10%;"
-                                             @click="this.saveModule()">
-                                        <img alt="cancel"
-                                             src="css/images/72px-Dialog-error-round.svg.png"
-                                             style="width: 24px; height: auto; margin-left: 10%; margin-right: 10%;"
-                                             @click="this.cancelModuleAction()">
-                                    </li>
-                                    <li id="detail_li" class="list-group-item text-justify"
-                                        style="overflow: scroll;">
+                                    <li class="list-group-item">
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td><h5>{{ selected }}</h5></td>
+                                                <td>
+                                                    <img v-show="(selected !== '' && selected !== 'config/component_map')"
+                                                         alt="edit"
+                                                         src="css/images/Text-x-generic_with_pencil.svg"
+                                                         style="width: 24px; height: auto;"
+                                                         @click="this.editModule()">
+                                                    <img v-show="(!isDirty && selected === 'config/component_map')"
+                                                         alt="add"
+                                                         src="css/images/1024px-Ambox_emblem_plus.svg.png"
+                                                         style="width: 24px; height: auto;"
+                                                         @click="this.addModule()">
+                                                    <img v-show="(isDirty && selected === 'config/component_map')"
+                                                         alt="accept"
+                                                         src="css/images/72px-Dialog-accept.svg.png"
+                                                         style="width: 24px; height: auto;"
+                                                         @click="this.saveModule()">
+                                                    <img v-show="(isDirty && selected === 'config/component_map')"
+                                                         alt="cancel"
+                                                         src="css/images/72px-Dialog-error-round.svg.png"
+                                                         style="width: 24px; height: auto; margin-left: 20px;"
+                                                         @click="this.cancelModuleAction()">
+                                                </td>
+                                            </tr>
+                                        </table>
                                         <div v-if="selected === 'config/component_map'">
-                                            <table class="table">
+                                            <table class="table table-sm">
                                                 <thead>
                                                 <tr>
-                                                    <th scope="col">Thing</th>
-                                                    <th scope="col">Component</th>
-                                                    <th scope="col">
-                                                        <img v-show="!isDirty"
-                                                             alt="add"
-                                                             src="css/images/1024px-Ambox_emblem_plus.svg.png"
-                                                             style="width: 24px; height: auto;"
-                                                             @click="this.addModule()">
-                                                    </th>
+                                                    <th scope="col">thing</th>
+                                                    <th scope="col">component</th>
+                                                    <th></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -187,8 +194,7 @@
                                             </table>
                                         </div>
                                         <div v-else-if="selected !==''">
-                                            <div :contenteditable="isDirty"
-                                                 @click="this.isDirty = true">
+                                            <div>
                                                 <pre id="current_module_edit">{{ this.current_module }}</pre>
                                             </div>
                                         </div>
@@ -450,7 +456,36 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">jwt</h5>
+                <h5 class="modal-title">jwt info</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group text-left">
+                    <li class="list-group-item list-group-item-primary  text-center">
+                        thing url
+                    </li>
+                    <li class="list-group-item  text-center">
+                        <span id="thing_url"></span>
+                    </li>
+                    <li class="list-group-item  list-group-item-primary text-center">
+                        jwt
+                    </li>
+                    <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
+                        <span id="jwt_token"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- thing url  -->
+<div id="thing_ui_modal" class="modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">thing ui url</h5>
                 <button aria-label="Close" class="close" data-dismiss="modal" type="button">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -458,50 +493,32 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">
-                        <ul class="list-group text-left">
-                            <li class="list-group-item list-group-item-primary  text-center">
-                                thing url
-                            </li>
-                            <li class="list-group-item  text-center">
-                                <span id="thing_url"></span>
-                            </li>
-                            <li class="list-group-item  list-group-item-primary text-center">
-                                jwt
-                            </li>
-                            <li class="list-group-item  text-center">
-                                <span id="jwt_token"></span>
-                            </li>
-                        </ul>
-                    </div>
+                    <div id="thing_ui_url"></div>
+                        </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- jwt modal -->
-<div id="thing_ui_modal" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
+<!-- thing url  -->
+<div id="ace_editor_modal" class="modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">thing ui</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 id="ace_module_title" class="modal-title">module editor</h5>
+                <div>
+                    <img alt="accept"
+                         onclick="deviceDetailApp.saveModule()"
+                         src="css/images/72px-Dialog-accept.svg.png"
+                         style="width: 24px; height: auto;">
+                    <img alt="cancel"
+                         onclick="deviceDetailApp.cancelModuleAction()"
+                         src="css/images/72px-Dialog-error-round.svg.png"
+                         style="width: 24px; height: auto; margin-left: 20px;">
+                </div>
             </div>
             <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-text">
-                        <ul class="list-group text-left">
-                            <li class="list-group-item list-group-item-primary  text-center">
-                                thing ui url
-                            </li>
-                            <li class="list-group-item  text-center">
-                                <span id="thing_ui_url"></span>
-                            </li>
-                        </ul>
-                    </div>
+                <div id="ace_editor" style="height: 500px;">
                 </div>
             </div>
         </div>
@@ -530,6 +547,7 @@
 <script src="js/vendor/bootstrap.min.js"></script>
 <!-- need jquery.min -- slim will not work -->
 <script src="js/vendor/jstree.min.js"></script>
+<script charset="utf-8" src="js/vendor/ace/ace.js" type="text/javascript"></script>
 <script src="js/tree.js"></script><!-- js tree  -->
 <script src="js/api.js"></script><!-- rest calls -->
 <script src="js/comm.js"></script><!-- web socket comm -->
@@ -545,11 +563,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-

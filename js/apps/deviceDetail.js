@@ -2,9 +2,10 @@ const deviceDetail = Vue.createApp({
     data() {
         return {
             selected: '',
-            title: 'Detail',
+            title: 'detail',
             current_module: '',
-            isDirty: false
+            isDirty: false,
+            editor: ace.edit("ace_editor")
         }
     },
     methods: {
@@ -28,13 +29,20 @@ const deviceDetail = Vue.createApp({
             this.isDirty = false
             this.current_module = ''
             this.setModule(this.selected)
+            $("#ace_editor_modal").modal("hide")
         },
         saveModule() {
             try {
                 if (this.selected === "config/component_map") {
                     putDataOptions['body'] = JSON.stringify(this.current_module.component_map)
                 } else {
-                    putDataOptions['body'] = JSON.stringify(JSON.parse(document.getElementById('current_module_edit').innerText))
+                    try {
+                        putDataOptions['body'] = JSON.stringify(JSON.parse(this.editor.getValue()))
+                        $("#ace_editor_modal").modal("hide")
+                    } catch (e) {
+                        alert('The current content is not json')
+                        return
+                    }
                 }
             } catch (e) {
                 alert('Content is not valid json')
@@ -63,6 +71,17 @@ const deviceDetail = Vue.createApp({
             }
             this.current_module.component_map.thing = 'component'
         },
+        editModule() {
+            document.getElementById('ace_module_title').innerHTML = this.selected
+            this.editor.setTheme("ace/theme/chrome")
+            this.editor.session.setMode("ace/mode/json")
+            this.editor.setOptions({
+                fontSize: "12pt"
+            });
+            const _mod = JSON.stringify(JSON.parse(this.current_module), null, 2)
+            this.editor.session.setValue(_mod)
+            $("#ace_editor_modal").modal("show")
+        },
         deleteModule(member) {
             delete this.current_module.component_map[member]
             this.saveModule()
@@ -85,11 +104,11 @@ const deviceDetail = Vue.createApp({
                 component.disabled = false
             }
         },
-        thingOptions(thing = ''){
+        thingOptions(thing = '') {
             let things = this.current_module.things.filter(x =>
                 !Object.keys(this.current_module.component_map).includes(x) || x === thing
             )
-            if(thing === 'thing') things.push('thing')
+            if (thing === 'thing') things.push('thing')
             return things
         }
 
@@ -100,6 +119,7 @@ const deviceDetail = Vue.createApp({
                 disableTree()
             } else {
                 enableTree()
+                //TODO: if component_map reload tree
             }
         }
     }
