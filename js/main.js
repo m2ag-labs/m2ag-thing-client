@@ -43,7 +43,7 @@ function uiInit(thing, server_ui = undefined) {
     //ui-tab-list -- append to there
     //When server ui is defined, make it the default
     //Key is ui name, array is modules things need to be passed to ui.
-
+    document.getElementById('ui_frame').src = ''
     for (let i = 0; i < thing.length; i++) {
         if (i === 0 && server_ui === undefined) {
             //TODO: set to fist thing
