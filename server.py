@@ -74,7 +74,7 @@ def parse_args(args=None):
         '-p', '--port', type=int, default=8443,
         help='Port on which to run server.')
     parser.add_argument(
-        'dir', help='Directory from which to serve files.')
+        '-d', '--dir', type=str, default='static', help='Directory from which to serve files.')
     return parser.parse_args(args)
 
 
