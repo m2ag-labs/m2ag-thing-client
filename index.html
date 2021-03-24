@@ -50,7 +50,7 @@
                     <div class="dropdown-divider"></div>
                     <a id="token_menu" class="dropdown-item control_action">jwt</a>
                     <div class="dropdown-divider"></div>
-                    <a id="thing_ui_menu" class="dropdown-item control_action">thing url</a>
+                    <a id="thing_ui_menu" class="dropdown-item control_action">thing urls</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -58,22 +58,25 @@
                    href="#"
                    role="button">about</a>
                 <div class="dropdown-menu">
-                    <a id="about_link" class="nav-link control_action" href="#">version<span class="sr-only">(current)</span></a>
+                    <a id="about_link" class="nav-link control_action" href="#">version<span
+                            class="sr-only">(current)</span></a>
                     <div class="dropdown-divider"></div>
                     <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-installer/wiki" target="_new">installer<span
-                        class="sr-only">(current)</span></a>
+                            class="sr-only">(current)</span></a>
                     <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-client/wiki" target="_new">thing client<span
-                        class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-client/wiki" target="_new">thing
+                        client<span
+                                class="sr-only">(current)</span></a>
                     <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-builder/wiki" target="_new">thing builder<span
-                        class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-builder/wiki" target="_new">thing
+                        builder<span
+                                class="sr-only">(current)</span></a>
                     <div class="dropdown-divider"></div>
                     <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-things/wiki" target="_new">things<span
-                        class="sr-only">(current)</span></a>
+                            class="sr-only">(current)</span></a>
                     <div class="dropdown-divider"></div>
                     <a class="nav-link" href="https://m2aglabs.com" target="_new">m2ag.labs blog<span
-                        class="sr-only">(current)</span></a>
+                            class="sr-only">(current)</span></a>
                 </div>
             </li>
         </ul>
@@ -510,7 +513,20 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <div id="thing_ui_url"></div>
+                        <ul class="list-group text-left">
+                            <li class="list-group-item list-group-item-primary  text-center">
+                                thing urls
+                            </li>
+                            <li class="list-group-item  text-center">
+                                <span id="thing_ui_url"></span>
+                            </li>
+                            <li class="list-group-item  list-group-item-primary text-center">
+                                thing ws url
+                            </li>
+                            <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
+                                <span id="thing_ws_url"></span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
