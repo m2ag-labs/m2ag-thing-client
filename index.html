@@ -8,241 +8,89 @@
     <link href="siteicon.png" rel="shortcut icon" type="image/png"/>
     <link href="siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <link href="css/jstree/style.min.css" rel="stylesheet"/>
-    <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
+    <link href="css/jstree/style.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <!--link href="css/main.css" rel="stylesheet">  there is nothing there -->
     <title>m2ag.labs.thing</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-light bg-light" style="padding-right: 7%;">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding-right: 7%;">
+  <div class="container-fluid">
     <a class="navbar-brand" href="#">m2ag.labs.thing.builder</a>
-    <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-            class="navbar-toggler"
-            data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
-        <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div id="navbarSupportedContent" class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-sm-auto">
-            <li class="nav-item">
-                <ul id="pills-tab" class="nav nav-pills mb-3" role="tablist">
-                    <li class="nav-item">
-                        <a id="pills-config-tab" aria-controls="pills-config" aria-selected="true"
-                           class="nav-link active"
-                           data-toggle="pill" href="#config"
-                           role="tab">config</a>
-                    </li>
-                    <li class="nav-item">
-                        <a id="things_tab" aria-controls="pills-ui" aria-selected="false"
-                           class="nav-link control_action" data-toggle="pill"
-                           href="#ui" role="tab">things </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item dropdown">
-                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                   href="#"
-                   role="button">utils</a>
-                <div class="dropdown-menu">
-                    <a id="connect_menu" class="dropdown-item control_action">credentials</a>
-                    <div class="dropdown-divider"></div>
-                    <a id="pick_menu" class="dropdown-item control_action">modules</a>
-                    <div class="dropdown-divider"></div>
-                    <a id="token_menu" class="dropdown-item control_action">jwt</a>
-                    <div class="dropdown-divider"></div>
-                    <a id="thing_ui_menu" class="dropdown-item control_action">thing urls</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                   href="#"
-                   role="button">about</a>
-                <div class="dropdown-menu">
-                    <a id="about_link" class="nav-link control_action" href="#">version<span
-                            class="sr-only">(current)</span></a>
-                    <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-installer/wiki" target="_new">installer<span
-                            class="sr-only">(current)</span></a>
-                    <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-client/wiki" target="_new">thing
-                        client<span
-                                class="sr-only">(current)</span></a>
-                    <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-thing-builder/wiki" target="_new">thing
-                        builder<span
-                                class="sr-only">(current)</span></a>
-                    <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://github.com/m2ag-labs/m2ag-things/wiki" target="_new">things<span
-                            class="sr-only">(current)</span></a>
-                    <div class="dropdown-divider"></div>
-                    <a class="nav-link" href="https://m2aglabs.com" target="_new">m2ag.labs blog<span
-                            class="sr-only">(current)</span></a>
-                </div>
-            </li>
-        </ul>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            utilities
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a onclick="connectModal(true)" class="dropdown-item" href="#">credentials</a></li>
+            <li><a onclick="pickModal(true)" class="dropdown-item" href="#">things</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a onclick="jwtModal(true)" class="dropdown-item" href="#">jwt</a></li>
+          </ul>
+        </li>
+          <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="#">about</a>
+        </li>
+      </ul>
+      <!--form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form-->
     </div>
+  </div>
 </nav>
 
-
+<!-- container main content-->
 <div class="container-fluid">
-    <div id="pills-config-content" class="tab-content">
-        <!--config page-->
-        <div id="config" aria-labelledby="pills-config-tab" class="tab-pane fade show active" role="tabpanel">
-            <div class="row vw-100">
-                <!-- service list card -->
-                <div class="col-md-3">
-                    <div class="card">
-                        <div id="service-status-list" class="card-body text-center">
-                            <div id="serviceApp">
-                                <service-element
-                                        v-for="service in this.services"
-                                        :ref="service"
-                                        v-bind:context="service">
-                                </service-element>
-                                <div v-if="this.services.length" class="custom-control custom-switch">
-                                    <input id="service-poll" v-model="this.polling"
-                                           autocomplete="poll-switch" class="custom-control-input" type="checkbox"
-                                           @change="this.pollServices()">
-                                    <label class="custom-control-label" for="service-poll">
-                                        {{ this.polling ? "polling" : "not polling" }}</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- jstree card -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <ul class="list-group text-left">
-                                <li class="list-group-item list-group-item-primary text-center">
-                                    <h5 class="card-title">device tree</h5>
-                                </li>
-                            </ul>
-                            <div id="device_tree_area" style="overflow: scroll;">
+    <div class="row vw-100">
+        <!-- jstree card -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <ul class="list-group text-left">
+                        <li class="list-group-item list-group-item-primary text-center">
+                            <h5 class="card-title">device tree</h5>
+                        </li>
+                    </ul>
+                    <div id="device_tree_area" style="overflow: scroll;">
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- detail card -->
-                <div class="col-md-5">
-                    <div class="card">
-                        <div id="tree-detail-card" class="card-body">
-                            <div id="deviceDetailApp">
-                                <ul class="list-group text-left">
-                                    <li class="list-group-item list-group-item-primary text-center">
-                                        <h5 class="card-title">{{ title }}</h5>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <table class="table table-sm">
-                                            <tr>
-                                                <td><h5>{{ selected }}</h5></td>
-                                                <td>
-                                                    <img v-show="(selected !== '' && selected !== 'config/component_map')"
-                                                         alt="edit"
-                                                         src="css/images/Text-x-generic_with_pencil.svg"
-                                                         style="width: 24px; height: auto;"
-                                                         @click="this.editModule()">
-                                                    <img v-show="(!isDirty && selected === 'config/component_map')"
-                                                         alt="add"
-                                                         src="css/images/1024px-Ambox_emblem_plus.svg.png"
-                                                         style="width: 24px; height: auto;"
-                                                         @click="this.addModule()">
-                                                    <img v-show="(isDirty && selected === 'config/component_map')"
-                                                         alt="accept"
-                                                         src="css/images/72px-Dialog-accept.svg.png"
-                                                         style="width: 24px; height: auto;"
-                                                         @click="this.saveModule()">
-                                                    <img v-show="(isDirty && selected === 'config/component_map')"
-                                                         alt="cancel"
-                                                         src="css/images/72px-Dialog-error-round.svg.png"
-                                                         style="width: 24px; height: auto; margin-left: 20px;"
-                                                         @click="this.cancelModuleAction()">
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <div v-if="selected === 'config/component_map'">
-                                            <table class="table table-sm">
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col">thing</th>
-                                                    <th scope="col">component</th>
-                                                    <th></th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr v-for="(key, component) in current_module.component_map" :key="key">
-                                                    <td>
-                                                        <label>
-                                                            <select :id="component"
-                                                                    class="custom-select"
-                                                                    @change="this.optionChange(component)">
-                                                                <option v-for="(item) in this.thingOptions(component)"
-                                                                        :selected="item === component"
-                                                                        :value="item">
-                                                                    {{ item }}
-                                                                </option>
-                                                            </select>
-                                                        </label>
-                                                    </td>
-                                                    <td>
-                                                        <label>
-                                                            <select :id="`${component}_component`"
-                                                                    class="custom-select"
-                                                                    @change="this.optionChange(component)">
-                                                                <option value="component">component</option>
-                                                                <option v-for="(item) in current_module.components"
-                                                                        :selected="item === key"
-                                                                        :value="item">
-                                                                    {{ item }}
-                                                                </option>
-                                                            </select>
-                                                        </label>
-                                                    </td>
-                                                    <td>
-                                                        <img v-show="!isDirty"
-                                                             alt="delete"
-                                                             src="css/images/72px-User-trash-full.svg.png"
-                                                             style="width: 24px; height: auto; margin-right: 5%;"
-                                                             @click="this.deleteModule(component)">
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div v-else-if="selected !==''">
-                                            <div>
-                                                <pre id="current_module_edit">{{ this.current_module }}</pre>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!--ui iframe panel -->
-        <div id="ui" aria-labelledby="pills-ui-tab" class="tab-pane fade show" role="tabpanel">
+        <!-- detail card -->
+        <div class="col-md-9">
             <div class="card">
-                <nav class="navbar navbar-expand-sm navbar-light bg-light">
-                    <ul id="ui-tab-list" class="nav nav-pills mb-3" role="tablist"></ul>
-                </nav>
-                <div class="card-body">
-                    <iframe id="ui_frame" src=""
-                            style="position: relative; height: 700px; width: 100%; border: 0;" title="thing">
-                    </iframe>
+                <div id="tree-detail-card" class="card-body">
+                        <ul class="list-group text-left">
+                            <li class="list-group-item list-group-item-primary text-center">
+                                <h5 class="card-title">detail</h5>
+                            </li>
+                            <li class="list-group-item">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><pre><span id="selected_node">Not Selected</span></pre></td>
+                                    </tr>
+                                </table>
+                                    <div>
+                                        <pre id="current_module_edit"></pre>
+                                    </div>
+                            </li>
+                        </ul>
+
                 </div>
             </div>
         </div>
     </div>
-</div> <!-- container main content-->
-
+</div>
 
 <!-- pw modal -->
-<div id="connect_modal" class="modal" role="dialog" tabindex="-1">
+<div id="connect_modal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -341,9 +189,7 @@
         </div>
     </div>
 </div>
-<!-- add components modal -->
-<!-- message toast -->
-
+<!-- pick modal -->
 <div id="pick_modal" class="modal" role="dialog" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -533,21 +379,21 @@
         </div>
     </div>
 </div>
-<!-- thing url  -->
+<!-- ace editor  -->
 <div id="ace_editor_modal" class="modal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 id="ace_module_title" class="modal-title">module editor</h5>
                 <div>
-                    <img alt="accept"
+                    <!--img alt="accept"
                          onclick="deviceDetailApp.saveModule()"
-                         src="css/images/72px-Dialog-accept.svg.png"
+                         <src="css/images/72px-Dialog-accept.svg.png"
                          style="width: 24px; height: auto;">
                     <img alt="cancel"
                          onclick="deviceDetailApp.cancelModuleAction()"
                          src="css/images/72px-Dialog-error-round.svg.png"
-                         style="width: 24px; height: auto; margin-left: 20px;">
+                         style="width: 24px; height: auto; margin-left: 20px;" -->
                 </div>
             </div>
             <div class="modal-body">
@@ -557,17 +403,17 @@
         </div>
     </div>
 </div>
+<!-- message toast -->
 <div id="message-toast" aria-atomic="true" aria-live="assertive" class="toast" role="alert"
      style="position: fixed; min-width: 300px;">
 </div>
 
 
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="js/vendor/vue.global.prod.js"></script>
-<script src="js/vendor/jquery.min.js"></script>
-<script src="js/vendor/popper-lite.min.js"></script>
+<!-- Popper.js, then Bootstrap JS -->
+<script src="js/vendor/popper.min.js"></script>
 <script src="js/vendor/bootstrap.min.js"></script>
 <!-- need jquery.min -- slim will not work -->
+<script src="js/vendor/jquery.min.js"></script>
 <script src="js/vendor/jstree.min.js"></script>
 <script charset="utf-8" src="js/vendor/ace/ace.js" type="text/javascript"></script>
 <script src="js/tree.js"></script><!-- js tree  -->
@@ -575,13 +421,5 @@
 <script src="js/comm.js"></script><!-- web socket comm -->
 <script src="js/modules.js"></script><!--code to add/remove things -->
 <script src="js/main.js"></script><!-- main -->
-<script src="js/apps/serviceList.js"></script>
-<script src="js/apps/deviceDetail.js"></script>
-<script src="js/components/ServiceElement.js"></script>
-<script>
-    //mount everything last
-    const serviceApp = serviceList.mount('#serviceApp')
-    const deviceDetailApp = deviceDetail.mount('#deviceDetailApp')
-</script>
 </body>
 </html>

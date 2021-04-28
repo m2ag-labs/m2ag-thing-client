@@ -1,7 +1,8 @@
-const version_info = 'alpha 6, 1/22/21'
+const version_info = 'beta 1, 2021'
 let auth_hash;
 let jwt_token;
 let server_ui
+
 
 function mainInit() {
     document.title = window.location.hostname
@@ -14,7 +15,7 @@ function mainInit() {
         fetch(`${api_url}/config`, getDataOptions)
             .then(response => response.json())
             .then(result => {
-                create_device_tree(result)
+                create_device_tree(result) // jshint ignore:line
                 server_ui = result.data.server.ui
             }).catch(error => console.log('error', error))
         treeInit()
@@ -27,7 +28,7 @@ function mainInit() {
             })
             .catch(error => console.log('error', error))
     } else {
-        manageModal('show')
+        connectModal('show')
     }
 }
 
@@ -43,6 +44,7 @@ function uiInit(thing, server_ui = undefined) {
     //ui-tab-list -- append to there
     //When server ui is defined, make it the default
     //Key is ui name, array is modules things need to be passed to ui.
+    //TODO: can I add options for display -- property order / composition?
     document.getElementById('ui_frame').src = ''
     for (let i = 0; i < thing.length; i++) {
         if (i === 0 && server_ui === undefined) {
@@ -92,8 +94,9 @@ function uiActionHandler() {
     }
 }
 
-function manageModal(mode, dialog = "connect_menu") {
-    if (dialog === "connect_menu") {
+function connectModal(mode) {
+    const modal = new bootstrap.Modal(document.getElementById('connect_modal'))
+    if (mode) {
         if (auth_hash === undefined) {
             document.getElementById("clear_login").disabled = true;
             document.getElementById("save_login").disabled = false;
@@ -101,21 +104,45 @@ function manageModal(mode, dialog = "connect_menu") {
             document.getElementById("clear_login").disabled = false;
             document.getElementById("save_login").disabled = true;
         }
-        if (mode === 'show') {
-            $('#connect_modal').modal('show');
-        } else {
-            $('#connect_modal').modal('hide');
-        }
-    }
-
-    if (dialog === 'comm_menu') {
-        if (mode === 'show') {
-            $('#comm_modal').modal('show');
-        } else {
-            $('#comm_modal').modal('hide');
-        }
+        modal.show()
+    } else {
+        modal.hide()
     }
 }
+
+function pickModal(mode) {
+    const modal = new bootstrap.Modal(document.getElementById('pick_modal'))
+    if (mode) {
+        if (auth_hash === undefined) {
+            connectModal(true)
+        } else {
+            thingerInit() // jshint ignore:line
+            modal.show()
+        }
+    } else {
+        modal.hide()
+    }
+}
+
+function jwtModal(mode) {
+    const modal = new bootstrap.Modal(document.getElementById('jwt_modal'))
+    if(mode) {
+        if (auth_hash !== undefined) {
+            fetch(`${api_url}/auth`, getDataOptions)
+                .then(response => response.json())
+                .then(result => {
+                    document.getElementById('thing_url').innerText = thing_url
+                    document.getElementById('jwt_token').innerText = result.data.token
+                })
+                .catch(error => console.log('error', error))
+            modal.show()
+        } else {
+            connectModal(true)
+        }
+    } else {
+        modal.hide()
+    }
+ }
 
 function manageLocalStorage(mode = 'load') {
     let config = {};
@@ -169,10 +196,6 @@ function setPassword() {
 function mainActionHandler() {
 
     switch (this.id) {
-        case 'connect_menu':
-        case 'comm_menu':
-            manageModal('show', this.id);
-            break;
         case 'save_login':
         case 'connect_password':
             if (auth_hash === undefined) {
@@ -193,7 +216,7 @@ function mainActionHandler() {
             const pw_2 = document.getElementById("password_2").value;
             if (pw_1 !== "" && pw_1 === pw_2) {
                 let data = {user: document.getElementById("connect_name").value, password: pw_1};
-                putDataOptions['data'] = JSON.stringify(data)
+                putDataOptions.data = JSON.stringify(data)
                 fetch(`${api_url}/password`, putDataOptions)
                     .then(response => response.json())
                     .then(() => setPassword())
@@ -205,28 +228,6 @@ function mainActionHandler() {
             break;
         case 'about_link':
             alert(`m2ag.labs thing builder ${version_info} `); // jshint ignore:line
-            break;
-        case 'pick_menu':
-            if (auth_hash !== undefined) {
-                thingerInit()
-                $("#pick_modal").modal("show")
-            } else {
-                manageModal('show')
-            }
-            break;
-        case 'token_menu':
-            if (auth_hash !== undefined) {
-                fetch(`${api_url}/auth`, getDataOptions)
-                    .then(response => response.json())
-                    .then(result => {
-                        document.getElementById('thing_url').innerText = thing_url
-                        document.getElementById('jwt_token').innerText = result['data']['token']
-                    })
-                    .catch(error => console.log('error', error))
-                $("#jwt_modal").modal("show")
-            } else {
-                manageModal('show')
-            }
             break;
         case 'thing_ui_menu':
             if (auth_hash !== undefined) {
@@ -247,7 +248,7 @@ function mainActionHandler() {
                 }
                 $("#thing_ui_modal").modal("show")
             } else {
-                manageModal('show')
+                connectModal('show')
             }
             break;
         case 'things_tab':
