@@ -1,19 +1,26 @@
 const device_tree_area = $('#device_tree_area');
-const selected_node_span = document.getElementById('selected_node')
 let current_node = ''
+const editor = ace.edit("ace_editor"); // jshint ignore:line
+editor.setTheme("ace/theme/chrome")
+editor.session.setMode("ace/mode/json")
+editor.setOptions({
+          fontSize: "12pt"
+      });
 
 function treeInit() {
     device_tree_area.on("changed.jstree", function (e, data) {
         current_node = ''
-        selected_node_span.innerHTML = ''
+        editor.session.setValue('')
+        document.getElementById('ui_frame').src = ''
         if (data.node !== undefined && data.node.data !== null) {
             fetch(`${api_url}/${data.node.data}`, getDataOptions)
                 .then(response => response.json())
                 .then(result => {
-                    current_node = JSON.stringify(result.data, null, 2)
+                    const t = JSON.stringify(result.data, null, 2)
+                    current_node = t
+                    setDetail(data.node,t)
                 })
                 .catch(error => console.log('error', error))
-                .finally(() => selected_node_span.innerHTML = current_node)
         }
     });
     device_tree_area.jstree({
@@ -65,6 +72,16 @@ function treeInit() {
                 })
                 .catch(error => console.log('error', error))
        });
+}
+
+function setDetail(node, t) {
+    editor.session.setValue(t)
+    editor.setReadOnly(true);
+    if('index' in node.original){
+                //set the thing url in ui
+                   document.getElementById('ui_frame').src =
+        `${window.location.origin}/ui/raspiui.html?index=${node.original.index}&socket=true&jwt=${jwt_token}`
+            }
 }
 
 function disableTree() {
@@ -131,6 +148,7 @@ function create_device_tree(response) {
             root.children[root.children.length - 1].children.push({
                 "type": "thing",
                 "text": data.enabled[i],
+                "index": i,
                 "data": `config/things/${data.enabled[i]}`
             });
         }
@@ -157,6 +175,8 @@ function create_device_tree(response) {
     device_tree_area.jstree(true).settings.core.data = [root];
     device_tree_area.jstree(true).refresh();
 }
+
+
 
 
 

@@ -8,41 +8,47 @@
     <link href="siteicon.png" rel="shortcut icon" type="image/png"/>
     <link href="siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <link href="css/jstree/style.css" rel="stylesheet"/>
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/jstree/style.css" rel="stylesheet"/>
+    <link href="css/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
     <!--link href="css/main.css" rel="stylesheet">  there is nothing there -->
     <title>m2ag.labs.thing</title>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding-right: 7%;">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">m2ag.labs.thing.builder</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            utilities
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a onclick="connectModal(true)" class="dropdown-item" href="#">credentials</a></li>
-            <li><a onclick="pickModal(true)" class="dropdown-item" href="#">things</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a onclick="jwtModal(true)" class="dropdown-item" href="#">jwt</a></li>
-          </ul>
-        </li>
-          <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">about</a>
-        </li>
-      </ul>
-      <!--form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form-->
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">m2ag.labs.thing.builder</a>
+        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+                class="navbar-toggler"
+                data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                       id="navbarDropdown" role="button">
+                        utilities
+                    </a>
+                    <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="connectModal(true)">credentials</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="pickModal(true)">things</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a aria-current="page" class="nav-link" href="#">about</a>
+                </li>
+            </ul>
+            <!--form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form-->
+        </div>
     </div>
-  </div>
 </nav>
 
 <!-- container main content-->
@@ -52,374 +58,389 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body">
-                    <ul class="list-group text-left">
-                        <li class="list-group-item list-group-item-primary text-center">
-                            <h5 class="card-title">device tree</h5>
-                        </li>
-                    </ul>
-                    <div id="device_tree_area" style="overflow: scroll;">
-
-                    </div>
+                    <div id="device_tree_area" style="overflow: scroll; height: 100%;"></div>
                 </div>
             </div>
         </div>
         <!-- detail card -->
         <div class="col-md-9">
             <div class="card">
-                <div id="tree-detail-card" class="card-body">
-                        <ul class="list-group text-left">
-                            <li class="list-group-item list-group-item-primary text-center">
-                                <h5 class="card-title">detail</h5>
-                            </li>
-                            <li class="list-group-item">
-                                <table class="table table-sm">
-                                    <tr>
-                                        <td><pre><span id="selected_node">Not Selected</span></pre></td>
-                                    </tr>
-                                </table>
-                                    <div>
-                                        <pre id="current_module_edit"></pre>
-                                    </div>
-                            </li>
-                        </ul>
-
+                <div class="card-body" id="tree-detail-card">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-pills" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button aria-controls="home" aria-selected="true" class="nav-link active"
+                                    data-bs-target="#ui"
+                                    data-bs-toggle="tab" id="ui-tab" role="tab" type="button">ui
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button aria-controls="profile" aria-selected="false" class="nav-link"
+                                    data-bs-target="#profile"
+                                    data-bs-toggle="tab" id="profile-tab" role="tab" type="button">detail
+                            </button>
+                        </li>
+                        <!--li class="nav-item" role="presentation">
+                            <button aria-controls="messages" aria-selected="false" class="nav-link"
+                                    data-bs-target="#messages"
+                                    data-bs-toggle="tab" id="messages-tab" role="tab" type="button">component
+                            </button>
+                        </li-->
+                        <li class="nav-item" role="presentation">
+                            <button aria-controls="settings" aria-selected="false" class="nav-link"
+                                    data-bs-target="#settings"
+                                    data-bs-toggle="tab" id="settings-tab" onclick="editor.resize()" role="tab"
+                                    type="button">file
+                            </button>
+                        </li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div aria-labelledby="ui-tab" class="tab-pane active" id="ui" role="tabpanel">
+                            <div class="card">
+                                <div class="card-body">
+                                    <iframe id="ui_frame" src=""
+                                            style="position: relative; height: 700px; width: 100%; border: 0;"
+                                            title="thing">
+                                    </iframe>
+                                </div>
+                            </div>
+                        </div>
+                        <div aria-labelledby="profile-tab" class="tab-pane" id="profile" role="tabpanel">
+                            <table data-toggle="table">
+                                <thead>
+                                <tr>
+                                    <th>Item ID</th>
+                                    <th>Item Name</th>
+                                    <th>Item Price</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Item 1</td>
+                                    <td>$1</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Item 2</td>
+                                    <td>$2</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div aria-labelledby="messages-tab" class="tab-pane" id="messages" role="tabpanel">...</div>
+                        <div aria-labelledby="settings-tab" class="tab-pane" id="settings" role="tabpanel">
+                            <div id="ace_editor" style="height: 700px;">ace!
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- pw modal -->
-<div id="connect_modal" class="modal fade" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">credentials</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <ul id="mpills-tab" class="nav nav-pills" role="tablist">
-                    <li class="nav-item">
-                        <a id="mpills-connect-tab" aria-controls="mpills-connect" aria-selected="true"
-                           class="nav-link active"
-                           data-toggle="pill"
-                           href="#credentials" role="tab">credentials</a>
-                    </li>
-                    <li class="nav-item">
-                        <a id="mpills-set-password-tab" aria-controls="mpills-comm" aria-selected="false"
-                           class="nav-link"
-                           data-toggle="pill"
-                           href="#mpills-comm" role="tab">set password</a>
-                    </li>
-                </ul>
-                <div id="mpills-tabContent" class="tab-content">
-                    <div id="credentials" aria-labelledby="pills-connect-tab" class="tab-pane fade show active"
-                         role="tabpanel">
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">
-                                <ul class="list-group text-left">
-                                    <li id="mconnect_info_display" class="list-group-item  text-center">
-                                        <form>
-                                            <div class="form-group">
-                                                <label for="connect_name">user id</label>
-                                                <input id="connect_name" aria-describedby="connect_name_help"
-                                                       autocomplete="username"
-                                                       class="form-control" type="text">
-                                                <small id="connect_name_help" class="form-text text-muted">usually this
-                                                    will be pi</small>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="connect_password">password</label>
-                                                <input id="connect_password" autocomplete="current-password"
-                                                       class="form-control"
-                                                       type="password">
-                                            </div>
-                                            <div>
-                                                <button id="save_login" class="control_action btn btn-primary"
-                                                        type="button">login
-                                                </button>
-                                                <button id="clear_login" class="control_action btn btn-danger"
-                                                        type="button">log out
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
+            <!-- pw modal -->
+            <div class="modal fade" id="connect_modal" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">credentials</h5>
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                    </div> <!-- connect tab -->
-                    <div id="mpills-comm" aria-labelledby="pills-set-password-tab" class="tab-pane fade"
-                         role="tabpanel">
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">
-                                <ul class="list-group text-left">
-                                    <li id="connect_info_display" class="list-group-item  text-center">
-                                        <form>
-                                            <div class="form-group">
-                                                <label for="emailfield"></label><input id="emailfield"
-                                                                                       autocomplete="username"
-                                                                                       style="display: none;"
-                                                                                       type="text" value="">
-                                                <label for="password_1">enter new password</label>
-                                                <input id="password_1" autocomplete="new-password" class="form-control"
-                                                       type="password" value="">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="password_2">enter it again</label>
-                                                <input id="password_2" autocomplete="new-password"
-                                                       class="form-control" type="password" value="">
-                                            </div>
-                                        </form>
-                                    </li>
-                                    <li class="list-group-item  text-center">
-                                        <button id="save_password" class="btn btn-primary control_action" type="button">
-                                            save password
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div> <!-- comm tab -->
-                </div><!-- tab pane-->
-            </div>
-        </div>
-    </div>
-</div>
-<!-- pick modal -->
-<div id="pick_modal" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">add/remove</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <ul class="nav nav-pills" role="tablist">
-                    <li class="nav-item">
-                        <a aria-controls="mpills" aria-selected="true" class="nav-link active"
-                           data-toggle="pill"
-                           href="#components"
-                           onclick="buttonsOff()" role="tab">components</a>
-                    </li>
-                    <li class="nav-item">
-                        <a aria-controls="mpills" aria-selected="false" class="nav-link" data-toggle="pill"
-                           href="#things"
-                           onclick="buttonsOff()" role="tab">things</a>
-                    </li>
-                </ul>
-
-                <div class="tab-content text-center">
-
-                    <div id="components" aria-labelledby="pills-components-tab" class="tab-pane fade show active"
-                         role="tabpanel">
-
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <h6>available</h6>
-                                                <ul id="components-available" class="list-group">
-
-                                                </ul>
-                                                <button id="add-components" class="btn btn-success thinger-button-add"
-                                                        style="display: none;" type="button">
-                                                    add
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <h6>installed</h6>
-                                                <ul id="components-installed" class="list-group">
-
-                                                </ul>
-                                                <button id="remove-components"
-                                                        class="btn btn-danger thinger-button-remove"
-                                                        style="display: none;" type="button">
-                                                    remove
-                                                </button>
-                                            </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-pills" id="mpills-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a aria-controls="mpills-connect" aria-selected="true" class="nav-link active"
+                                       data-toggle="pill"
+                                       href="#credentials"
+                                       id="mpills-connect-tab" role="tab">credentials</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a aria-controls="mpills-comm" aria-selected="false" class="nav-link"
+                                       data-toggle="pill"
+                                       href="#mpills-comm"
+                                       id="mpills-set-password-tab" role="tab">set password</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="mpills-tabContent">
+                                <div aria-labelledby="pills-connect-tab" class="tab-pane fade show active"
+                                     id="credentials"
+                                     role="tabpanel">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                            <ul class="list-group text-left">
+                                                <li class="list-group-item  text-center" id="mconnect_info_display">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label for="connect_name">user id</label>
+                                                            <input aria-describedby="connect_name_help"
+                                                                   autocomplete="username"
+                                                                   class="form-control"
+                                                                   id="connect_name" type="text">
+                                                            <small class="form-text text-muted" id="connect_name_help">usually
+                                                                this
+                                                                will be pi</small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="connect_password">password</label>
+                                                            <input autocomplete="current-password" class="form-control"
+                                                                   id="connect_password"
+                                                                   type="password">
+                                                        </div>
+                                                        <div>
+                                                            <button class="control_action btn btn-primary"
+                                                                    id="save_login"
+                                                                    type="button">login
+                                                            </button>
+                                                            <button class="control_action btn btn-danger"
+                                                                    id="clear_login"
+                                                                    type="button">log out
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </li>
+                                            </ul>
                                         </div>
-
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div> <!-- components tab -->
-
-                    <div id="things" aria-labelledby="pills-set-things-tab" class="tab-pane fade"
-                         role="tabpanel">
-
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <h6>available</h6>
-                                                <ul id="things-available" class="list-group">
-
-                                                </ul>
-                                                <button id="add-things" class="btn btn-success thinger-button-add"
-                                                        style="display: none;" type="button">
-                                                    add
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <h6>installed</h6>
-                                                <ul id="things-installed" class="list-group">
-
-                                                </ul>
-                                                <button id="remove-things" class="btn btn-danger thinger-button-remove"
-                                                        style="display: none;" type="button">
-                                                    remove
-                                                </button>
-                                            </div>
-
+                                    </div>
+                                </div> <!-- connect tab -->
+                                <div aria-labelledby="pills-set-password-tab" class="tab-pane fade" id="mpills-comm"
+                                     role="tabpanel">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                            <ul class="list-group text-left">
+                                                <li class="list-group-item  text-center" id="connect_info_display">
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <label for="emailfield"></label><input
+                                                                autocomplete="username"
+                                                                id="emailfield"
+                                                                style="display: none;"
+                                                                type="text" value="">
+                                                            <label for="password_1">enter new password</label>
+                                                            <input autocomplete="new-password" class="form-control"
+                                                                   id="password_1"
+                                                                   type="password" value="">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="password_2">enter it again</label>
+                                                            <input autocomplete="new-password" class="form-control"
+                                                                   id="password_2" type="password" value="">
+                                                        </div>
+                                                    </form>
+                                                </li>
+                                                <li class="list-group-item  text-center">
+                                                    <button class="btn btn-primary control_action" id="save_password"
+                                                            type="button">
+                                                        save password
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
+                                    </div>
+                                </div> <!-- comm tab -->
+                            </div><!-- tab pane-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- pick modal -->
+            <div class="modal" id="pick_modal" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">add/remove</h5>
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-pills" role="tablist">
+                                <li class="nav-item">
+                                    <a aria-controls="mpills" aria-selected="true" class="nav-link active"
+                                       data-toggle="pill"
+                                       href="#components"
+                                       onclick="buttonsOff()" role="tab">components</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a aria-controls="mpills" aria-selected="false" class="nav-link" data-toggle="pill"
+                                       href="#things"
+                                       onclick="buttonsOff()" role="tab">things</a>
+                                </li>
+                            </ul>
 
-                                    </li>
-                                </ul>
+                            <div class="tab-content text-center">
+
+                                <div aria-labelledby="pills-components-tab" class="tab-pane fade show active"
+                                     id="components"
+                                     role="tabpanel">
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <h6>available</h6>
+                                                            <ul class="list-group" id="components-available">
+
+                                                            </ul>
+                                                            <button class="btn btn-success thinger-button-add"
+                                                                    id="add-components"
+                                                                    style="display: none;" type="button">
+                                                                add
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h6>installed</h6>
+                                                            <ul class="list-group" id="components-installed">
+
+                                                            </ul>
+                                                            <button class="btn btn-danger thinger-button-remove"
+                                                                    id="remove-components"
+                                                                    style="display: none;" type="button">
+                                                                remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- components tab -->
+
+                                <div aria-labelledby="pills-set-things-tab" class="tab-pane fade" id="things"
+                                     role="tabpanel">
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <h6>available</h6>
+                                                            <ul class="list-group" id="things-available">
+
+                                                            </ul>
+                                                            <button class="btn btn-success thinger-button-add"
+                                                                    id="add-things"
+                                                                    style="display: none;" type="button">
+                                                                add
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h6>installed</h6>
+                                                            <ul class="list-group" id="things-installed">
+
+                                                            </ul>
+                                                            <button class="btn btn-danger thinger-button-remove"
+                                                                    id="remove-things"
+                                                                    style="display: none;" type="button">
+                                                                remove
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- thing -->
+
+                            </div><!-- tab pane-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- jwt modal -->
+            <div class="modal" id="jwt_modal" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">jwt info</h5>
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="list-group text-left">
+                                <li class="list-group-item list-group-item-primary  text-center">
+                                    thing url
+                                </li>
+                                <li class="list-group-item  text-center">
+                                    <span id="thing_url"></span>
+                                </li>
+                                <li class="list-group-item  list-group-item-primary text-center">
+                                    jwt
+                                </li>
+                                <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
+                                    <span id="jwt_token"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- thing url  -->
+            <div class="modal" id="thing_ui_modal" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">thing ui url</h5>
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    <ul class="list-group text-left">
+                                        <li class="list-group-item list-group-item-primary  text-center">
+                                            thing urls
+                                        </li>
+                                        <li class="list-group-item  text-center">
+                                            <span id="thing_ui_url"></span>
+                                        </li>
+                                        <li class="list-group-item  list-group-item-primary text-center">
+                                            thing ws url
+                                        </li>
+                                        <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
+                                            <span id="thing_ws_url"></span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-
-                    </div> <!-- thing -->
-
-                </div><!-- tab pane-->
-            </div>
-        </div>
-    </div>
-    <!-- toast -->
-    <div aria-atomic="true" aria-live="polite" class="d-flex justify-content-center align-items-sm-baseline"
-         style="min-height: 200px;">
-        <!-- Then put toasts within -->
-        <div id="advice-toast" aria-atomic="true" aria-live="assertive" class="toast" role="alert">
-            <div class="toast-header">
-                <img alt="" class="rounded mr-2" src="">
-                <strong class="mr-auto">driver required</strong>
-                <small></small>
-                <button aria-label="Close" class="ml-2 mb-1 close" data-dismiss="toast" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="toast-body">
-                <span id="advice-text"></span>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- jwt modal -->
-<div id="jwt_modal" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">jwt info</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group text-left">
-                    <li class="list-group-item list-group-item-primary  text-center">
-                        thing url
-                    </li>
-                    <li class="list-group-item  text-center">
-                        <span id="thing_url"></span>
-                    </li>
-                    <li class="list-group-item  list-group-item-primary text-center">
-                        jwt
-                    </li>
-                    <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
-                        <span id="jwt_token"></span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- thing url  -->
-<div id="thing_ui_modal" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">thing ui url</h5>
-                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <ul class="list-group text-left">
-                            <li class="list-group-item list-group-item-primary  text-center">
-                                thing urls
-                            </li>
-                            <li class="list-group-item  text-center">
-                                <span id="thing_ui_url"></span>
-                            </li>
-                            <li class="list-group-item  list-group-item-primary text-center">
-                                thing ws url
-                            </li>
-                            <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
-                                <span id="thing_ws_url"></span>
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
-<!-- ace editor  -->
-<div id="ace_editor_modal" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 id="ace_module_title" class="modal-title">module editor</h5>
-                <div>
-                    <!--img alt="accept"
-                         onclick="deviceDetailApp.saveModule()"
-                         <src="css/images/72px-Dialog-accept.svg.png"
-                         style="width: 24px; height: auto;">
-                    <img alt="cancel"
-                         onclick="deviceDetailApp.cancelModuleAction()"
-                         src="css/images/72px-Dialog-error-round.svg.png"
-                         style="width: 24px; height: auto; margin-left: 20px;" -->
-                </div>
-            </div>
-            <div class="modal-body">
-                <div id="ace_editor" style="height: 500px;">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- message toast -->
-<div id="message-toast" aria-atomic="true" aria-live="assertive" class="toast" role="alert"
-     style="position: fixed; min-width: 300px;">
-</div>
+    <!-- Popper.js, then Bootstrap JS -->
+    <script src="js/vendor/popper.min.js"></script>
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <!-- need jquery.min -- slim will not work -->
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/vendor/bootstrap-table.min.js"></script>
+    <script src="js/vendor/jstree.min.js"></script>
+    <script charset="utf-8" src="js/vendor/ace/ace.js" type="text/javascript"></script>
+    <script src="js/tree.js"></script><!-- js tree  -->
+    <script src="js/api.js"></script><!-- rest calls -->
+    <script src="js/comm.js"></script><!-- web socket comm -->
+    <script src="js/modules.js"></script><!--code to add/remove things -->
+    <script src="js/main.js"></script><!-- main -->
 
-
-<!-- Popper.js, then Bootstrap JS -->
-<script src="js/vendor/popper.min.js"></script>
-<script src="js/vendor/bootstrap.min.js"></script>
-<!-- need jquery.min -- slim will not work -->
-<script src="js/vendor/jquery.min.js"></script>
-<script src="js/vendor/jstree.min.js"></script>
-<script charset="utf-8" src="js/vendor/ace/ace.js" type="text/javascript"></script>
-<script src="js/tree.js"></script><!-- js tree  -->
-<script src="js/api.js"></script><!-- rest calls -->
-<script src="js/comm.js"></script><!-- web socket comm -->
-<script src="js/modules.js"></script><!--code to add/remove things -->
-<script src="js/main.js"></script><!-- main -->
 </body>
 </html>

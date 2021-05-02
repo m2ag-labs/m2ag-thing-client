@@ -39,60 +39,7 @@ function uiLoad() {
         .catch(error => console.log('error', error))
 }
 
-function uiInit(thing, server_ui = undefined) {
-    let ui_html = ''
-    //ui-tab-list -- append to there
-    //When server ui is defined, make it the default
-    //Key is ui name, array is modules things need to be passed to ui.
-    //TODO: can I add options for display -- property order / composition?
-    document.getElementById('ui_frame').src = ''
-    for (let i = 0; i < thing.length; i++) {
-        if (i === 0 && server_ui === undefined) {
-            //TODO: set to fist thing
-            // document.getElementById('ui_frame').src = `${window.location.origin}/ui/raspiui.html?index=${i}&socket=true&jwt=${jwt_token}`
-            ui_html = createUiLi(thing[i].title, i, false)
-        } else {
-            ui_html += createUiLi(thing[i].title, i, false)
-        }
 
-    }
-    //Custom marker flags ui
-    if (server_ui !== undefined && server_ui !== 'none') {
-        const ui_file = Object.keys(server_ui)[0]
-        const index = server_ui[ui_file][0]
-        // document.getElementById('ui_frame').src = `${window.location.origin}/ui/${ui_file}.html?index=${index}&socket=true&jwt=${jwt_token}`
-        ui_html += createUiLi(`custom.${ui_file}`, index, false)
-    }
-    // add a refresh link --
-    document.getElementById('ui-tab-list').innerHTML = ui_html
-
-    let controls = document.getElementsByClassName('ui-select')
-    for (let i = 0; i < controls.length; i++) {
-        controls[i].addEventListener('click', uiActionHandler, false)
-    }
-
-}
-
-function createUiLi(tag, index, selected = false) {
-    return `<li class="nav-item ui-select"  id="${tag}.${index}">
-                <a aria-controls="${tag}" aria-selected="${selected.toString()}" class="nav-link"
-                   data-toggle="pill"
-                   href="#"
-                   role="tab">${tag}</a>
-            </li>`
-    //put the index of the thing in the name field -- use to set src page
-}
-
-function uiActionHandler() {
-    let idx = this.id.split('.')
-    if (idx[0] !== 'custom') {
-        document.getElementById('ui_frame').src =
-            `${window.location.origin}/ui/raspiui.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
-    } else {
-        document.getElementById('ui_frame').src =
-            `${window.location.origin}/ui/${idx[1]}.html?index=${idx[idx.length - 1]}&socket=true&jwt=${jwt_token}`
-    }
-}
 
 function connectModal(mode) {
     const modal = new bootstrap.Modal(document.getElementById('connect_modal'))
