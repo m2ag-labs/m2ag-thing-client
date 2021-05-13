@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs editor" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <title>m2ag.labs.thing.ui</title>
+</head>
+<body>
+<div class="container-fluid">
+    <!--ui page -->
+    <div class="row vw-100" id="container_row">
+        <div id="ace_editor" style="height: 700px;">no data</div>
+    </div>
+
+</div> <!-- container main content-->
+
+<script src="js/ace/ace.js"></script>
+<script>
+    window.addEventListener("load", init);
+    const opts = {
+        which : 'thing',
+        path : '',
+        auth : '',
+
+    } //component to look at, update method
+    const editor = ace.edit("ace_editor")
+//    editor.setTheme("ace/theme/chrome")
+//    editor.setOptions({fontSize: "12pt"});
+    let target_interval = 3 //poll the service this often when open
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    };
+    const putOptions = {
+        method: 'PUT',
+        headers: requestHeaders,
+        body: '',
+        redirect: 'follow'
+    }
+
+    function remove_non_ascii(str) {
+        if ((str === null) || (str === ''))
+            return false;
+        else
+            str = str.toString();
+        return str.replace(/%E2%80%8C/g, '');
+    }
+
+    function init() {
+        //sets up an editor in its own page. Handles updates to mods and config.
+        //?module=<module>
+        // TODO: where are the non ascii chars comming from?
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = remove_non_ascii(param)
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        pollService()
+    }
+
+    function pollService(){
+        if (opts['auth'] !== undefined && opts['auth'] !== '') {
+            auth = `Basic ${opts['auth']}`
+            requestHeaders.append("Authorization", auth);
+            fetch(`${api_url}/${opts.path}`, getOptions)
+                .then(response => response.json())
+                .then(result => updateUi(result))
+                .catch(error => console.log('error', error))
+        } else {
+            console.log('missing auth token') // gotta have a token
+        }
+    }
+
+    function updateUi(result) {
+        serv.session.setMode("ace/mode/text")
+        serv.session.setValue(result.data)
+        serv.setReadOnly(true);
+    }
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
