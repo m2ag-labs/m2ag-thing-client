@@ -18,7 +18,7 @@ function mainInit() {
                 create_device_tree(result) // jshint ignore:line
                 server_ui = result.data.server.ui
             }).catch(error => console.log('error', error))
-        treeInit()
+        treeInit() // jshint ignore:line
         //get a valid jwt token from the sever, set in options, call fetch
         fetch(`${api_url}/auth`, getDataOptions)
             .then(response => response.json())
