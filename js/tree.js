@@ -71,23 +71,15 @@ const setDetail = (node) => {
         tabsOff(node.original.index)
         switch (node.original.index) {
             case 'm2ag-thing-tag':
-                editors.service.session.setMode("ace/mode/json")
-                document.getElementsByClassName('thing_pill').item(0).style.display = 'block'
-                editors.thing.session.setMode("ace/mode/json")
-                editors.helper.session.setMode("ace/mode/python")
-                editors.service.session.setValue(JSON.stringify(current_node.service, null, 2))
-                editors.service.setReadOnly(true);
-                editors.thing.session.setValue(JSON.stringify(current_node.thing, null, 2))
-                editors.thing.setReadOnly(true);
                 if ('ui' in node.original) {
-                    document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
-                    document.getElementById('ui_frame').src =
-                        `${window.location.origin}/ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}` // jshint ignore:line
+                    //document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
+                   // document.getElementById('ui_frame').src =
+                    //    `${window.location.origin}/ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}` // jshint ignore:line
                 }
                 if ('helper' in current_node && current_node.helper !== 'none') {
-                    document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
-                    editors.helper.session.setValue(current_node.helper)
-                    editors.helper.setReadOnly(true);
+                //    document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
+                //    editors.helper.session.setValue(current_node.helper)
+                //    editors.helper.setReadOnly(true);
                 }
                 break
             case 'm2ag-server-tag':
