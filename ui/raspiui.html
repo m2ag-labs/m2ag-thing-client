@@ -22,8 +22,8 @@
 
 </div> <!-- container main content-->
 
-<script src="js/gauge.min.js"></script>
-<script src="../js/comm.js"></script>
+<script src="js/vendor/gauge.min.js"></script>
+<script src="js/websocket.js"></script>
 <script>
     window.addEventListener("load", init);
     let opts = {} //component to look at, update method
@@ -164,7 +164,7 @@
         update() {
             //use rest to update property
             let input = document.getElementById(`${this.target}_input_control`)
-            let val = ""
+            let val
             switch (this.type) {
                 case 'checkbox': //Type boolean
                     val = input.checked

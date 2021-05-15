@@ -4,34 +4,42 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
-    <meta content="m2ag.labs editor" name="apple-mobile-web-app-title">
+    <meta content="m2ag.labs.service" name="apple-mobile-web-app-title">
     <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
     <link href="../siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
-    <title>m2ag.labs.thing.ui</title>
+    <title>m2ag.labs.thing.ui.service</title>
 </head>
 <body>
 <div class="container-fluid">
     <!--ui page -->
+    <!-- TODO: add nav -- move buttons to bar, fix buttons and enable poll -->
+    <!-- Button bar -->
+    <div id="service-button-bar">
+        <span id="service-button-label">Select a service</span>
+        <button id="service-enable-button" onclick="serviceButtonClick('enable')" class="btn btn-success">enable</button>
+        <button id="service-start-button" onclick="serviceButtonClick('start')" class="btn btn-success">start</button>
+        <button onclick="serviceButtonClick('restart')" class="btn btn-success">restart</button>
+    </div>
     <div class="row vw-100" id="container_row">
         <div id="ace_editor" style="height: 700px;">no data</div>
     </div>
 
 </div> <!-- container main content-->
 
-<script src="js/ace/ace.js"></script>
+<script src="js/vendor/ace/ace.js"></script>
 <script>
     window.addEventListener("load", init);
     const opts = {
-        which : 'thing',
-        path : '',
-        auth : '',
+        which: 'thing',
+        path: '',
+        auth: '',
 
     } //component to look at, update method
     const editor = ace.edit("ace_editor")
-//    editor.setTheme("ace/theme/chrome")
-//    editor.setOptions({fontSize: "12pt"});
+    editor.setTheme("ace/theme/chrome")
+    editor.setOptions({fontSize: "12pt"});
     let target_interval = 3 //poll the service this often when open
     const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
     const requestHeaders = new Headers();
@@ -67,13 +75,14 @@
             const ix = param[i].split('=')
             opts[ix[0]] = ix[1]
         }
+        auth = `Basic ${opts['auth']}`
+        requestHeaders.append("Authorization", auth);
         pollService()
+        target_interval = setInterval(pollService , 3000)
     }
 
-    function pollService(){
-        if (opts['auth'] !== undefined && opts['auth'] !== '') {
-            auth = `Basic ${opts['auth']}`
-            requestHeaders.append("Authorization", auth);
+    function pollService() {
+        if (opts.auth !== undefined && opts.auth !== '') {
             fetch(`${api_url}/${opts.path}`, getOptions)
                 .then(response => response.json())
                 .then(result => updateUi(result))
@@ -84,9 +93,66 @@
     }
 
     function updateUi(result) {
-        serv.session.setMode("ace/mode/text")
-        serv.session.setValue(result.data)
-        serv.setReadOnly(true);
+        editor.session.setMode("ace/mode/text")
+        editor.session.setValue(result.data)
+        editor.setReadOnly(true)
+        setServiceButtons(result.data)
+        document.getElementById('service-button-label').innerText = opts.path.split('/')[0]
+    }
+
+    const setServiceButtons = (result) => {
+        const isRunning = result.split("\n")[2].trim().indexOf(`(running)`) > -1
+        const isEnabled = result.split("\n")[1].trim().indexOf(`service; enabled;`) > -1
+        if (isRunning) {
+            document.getElementById("service-start-button").innerText = 'stop'
+            document.getElementById("service-start-button").classList.remove('btn-success')
+            document.getElementById("service-start-button").classList.add('btn-danger')
+        } else {
+            document.getElementById("service-start-button").innerText = 'start'
+            document.getElementById("service-start-button").classList.remove('btn-danger')
+            document.getElementById("service-start-button").classList.add('btn-success')
+        }
+        if (isEnabled) {
+            document.getElementById("service-enable-button").innerText = 'disable'
+            document.getElementById("service-enable-button").classList.remove('btn-success')
+            document.getElementById("service-enable-button").classList.add('btn-danger')
+        } else {
+            document.getElementById("service-enable-button").innerText = 'enable'
+            document.getElementById("service-enable-button").classList.remove('btn-danger')
+            document.getElementById("service-enable-button").classList.add('btn-success')
+        }
+
+    }
+
+
+    const serviceButtonClick = (action) => {
+        let endpoint = document.getElementById('service-button-label').innerText + '/'
+        switch (action) {
+            case 'enable':
+                if (document.getElementById("service-enable-button").innerText === 'enable') {
+                    endpoint += 'enable'
+                } else {
+                    endpoint += 'disable'
+                }
+                break
+            case 'start':
+                if (document.getElementById("service-start-button").innerText === 'start') {
+                    endpoint += 'start'
+                } else {
+                    endpoint += 'stop'
+                }
+                break
+            default:
+                endpoint += 'restart'
+                break
+
+        }
+        fetch(`${api_url}/${endpoint}`, getOptions)
+            .then(response => response.json())
+            .then(result => {
+                updateUi(result)
+            })
+            .catch(error => console.log('error', error))
     }
 
 
