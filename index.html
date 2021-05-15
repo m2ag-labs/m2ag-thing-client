@@ -62,36 +62,38 @@
             </div>
         </div>
         <!-- detail card -->
-        <div class="col-md-9">
-            <div class="card">
+        <div class="col-md-9" >
+            <div class="card"  style="align-content: center">
                 <div class="card-body" id="tree-detail-card">
                     <!-- Nav tabs -->
-                    <ul class="nav nav-pills" id="thing-tab-ul" role="tablist" >
+                    <ul class="nav nav-pills" id="thing-tab-ul" role="tablist">
                         <li class="nav-item ui_pill all_pills" role="presentation">
                             <button aria-controls="ui" aria-selected="false" class="nav-link"
                                     data-bs-target="#ui"
-                                    data-bs-toggle="tab" id="ui-tab" role="tab" type="button">ui
+                                    data-bs-toggle="tab" id="ui-tab" role="tab" type="button"
+                                    onclick="tabClickHandler('ui-tab')">ui
                             </button>
                         </li>
-                        <!--li class="nav-item service_pill" role="presentation">
+                        <li class="nav-item service_pill all_pills" role="presentation">
                             <button aria-controls="service" aria-selected="false" class="nav-link active"
                                     data-bs-target="#service"
                                     data-bs-toggle="tab" id="service-tab" role="tab"
-                                    type="button">
+                                    type="button" onclick="tabClickHandler('service-tab')">
                                 service
                             </button>
-                        </li-->
+                        </li>
                         <li class="nav-item thing_pill all_pills" role="presentation">
                             <button aria-controls="thing" aria-selected="false" class="nav-link"
                                     data-bs-target="#thing"
                                     data-bs-toggle="tab" id="thing-tab" role="tab"
-                                    type="button">thing
+                                    type="button" onclick="tabClickHandler('thing-tab')">thing
                             </button>
                         </li>
                         <li class="nav-item helper_pill all_pills" role="presentation">
                             <button aria-controls="helper" aria-selected="false" class="nav-link"
                                     data-bs-target="#helper"
-                                    data-bs-toggle="tab" id="helper-tab"  role="tab" type="button">helper
+                                    data-bs-toggle="tab" id="helper-tab"  role="tab" type="button"
+                                    onclick="tabClickHandler('helper-tab')">helper
                             </button>
                         </li>
                     </ul>

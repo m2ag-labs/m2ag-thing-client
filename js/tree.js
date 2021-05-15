@@ -1,18 +1,36 @@
 const device_tree_area = $('#device_tree_area');
 const all_pills = document.getElementsByClassName('all_pills')
-let current_node = ''
-let current_data = ''
+
+
 let current_view = 'none'
+let current_tab = 'none'
+let current_node = 'none'
 
 const thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab'))
-const tabsOff = (view) => {
-    if(view !== current_view) {
+const service_tab = new bootstrap.Tab(document.querySelector('#service-tab'))
+const setTabs = (view) => {
+    document.getElementById('thing_frame').src = ''
+    document.getElementById('ui_frame').src = ''
+    document.getElementById('service_frame').src = ''
+    document.getElementById('helper_frame').src = ''
+    if (view !== current_view) {
         current_view = view
-        thing_tab.show()
+        if (current_view === 'm2ag-thing-tag') {
+            thing_tab.show()
+            current_tab = 'thing-tab'
+        } else {
+            service_tab.show()
+            current_tab = 'service-tab'
+        }
     }
-     for (const i of all_pills) {
-            i.style.display = 'none'
-     }
+    for (const i of all_pills) {
+        i.style.display = 'none'
+    }
+
+}
+
+const tabClickHandler = (tab) => {
+    current_tab = tab
 }
 
 /**
@@ -42,29 +60,39 @@ const handleMoveNode = (data) => {
 
 const setDetail = (node) => {
     if ('index' in node.original) {
-        tabsOff(node.original.index)
+        setTabs(node.original.index)
         switch (node.original.index) {
             case 'm2ag-thing-tag':
+                document.getElementsByClassName('thing_pill').item(0).style.display = 'block'
+                document.getElementById('thing_frame').src =
+                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}`
+
                 if ('ui' in node.original) {
                     document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
                     document.getElementById('ui_frame').src =
-                       `${window.location.origin}/ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}` // jshint ignore:line
+                        `${window.location.origin}/ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}` // jshint ignore:line
+                } else if (current_tab === 'ui-tab'){
+                    thing_tab.show()
                 }
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
                     document.getElementById('helper_frame').src =
-                       `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}`
+                        `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}`
 
+                } else if(current_tab === 'helper-tab'){
+                    thing_tab.show()
                 }
                 break
             case 'm2ag-server-tag':
-                document.getElementsByClassName('service_pill').item(0).style.display = 'block'
+                document.getElementById('service_frame').src =
+                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}`
                 if ('ui' in node.original) {
                     document.getElementById('ui_frame').src = node.original.ui
                 }
                 break
             case 'm2ag-service-tag':
-
+                document.getElementById('service_frame').src =
+                    `${window.location.origin}/ui/service.html?path=${node.data}&type=json&auth=${auth_hash}`
                 break
             default:
                 break
@@ -73,22 +101,21 @@ const setDetail = (node) => {
 
 }
 
-
-
 const handleChangeTree = (data) => {
-    current_node = ''
-    document.getElementById('ui_frame').src = ''
     if (data.node !== undefined && data.node.data !== null) {
-        fetch(`${api_url}/${data.node.data}`, getDataOptions)// jshint ignore:line
-            .then(response => response.json())
-            .then(result => {
-                current_node = result.data
-                setDetail(data.node, result)
-            })
-            .catch(error => console.log('error', error))
+        if(current_node !== data.node.data) {
+            current_node = data.node.data
+            fetch(`${api_url}/${data.node.data}`, getDataOptions)// jshint ignore:line
+                .then(response => response.json())
+                .then(result => {
+                    setDetail(data.node, result)
+                })
+                .catch(error => console.log('error', error))
+        }
+    } else {
+        setTabs('none')
     }
 }
-
 
 const disableTree = () => { // jshint ignore:line
     // disable visible nodes
@@ -134,7 +161,7 @@ const create_device_tree = (response) => { // jshint ignore:line
     for (let i in current_data.available) { // jshint ignore:line
         if (current_data.available.hasOwnProperty(i) && current_data.enabled.indexOf(current_data.available[i]) < 0) {
             let helper = false
-            if(current_data.helpers.indexOf(current_data.available[i]) !== -1) {
+            if (current_data.helpers.indexOf(current_data.available[i]) !== -1) {
                 helper = `config/helpers/${current_data.available[i]}`
             }
             root.children[root.children.length - 1].children.push({
@@ -160,7 +187,7 @@ const create_device_tree = (response) => { // jshint ignore:line
     for (let i in current_data.enabled) { // jshint ignore:line
         if (current_data.enabled.hasOwnProperty(i)) {
             let helper = false
-            if(current_data.helpers.indexOf(current_data.enabled[i]) !== -1) {
+            if (current_data.helpers.indexOf(current_data.enabled[i]) !== -1) {
                 helper = `config/helpers/${current_data.enabled[i]}`
             }
             root.children[root.children.length - 1].children.push({
@@ -196,7 +223,7 @@ const create_device_tree = (response) => { // jshint ignore:line
 
 
 const treeInit = () => { // jshint ignore:line
-    tabsOff()
+    setTabs()
     device_tree_area.jstree({
         "types": {
             "default": {
@@ -225,7 +252,7 @@ const treeInit = () => { // jshint ignore:line
     device_tree_area.on("changed.jstree", function (e, data) { // jshint ignore:line
         handleChangeTree(data)
     });
-    device_tree_area.bind("move_node.jstree", function (e,data) { // jshint ignore:line
+    device_tree_area.bind("move_node.jstree", function (e, data) { // jshint ignore:line
         handleMoveNode(data)
     });
 
