@@ -10,7 +10,11 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/jstree/style.css" rel="stylesheet"/>
-    <!--link href="css/main.css" rel="stylesheet">  there is nothing there -->
+    <style>
+        .tree-card {
+            height : 100%;
+        }
+    </style>
     <title>m2ag.labs.thing</title>
 </head>
 <body>
@@ -55,18 +59,18 @@
     <div class="row vw-100">
         <!-- jstree card -->
         <div class="col-md-3">
-            <div class="card">
+            <div class="card tree-card">
                 <div class="card-body">
                     <div id="device_tree_area" style="overflow: scroll; height: 100%;"></div>
                 </div>
             </div>
         </div>
         <!-- detail card -->
-        <div class="col-md-9" >
-            <div class="card"  style="align-content: center">
+        <div class="col-md-9">
+            <div class="card">
                 <div class="card-body" id="tree-detail-card">
                     <!-- Nav tabs -->
-                    <ul class="nav nav-pills" id="thing-tab-ul" role="tablist">
+                    <ul class="nav nav-pills" id="thing-tab-ul" role="tablist" >
                         <li class="nav-item ui_pill all_pills" role="presentation">
                             <button aria-controls="ui" aria-selected="false" class="nav-link"
                                     data-bs-target="#ui"
@@ -104,28 +108,28 @@
                             <div class="card">
                                 <div class="card-body">
                                     <iframe id="ui_frame" src=""
-                                            style="position: relative; height: 700px; width: 100%; border: 0;"
-                                            title="thing">
+                                            style="position: relative; height: 750px; width: 100%; border: 0;"
+                                            title="ui">
                                     </iframe>
                                 </div>
                             </div>
                         </div>
                         <div aria-labelledby="service-tab" class="tab-pane active" id="service" role="tabpanel">
                             <iframe id="service_frame" src=""
-                                            style="position: relative; height: 700px; width: 100%; border: 0;"
+                                            style="position: relative; height: 750px; width: 100%; border: 0;"
                                             title="service">
                             </iframe>
                         </div>
                         <div aria-labelledby="thing-tab" class="tab-pane" id="thing" role="tabpanel">
-                            <iframe id="thing_frame" src=""
-                                            style="position: relative; height: 700px; width: 100%; border: 0;"
+                            <iframe id="thing_frame" src="" scrolling="no"
+                                            style="position: relative; height: 750px; width: 100%; border: 0;"
                                             title="thing">
                             </iframe>
                         </div>
                         <div aria-labelledby="helper-tab" class="tab-pane" id="helper" role="tabpanel">
                             <iframe id="helper_frame" src=""
-                                            style="position: relative; height: 700px; width: 100%; border: 0;"
-                                            title="thing">
+                                            style="position: relative; height: 750px; width: 100%; border: 0;"
+                                            title="helper">
                             </iframe>
                         </div>
                     </div>

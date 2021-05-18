@@ -6,8 +6,9 @@ let current_view = 'none'
 let current_tab = 'none'
 let current_node = 'none'
 
-const thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab'))
-const service_tab = new bootstrap.Tab(document.querySelector('#service-tab'))
+
+let thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab'));
+let service_tab = new bootstrap.Tab(document.querySelector('#service-tab'))
 const setTabs = (view) => {
     document.getElementById('thing_frame').src = ''
     document.getElementById('ui_frame').src = ''
@@ -65,7 +66,7 @@ const setDetail = (node) => {
             case 'm2ag-thing-tag':
                 document.getElementsByClassName('thing_pill').item(0).style.display = 'block'
                 document.getElementById('thing_frame').src =
-                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}`
+                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`
 
                 if ('ui' in node.original) {
                     document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
@@ -77,7 +78,7 @@ const setDetail = (node) => {
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
                     document.getElementById('helper_frame').src =
-                        `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}`
+                        `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}&ts=${Date.now()}`
 
                 } else if(current_tab === 'helper-tab'){
                     thing_tab.show()
@@ -85,14 +86,14 @@ const setDetail = (node) => {
                 break
             case 'm2ag-server-tag':
                 document.getElementById('service_frame').src =
-                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}`
+                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`
                 if ('ui' in node.original) {
                     document.getElementById('ui_frame').src = node.original.ui
                 }
                 break
             case 'm2ag-service-tag':
                 document.getElementById('service_frame').src =
-                    `${window.location.origin}/ui/service.html?path=${node.data}&type=json&auth=${auth_hash}`
+                    `${window.location.origin}/ui/service.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Math.random()}`
                 break
             default:
                 break

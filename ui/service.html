@@ -9,34 +9,52 @@
     <link href="../siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn {
+            margin-left: 20px;
+        }
+        .editor {
+            height: 730px
+        }
+
+        .navbar {
+            height: 40px
+        }
+
+        body {
+            min-height: 75rem;
+            padding-top: 2.5rem;
+        }
+    </style>
     <title>m2ag.labs.thing.ui.service</title>
 </head>
 <body>
-<div class="container-fluid">
-    <!--ui page -->
-    <!-- TODO: add nav -- move buttons to bar, fix buttons and enable poll -->
-    <!-- Button bar -->
-    <div id="service-button-bar">
-        <span id="service-button-label">Select a service</span>
-        <button id="service-enable-button" onclick="serviceButtonClick('enable')" class="btn btn-success">enable</button>
-        <button id="service-start-button" onclick="serviceButtonClick('start')" class="btn btn-success">start</button>
-        <button onclick="serviceButtonClick('restart')" class="btn btn-success">restart</button>
-    </div>
-    <div class="row vw-100" id="container_row">
-        <div id="ace_editor" style="height: 700px;">no data</div>
-    </div>
+<nav class="navbar navbar-expand-sm navbar-light fixed-top bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href=""><span id="service-button-label">Loading...</span></a>
 
-</div> <!-- container main content-->
+            <ul class="navbar-nav">
+            </ul>
+            <div class="btn-toolbar">
+                <button class="btn btn-outline-success" id="service-enable-button" onclick="serviceButtonClick('enable')">
+                    enable
+                </button>
+                <button class="btn btn-outline-success" id="service-start-button" onclick="serviceButtonClick('start')">
+                    start
+                </button>
+                <button class="btn btn-outline-success" id="service-restart-button" onclick="serviceButtonClick('restart')">
+                    restart
+                </button>
+            </div>
 
+    </div>
+</nav>
+<div id="ace_editor" class="editor">no data</div>
 <script src="js/vendor/ace/ace.js"></script>
+<!--script src="../js/vendor/bootstrap.min.js"></script-->
 <script>
     window.addEventListener("load", init);
-    const opts = {
-        which: 'thing',
-        path: '',
-        auth: '',
-
-    } //component to look at, update method
+    let opts = {}
     const editor = ace.edit("ace_editor")
     editor.setTheme("ace/theme/chrome")
     editor.setOptions({fontSize: "12pt"});
@@ -56,20 +74,8 @@
         redirect: 'follow'
     }
 
-    function remove_non_ascii(str) {
-        if ((str === null) || (str === ''))
-            return false;
-        else
-            str = str.toString();
-        return str.replace(/%E2%80%8C/g, '');
-    }
-
     function init() {
-        //sets up an editor in its own page. Handles updates to mods and config.
-        //?module=<module>
-        // TODO: where are the non ascii chars comming from?
         let param = window.location.search.substring(1, window.location.search.length);
-        param = remove_non_ascii(param)
         param = param.split('&')
         for (const i in param) {
             const ix = param[i].split('=')
@@ -78,7 +84,7 @@
         auth = `Basic ${opts['auth']}`
         requestHeaders.append("Authorization", auth);
         pollService()
-        target_interval = setInterval(pollService , 3000)
+        target_interval = setInterval(pollService, 3000)
     }
 
     function pollService() {
@@ -105,21 +111,21 @@
         const isEnabled = result.split("\n")[1].trim().indexOf(`service; enabled;`) > -1
         if (isRunning) {
             document.getElementById("service-start-button").innerText = 'stop'
-            document.getElementById("service-start-button").classList.remove('btn-success')
-            document.getElementById("service-start-button").classList.add('btn-danger')
+            document.getElementById("service-start-button").classList.remove('btn-outline-success')
+            document.getElementById("service-start-button").classList.add('btn-outline-danger')
         } else {
             document.getElementById("service-start-button").innerText = 'start'
-            document.getElementById("service-start-button").classList.remove('btn-danger')
-            document.getElementById("service-start-button").classList.add('btn-success')
+            document.getElementById("service-start-button").classList.remove('btn-outline-danger')
+            document.getElementById("service-start-button").classList.add('btn-outline-success')
         }
         if (isEnabled) {
             document.getElementById("service-enable-button").innerText = 'disable'
-            document.getElementById("service-enable-button").classList.remove('btn-success')
-            document.getElementById("service-enable-button").classList.add('btn-danger')
+            document.getElementById("service-enable-button").classList.remove('btn-outline-success')
+            document.getElementById("service-enable-button").classList.add('btn-outline-danger')
         } else {
             document.getElementById("service-enable-button").innerText = 'enable'
-            document.getElementById("service-enable-button").classList.remove('btn-danger')
-            document.getElementById("service-enable-button").classList.add('btn-success')
+            document.getElementById("service-enable-button").classList.remove('btn-outline-danger')
+            document.getElementById("service-enable-button").classList.add('btn-outline-success')
         }
 
     }
