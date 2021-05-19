@@ -103,7 +103,6 @@
                 if (opts.type === 'json') {
                     try {
                         putOptions['body'] = JSON.stringify(JSON.parse(editor.getValue()))
-                        $("#ace_editor_modal").modal("hide")
                     } catch (e) {
                         alert('The current content is not json')
                         return
@@ -179,6 +178,12 @@
     }
 
     window.addEventListener("load", init);
+    window.onmessage = (event) => {
+        document.getElementById('ace_editor').style.height = `${event.data - 190}px`
+        editor.resize()
+    }
+    window.top.postMessage('resize', window.origin)
+    //TODO: post message back to parent page asking for size.
 </script>
 </body>
 </html>

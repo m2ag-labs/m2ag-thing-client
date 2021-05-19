@@ -1,19 +1,18 @@
 const device_tree_area = $('#device_tree_area') // uses jquery
 const all_pills = document.getElementsByClassName('all_pills')
-
+const iframes = document.querySelectorAll("iframe");
 
 let current_view = 'none'
 let current_tab = 'none'
 let current_node = 'none'
 
-
 let thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab')); // jshint ignore:line
 let service_tab = new bootstrap.Tab(document.querySelector('#service-tab')) // jshint ignore:line
 const setTabs = (view) => {
-    document.getElementById('thing_frame').src = ''
-    document.getElementById('ui_frame').src = ''
-    document.getElementById('service_frame').src = ''
-    document.getElementById('helper_frame').src = ''
+    document.getElementById('thing_frame').contentWindow.location.replace('ui/blank.html')
+    document.getElementById('ui_frame').contentWindow.location.replace('ui/blank.html')
+    document.getElementById('service_frame').contentWindow.location.replace('ui/blank.html')
+    document.getElementById('helper_frame').contentWindow.location.replace('ui/blank.html')
     if (view !== current_view) {
         current_view = view
         if (current_view === 'm2ag-thing-tag') {
@@ -58,6 +57,14 @@ const handleMoveNode = (data) => {
         .catch(error => console.log('error', error))
 }
 
+const resizeAll = (frame_only = false) => {
+    for( let i = 0; i < iframes.length; i++) {
+        if(!frame_only) {
+            iframes[i].style.height = `${window.innerHeight - 150}px`
+        }
+        iframes[i].contentWindow.postMessage(window.innerHeight, window.origin)
+    }
+}
 
 const setDetail = (node) => {
     if ('index' in node.original) {
@@ -65,43 +72,38 @@ const setDetail = (node) => {
         switch (node.original.index) {
             case 'm2ag-thing-tag':
                 document.getElementsByClassName('thing_pill').item(0).style.display = 'block'
-                document.getElementById('thing_frame').src =
-                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}` // jshint ignore:line
+                document.getElementById('thing_frame').contentWindow.location.replace(
+                    `ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`) // jshint ignore:line
 
                 if ('ui' in node.original) {
                     document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
-                    document.getElementById('ui_frame').src =
-                        `${window.location.origin}/ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}` // jshint ignore:line
+                    document.getElementById('ui_frame').contentWindow.location.replace(`ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}`) // jshint ignore:line
                 } else if (current_tab === 'ui-tab'){
                     thing_tab.show()
                 }
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
-                    document.getElementById('helper_frame').src =
-                        `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}&ts=${Date.now()}` // jshint ignore:line
+                    document.getElementById('helper_frame').contentWindow.location.replace(`ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}&ts=${Date.now()}`) // jshint ignore:line
 
                 } else if(current_tab === 'helper-tab'){
                     thing_tab.show()
                 }
                 break
             case 'm2ag-server-tag':
-                document.getElementById('service_frame').src =
-                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}` // jshint ignore:line
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`) // jshint ignore:line
                 if ('ui' in node.original) {
-                    document.getElementById('ui_frame').src = node.original.ui
+                    document.getElementById('ui_frame').contentWindow.location.replace(node.original.ui)
                 }
                 break
             case 'm2ag-service-tag':
-                document.getElementById('service_frame').src =
-                    `${window.location.origin}/ui/service.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Math.random()}` // jshint ignore:line
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/service.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Math.random()}`) // jshint ignore:line
                 break
             default:
                 break
         }
     }
-
 }
-
+//If user changes from a parent to a leaf and back too  fast fetch errors will occur.
 const handleChangeTree = (data) => {
     if (data.node !== undefined && data.node.data !== null) {
         if(current_node !== data.node.data) {
@@ -115,6 +117,7 @@ const handleChangeTree = (data) => {
         }
     } else {
         setTabs('none')
+        current_node = 'none'
     }
 }
 
@@ -257,4 +260,17 @@ const treeInit = () => { // jshint ignore:line
         handleMoveNode(data)
     });
 
+}
+
+window.addEventListener('resize', resizeAll);
+window.onmessage = (event) => {
+    switch(event.data){
+        case 'resize':
+            //TODO: this resizes everything every time for each iframe.
+            resizeAll(true)
+            break
+        default:
+            console.log(event.data)
+            break
+    }
 }

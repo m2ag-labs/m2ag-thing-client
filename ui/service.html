@@ -161,6 +161,13 @@
             .catch(error => console.log('error', error))
     }
 
+    window.onmessage = (event) => {
+        document.getElementById('ace_editor').style.height = `${event.data - 150}px`
+        editor.resize()
+    }
+    window.top.postMessage('resize', window.origin)
+
+
 
 </script>
 </body>
