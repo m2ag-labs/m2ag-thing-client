@@ -1,4 +1,4 @@
-const device_tree_area = $('#device_tree_area');
+const device_tree_area = $('#device_tree_area') // uses jquery
 const all_pills = document.getElementsByClassName('all_pills')
 
 
@@ -7,8 +7,8 @@ let current_tab = 'none'
 let current_node = 'none'
 
 
-let thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab'));
-let service_tab = new bootstrap.Tab(document.querySelector('#service-tab'))
+let thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab')); // jshint ignore:line
+let service_tab = new bootstrap.Tab(document.querySelector('#service-tab')) // jshint ignore:line
 const setTabs = (view) => {
     document.getElementById('thing_frame').src = ''
     document.getElementById('ui_frame').src = ''
@@ -30,7 +30,7 @@ const setTabs = (view) => {
 
 }
 
-const tabClickHandler = (tab) => {
+const tabClickHandler = (tab) => { // jshint ignore:line
     current_tab = tab
 }
 
@@ -66,7 +66,7 @@ const setDetail = (node) => {
             case 'm2ag-thing-tag':
                 document.getElementsByClassName('thing_pill').item(0).style.display = 'block'
                 document.getElementById('thing_frame').src =
-                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`
+                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}` // jshint ignore:line
 
                 if ('ui' in node.original) {
                     document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
@@ -78,7 +78,7 @@ const setDetail = (node) => {
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
                     document.getElementById('helper_frame').src =
-                        `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}&ts=${Date.now()}`
+                        `${window.location.origin}/ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}&ts=${Date.now()}` // jshint ignore:line
 
                 } else if(current_tab === 'helper-tab'){
                     thing_tab.show()
@@ -86,14 +86,14 @@ const setDetail = (node) => {
                 break
             case 'm2ag-server-tag':
                 document.getElementById('service_frame').src =
-                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`
+                    `${window.location.origin}/ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}` // jshint ignore:line
                 if ('ui' in node.original) {
                     document.getElementById('ui_frame').src = node.original.ui
                 }
                 break
             case 'm2ag-service-tag':
                 document.getElementById('service_frame').src =
-                    `${window.location.origin}/ui/service.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Math.random()}`
+                    `${window.location.origin}/ui/service.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Math.random()}` // jshint ignore:line
                 break
             default:
                 break

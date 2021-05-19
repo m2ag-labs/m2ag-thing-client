@@ -10,12 +10,14 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .editor{
+        .editor {
             height: 730px
         }
+
         .navbar {
             height: 40px
         }
+
         body {
             min-height: 75rem;
             padding-top: 2.5rem;
@@ -70,6 +72,7 @@
 <script>
     let opts = {}
     const editor = ace.edit("ace_editor")
+    //TODO: add editor options to nav bar
     editor.setTheme("ace/theme/chrome")
     editor.setOptions({fontSize: "12pt"});
     const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
@@ -87,52 +90,50 @@
         redirect: 'follow'
     }
 
-    function clickHandler(action) {
+    const clickHandler = (action) => {
         switch (action) {
             case 'edit':
                 document.getElementById('edit').style.display = 'none'
                 document.getElementById('save').style.display = 'inline'
                 document.getElementById('cancel').style.display = 'inline'
+                editor.setReadOnly(false)
+                // TODO: freeze the host page navigation until saved.
                 break
             case 'save':
+                if (opts.type === 'json') {
+                    try {
+                        putOptions['body'] = JSON.stringify(JSON.parse(editor.getValue()))
+                        $("#ace_editor_modal").modal("hide")
+                    } catch (e) {
+                        alert('The current content is not json')
+                        return
+                    }
+                } else {
+                    putOptions['body'] = editor.getValue()
+                }
                 document.getElementById('edit').style.display = 'block'
                 document.getElementById('save').style.display = 'none'
                 document.getElementById('cancel').style.display = 'none'
+                editor.setReadOnly(false)
+                fetch(`${api_url}/${opts.path}`, putOptions)// jshint ignore:line
+                    .then(response => response.json())
+                    .then(result => updateUi(result))
+                    .catch(error => console.log('error', error))
                 break
-            case 'cancel':
+            default:
                 document.getElementById('edit').style.display = 'block'
                 document.getElementById('save').style.display = 'none'
                 document.getElementById('cancel').style.display = 'none'
+                //Reload from the server
+                poll()
                 break
 
 
         }
     }
 
-    function init() {
-        //sets up an editor in its own page. Handles updates to mods and config.
-        //?path=<module>&type=text|json|python&auth=<auth_hash>
-        let param = window.location.search.substring(1, window.location.search.length);
-        param = param.split('&')
-        for (const i in param) {
-            const ix = param[i].split('=')
-            opts[ix[0]] = ix[1]
-        }
-        if (opts['auth'] !== undefined && opts['auth'] !== '') {
-            auth = `Basic ${opts['auth']}`
-            requestHeaders.append("Authorization", auth);
-            fetch(`${api_url}/${opts.path}`, getOptions)
-                .then(response => response.json())
-                .then(result => updateUi(result))
-                .catch(error => console.log('error', error))
-        } else {
-            console.log('missing auth token') // gotta have a token
-        }
-    }
-
-    function updateUi(result) {
+    const updateUi = (result) => {
         const file = opts.path.split('/').pop()
-
         switch (opts.type) {
             case 'json':
                 editor.session.setMode("ace/mode/json")
@@ -149,7 +150,32 @@
                 editor.session.setValue(result.data)
                 document.getElementById('edit-nav-label').innerText = `${file}.txt`
         }
-        editor.setReadOnly(true);
+        editor.setReadOnly(true)
+    }
+
+    const poll = () => {
+        fetch(`${api_url}/${opts.path}`, getOptions)
+            .then(response => response.json())
+            .then(result => updateUi(result))
+            .catch(error => console.log('error', error))
+    }
+
+    const init = () => {
+        //sets up an editor in its own page. Handles updates to mods and config.
+        //?path=<module>&type=text|json|python&auth=<auth_hash>
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        if (opts['auth'] !== undefined && opts['auth'] !== '') {
+            auth = `Basic ${opts['auth']}`
+            requestHeaders.append("Authorization", auth);
+            poll()
+        } else {
+            console.log('missing auth token') // gotta have a token
+        }
     }
 
     window.addEventListener("load", init);
