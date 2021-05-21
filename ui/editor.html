@@ -9,6 +9,7 @@
     <link href="../siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <title>m2ag.labs.thing.ui.editor</title>
     <style>
         .editor {
             height: 730px
@@ -23,7 +24,6 @@
             padding-top: 2.5rem;
         }
     </style>
-    <title>m2ag.labs.thing.ui.editor</title>
 </head>
 <body>
 <!--ui page -->
@@ -61,35 +61,16 @@
         </div>
     </div>
 </nav>
-<main>
+<main class="container-fluid">
     <div class="bg-light rounded editor" id="ace_editor">no data</div>
 </main>
-
-
 <script src="js/vendor/ace/ace.js"></script>
 <!--script src="../js/vendor/bootstrap.min.js"></script-->
-
 <script>
-    let opts = {}
     const editor = ace.edit("ace_editor")
-    //TODO: add editor options to nav bar
     editor.setTheme("ace/theme/chrome")
     editor.setOptions({fontSize: "12pt"});
-    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
-    const requestHeaders = new Headers();
-    requestHeaders.append("Content-Type", "application/json");
-    const getOptions = {
-        method: 'GET',
-        headers: requestHeaders,
-        redirect: 'follow'
-    };
-    const putOptions = {
-        method: 'PUT',
-        headers: requestHeaders,
-        body: '',
-        redirect: 'follow'
-    }
-
+    //TODO: add editor options to nav bar
     const clickHandler = (action) => {
         switch (action) {
             case 'edit':
@@ -108,7 +89,7 @@
                         return
                     }
                 } else {
-                    putOptions['body'] = editor.getValue()
+                    putOptions['body'] = JSON.stringify({data: editor.getValue()})
                 }
                 document.getElementById('edit').style.display = 'block'
                 document.getElementById('save').style.display = 'none'
@@ -117,17 +98,14 @@
                 fetch(`${api_url}/${opts.path}`, putOptions)// jshint ignore:line
                     .then(response => response.json())
                     .then(result => updateUi(result))
-                    .catch(error => console.log('error', error))
+                    .catch(error => alert(error))
                 break
             default:
                 document.getElementById('edit').style.display = 'block'
                 document.getElementById('save').style.display = 'none'
                 document.getElementById('cancel').style.display = 'none'
-                //Reload from the server
                 poll()
                 break
-
-
         }
     }
 
@@ -156,7 +134,23 @@
         fetch(`${api_url}/${opts.path}`, getOptions)
             .then(response => response.json())
             .then(result => updateUi(result))
-            .catch(error => console.log('error', error))
+            .catch(error => alert(error))
+    }
+
+    let opts = {auth: ''}
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+    const putOptions = {
+        method: 'PUT',
+        headers: requestHeaders,
+        body: '',
+        redirect: 'follow'
     }
 
     const init = () => {
@@ -168,12 +162,12 @@
             const ix = param[i].split('=')
             opts[ix[0]] = ix[1]
         }
-        if (opts['auth'] !== undefined && opts['auth'] !== '') {
+        if (opts.auth !== undefined && opts.auth !== '') {
             auth = `Basic ${opts['auth']}`
             requestHeaders.append("Authorization", auth);
             poll()
         } else {
-            console.log('missing auth token') // gotta have a token
+            alert('authorization error') // gotta have a token
         }
     }
 
@@ -183,7 +177,6 @@
         editor.resize()
     }
     window.top.postMessage('resize', window.origin)
-    //TODO: post message back to parent page asking for size.
 </script>
 </body>
 </html>

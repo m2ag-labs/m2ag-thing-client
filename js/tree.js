@@ -2,12 +2,13 @@ const device_tree_area = $('#device_tree_area') // uses jquery
 const all_pills = document.getElementsByClassName('all_pills')
 const iframes = document.querySelectorAll("iframe");
 
+const thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab')); // jshint ignore:line
+const service_tab = new bootstrap.Tab(document.querySelector('#service-tab')) // jshint ignore:line
+
 let current_view = 'none'
 let current_tab = 'none'
 let current_node = 'none'
 
-let thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab')); // jshint ignore:line
-let service_tab = new bootstrap.Tab(document.querySelector('#service-tab')) // jshint ignore:line
 const setTabs = (view) => {
     document.getElementById('thing_frame').contentWindow.location.replace('ui/blank.html')
     document.getElementById('ui_frame').contentWindow.location.replace('ui/blank.html')
@@ -48,8 +49,8 @@ const handleMoveNode = (data) => {
             break
         }
     }
-    putDataOptions.body = JSON.stringify(update) // jshint ignore:line
-    fetch(`${api_url}/config/enabled`, putDataOptions)// jshint ignore:line
+    putOptions.body = JSON.stringify(update) // jshint ignore:line
+    fetch(`${api_url}/config/enabled`, putOptions)// jshint ignore:line
         .then(response => response.json())
         .then(result => {
             create_device_tree(result)
@@ -57,11 +58,9 @@ const handleMoveNode = (data) => {
         .catch(error => console.log('error', error))
 }
 
-const resizeAll = (frame_only = false) => {
+const resizeAll = () => {
     for( let i = 0; i < iframes.length; i++) {
-        if(!frame_only) {
-            iframes[i].style.height = `${window.innerHeight - 150}px`
-        }
+        iframes[i].style.height = `${window.innerHeight - 150}px`
         iframes[i].contentWindow.postMessage(window.innerHeight, window.origin)
     }
 }
@@ -73,30 +72,30 @@ const setDetail = (node) => {
             case 'm2ag-thing-tag':
                 document.getElementsByClassName('thing_pill').item(0).style.display = 'block'
                 document.getElementById('thing_frame').contentWindow.location.replace(
-                    `ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`) // jshint ignore:line
+                    `ui/editor.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
 
                 if ('ui' in node.original) {
                     document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
-                    document.getElementById('ui_frame').contentWindow.location.replace(`ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${jwt_token}`) // jshint ignore:line
+                    document.getElementById('ui_frame').contentWindow.location.replace(`ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${config.token}`) // jshint ignore:line
                 } else if (current_tab === 'ui-tab'){
                     thing_tab.show()
                 }
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
-                    document.getElementById('helper_frame').contentWindow.location.replace(`ui/editor.html?path=${node.original.helper}&type=python&auth=${auth_hash}&ts=${Date.now()}`) // jshint ignore:line
+                    document.getElementById('helper_frame').contentWindow.location.replace(`ui/editor.html?path=${node.original.helper}&type=python&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
 
                 } else if(current_tab === 'helper-tab'){
                     thing_tab.show()
                 }
                 break
             case 'm2ag-server-tag':
-                document.getElementById('service_frame').contentWindow.location.replace(`ui/editor.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Date.now()}`) // jshint ignore:line
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/editor.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
                 if ('ui' in node.original) {
                     document.getElementById('ui_frame').contentWindow.location.replace(node.original.ui)
                 }
                 break
             case 'm2ag-service-tag':
-                document.getElementById('service_frame').contentWindow.location.replace(`ui/service.html?path=${node.data}&type=json&auth=${auth_hash}&ts=${Math.random()}`) // jshint ignore:line
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/service.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Math.random()}`) // jshint ignore:line
                 break
             default:
                 break
@@ -108,7 +107,7 @@ const handleChangeTree = (data) => {
     if (data.node !== undefined && data.node.data !== null) {
         if(current_node !== data.node.data) {
             current_node = data.node.data
-            fetch(`${api_url}/${data.node.data}`, getDataOptions)// jshint ignore:line
+            fetch(`${api_url}/${data.node.data}`, getOptions)// jshint ignore:line
                 .then(response => response.json())
                 .then(result => {
                     setDetail(data.node, result)
@@ -146,7 +145,7 @@ const create_device_tree = (response) => { // jshint ignore:line
     let current_data = response.data
     let root = {
         "icon": "../../css/images/cpu.svg",
-        "text": current_data.server.id,
+        "text": response.data.server.id,
         "data": `config/server`,
         "index": 'm2ag-server-tag',
         "state": {"opened": true},
@@ -225,7 +224,6 @@ const create_device_tree = (response) => { // jshint ignore:line
     device_tree_area.jstree(true).refresh();
 }
 
-
 const treeInit = () => { // jshint ignore:line
     setTabs()
     device_tree_area.jstree({
@@ -267,7 +265,7 @@ window.onmessage = (event) => {
     switch(event.data){
         case 'resize':
             //TODO: this resizes everything every time for each iframe.
-            resizeAll(true)
+            resizeAll()
             break
         default:
             console.log(event.data)

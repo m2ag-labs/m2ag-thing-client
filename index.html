@@ -10,59 +10,66 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/jstree/style.css" rel="stylesheet"/>
+    <title>m2ag.labs.thing.builder</title>
     <style>
+        .navbar{
+            margin-bottom: 0px;
+            height: 50px;
+        }
+        .control-menu{
+            margin-right: 20px;
+        }
         .tree-card {
-            height : 100%;
+            height: 100%;
         }
         #device_tree_area {
             overflow: scroll;
             height: 100%;
         }
     </style>
-    <title>m2ag.labs.thing</title>
+
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light" >
+<nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">m2ag.labs.thing.builder</a>
-        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+        <a class="navbar-brand">m2ag.labs.thing.builder</a>
+        <button aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
                 class="navbar-toggler"
-                data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+                data-bs-target="#navbarCollapse" data-bs-toggle="collapse" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown">
-                    <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                       id="navbarDropdown" role="button">
-                        utilities
-                    </a>
-                    <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="connectModal(true)">credentials</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="pickModal(true)">things</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a aria-current="page" class="nav-link" href="#">about</a>
-                </li>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
             </ul>
-            <!--form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form-->
+            <div class="d-flex control-menu">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           role="button">
+                            utilities
+                        </a>
+                        <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="configManager('clear-login')">logout</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="connectModal(true)">credentials</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="pickModal(true)">things</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">about</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
-
 <!-- container main content-->
-<div class="container-fluid">
+<main class="container-fluid">
     <div class="row vw-100">
         <!-- jstree card -->
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="card tree-card">
                 <div class="card-body">
                     <div id="device_tree_area"></div>
@@ -70,38 +77,39 @@
             </div>
         </div>
         <!-- detail card -->
-        <div class="col-md-9">
+        <div class="col-sm-9">
             <div class="card">
                 <div class="card-body" id="tree-detail-card">
                     <!-- Nav tabs -->
-                    <ul class="nav nav-pills" id="thing-tab-ul" role="tablist" >
+                    <ul class="nav nav-pills" id="thing-tab-ul" role="tablist">
                         <li class="nav-item ui_pill all_pills" role="presentation">
                             <button aria-controls="ui" aria-selected="false" class="nav-link"
                                     data-bs-target="#ui"
-                                    data-bs-toggle="tab" id="ui-tab" role="tab" type="button"
-                                    onclick="tabClickHandler('ui-tab')">ui
+                                    data-bs-toggle="tab" id="ui-tab" onclick="tabClickHandler('ui-tab')" role="tab"
+                                    type="button">ui
                             </button>
                         </li>
                         <li class="nav-item service_pill all_pills" role="presentation">
                             <button aria-controls="service" aria-selected="false" class="nav-link active"
                                     data-bs-target="#service"
-                                    data-bs-toggle="tab" id="service-tab" role="tab"
-                                    type="button" onclick="tabClickHandler('service-tab')">
+                                    data-bs-toggle="tab" id="service-tab" onclick="tabClickHandler('service-tab')"
+                                    role="tab" type="button">
                                 service
                             </button>
                         </li>
                         <li class="nav-item thing_pill all_pills" role="presentation">
                             <button aria-controls="thing" aria-selected="false" class="nav-link"
                                     data-bs-target="#thing"
-                                    data-bs-toggle="tab" id="thing-tab" role="tab"
-                                    type="button" onclick="tabClickHandler('thing-tab')">thing
+                                    data-bs-toggle="tab" id="thing-tab" onclick="tabClickHandler('thing-tab')"
+                                    role="tab" type="button">thing
                             </button>
                         </li>
                         <li class="nav-item helper_pill all_pills" role="presentation">
                             <button aria-controls="helper" aria-selected="false" class="nav-link"
                                     data-bs-target="#helper"
-                                    data-bs-toggle="tab" id="helper-tab"  role="tab" type="button"
-                                    onclick="tabClickHandler('helper-tab')">helper
+                                    data-bs-toggle="tab" id="helper-tab" onclick="tabClickHandler('helper-tab')"
+                                    role="tab"
+                                    type="button">helper
                             </button>
                         </li>
                     </ul>
@@ -111,7 +119,7 @@
                         <div aria-labelledby="ui-tab" class="tab-pane" id="ui" role="tabpanel">
                             <div class="card">
                                 <div class="card-body">
-                                    <iframe id="ui_frame" src="" scrolling="yes"
+                                    <iframe id="ui_frame" scrolling="yes" src=""
                                             style="position: relative; height: 750px; width: 100%; border: 0;"
                                             title="ui">
                                     </iframe>
@@ -119,21 +127,21 @@
                             </div>
                         </div>
                         <div aria-labelledby="service-tab" class="tab-pane active" id="service" role="tabpanel">
-                            <iframe id="service_frame" src="" scrolling="no"
-                                            style="position: relative; height: 750px; width: 100%; border: 0;"
-                                            title="service">
+                            <iframe id="service_frame" scrolling="no" src=""
+                                    style="position: relative; height: 750px; width: 100%; border: 0;"
+                                    title="service">
                             </iframe>
                         </div>
                         <div aria-labelledby="thing-tab" class="tab-pane" id="thing" role="tabpanel">
-                            <iframe id="thing_frame" src="" scrolling="no"
-                                            style="position: relative; height: 750px; width: 100%; border: 0;"
-                                            title="thing">
+                            <iframe id="thing_frame" scrolling="no" src=""
+                                    style="position: relative; height: 750px; width: 100%; border: 0;"
+                                    title="thing">
                             </iframe>
                         </div>
                         <div aria-labelledby="helper-tab" class="tab-pane" id="helper" role="tabpanel">
-                            <iframe id="helper_frame" src="" scrolling="no"
-                                            style="position: relative; height: 750px; width: 100%; border: 0;"
-                                            title="helper">
+                            <iframe id="helper_frame" scrolling="no" src=""
+                                    style="position: relative; height: 750px; width: 100%; border: 0;"
+                                    title="helper">
                             </iframe>
                         </div>
                     </div>
@@ -427,17 +435,100 @@
         </div>
 
     </div>
-</div>
+</main>
 <!-- Popper.js, then Bootstrap JS -->
 <script src="js/vendor/popper.min.js"></script>
 <script src="js/vendor/bootstrap.min.js"></script>
 <!-- need jquery.min -- slim will not work -->
 <script src="js/vendor/jquery.min.js"></script>
 <script src="js/vendor/jstree.min.js"></script>
-<script src="js/tree.js"></script><!-- js tree  -->
-<script src="js/api.js"></script><!-- rest calls -->
+<script src="js/tree.js"></script><!-- tree and ui actions  -->
 <script src="js/modules.js"></script><!--code to add/remove things -->
 <script src="js/main.js"></script><!-- main -->
+<script>
+    //TODO: move to path -- tornado wsqi
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const thing_url = `${window.location.protocol}//${window.location.hostname}:8888`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+    const version_info = 'beta 1, 2021'
+    let config = { hash: '', token: '', opts: ''}
+
+    const configManager = (mode = 'load') => {
+        switch (mode) {
+            case 'load':
+                //TODO: load other config options
+                config = localStorage.getItem('client_config');
+                try {
+                    config = JSON.parse(config);
+                } catch (e) {
+                    config = {}
+                }
+                if('hash' in config && config.hash !== ''){
+                    requestHeaders.append("Authorization", 'Basic ' + config.hash);
+                    if(config.token === undefined) config.token = ''
+                } else {
+                     window.location.replace('ui/signin.html')
+                }
+                break;
+            case 'save':
+                localStorage.setItem('client_config', JSON.stringify(config))
+                break
+            case 'save-password':
+                //TODO: save editor states -- this just does passwords now
+                config.hash = btoa(document.getElementById('connect_name').value + ":" + document.getElementById('connect_password').value);
+                dataHeaders.set("Authorization", 'Basic ' + config.hash)
+                localStorage.setItem('client_config', JSON.stringify(config));
+                break;
+            case 'clear-login':
+                config.hash = ''
+                config.jwt = ''
+                localStorage.setItem('client_config', JSON.stringify(config));
+                window.location.replace('ui/signin.html')
+                break;
+            default:
+                console.log("unknown local storage operation");
+                break;
+        }
+
+    }
+
+
+    const init = () => {
+        configManager('load') //sets dataOptions dataHeader too
+        if(config.hash !== '') {
+            fetch(`${api_url}/config`, getOptions)
+                .then(response => response.json())
+                .then(result => create_device_tree(result)) // jshint ignore:line
+                .catch(error => alert(error))
+            //get a valid jwt token from the server, set in options, call fetch
+            if (config.token === '') {
+                fetch(`${api_url}/auth`, getOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        config.token = result.data['token']
+                        configManager('save')
+                    })
+                    .catch(error => alert(error))
+            }
+            document.title = window.location.hostname
+            treeInit() // jshint ignore:line
+            let controls = document.getElementsByClassName('control_action')
+            for (let i = 0; i < controls.length; i++) {
+                controls[i].addEventListener('click', mainActionHandler, false)
+            }
+        } else {
+
+        }
+    }
+
+    window.addEventListener("load", init)
+</script>
 
 </body>
 </html>

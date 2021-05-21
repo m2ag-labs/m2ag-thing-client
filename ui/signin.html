@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs thing client" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <title>m2ag.labs.ui.signin</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    </style>
+</head>
+<body class="text-center">
+<main class="form-signin">
+    <form onsubmit="return false;">
+        <img alt="" class="mb-4" height="95" src="../siteicon.png" width="95">
+        <h1 class="h6 mb-3 fw-normal"><span id="server-name"></span></h1>
+        <h1 class="h3 mb-3 fw-normal">please sign in</h1>
+
+        <div class="form-floating">
+            <input class="form-control" id="floatingInput" placeholder="usually 'pi'" type="text">
+            <label for="floatingInput">user name</label>
+        </div>
+        <div class="form-floating">
+            <input class="form-control" id="floatingPassword" placeholder="password" type="password">
+            <label for="floatingPassword">password</label>
+        </div>
+        <!--div class="checkbox mb-3">
+            <label>
+                <input checked type="checkbox" value="remember-me"> remember me
+            </label>
+        </div-->
+        <button class="w-100 btn btn-lg btn-primary" onclick="loginHandler()">sign in</button>
+        <p class="mt-5 mb-3 text-muted">m2ag.labs &copy; 2017–2021</p>
+    </form>
+</main>
+
+<script>
+    const loginHandler = () => {
+        let config = localStorage.getItem('client_config');
+        let auth_hash
+        try {
+            config = JSON.parse(config);
+            if (config === null) {
+                config = {}
+            }
+        } catch (e) {
+            config = {}
+        }
+
+        auth_hash = btoa(document.getElementById('floatingInput').value + ":" + document.getElementById('floatingPassword').value);
+        requestHeaders.append("Authorization", 'Basic ' + auth_hash);
+        fetch(`${api_url}/config`, getOptions)
+            .then(response => {
+                if (response.status === 200) {
+                    config.hash = auth_hash
+                    localStorage.setItem('client_config', JSON.stringify(config));
+                    window.location.replace(`${window.location.origin}/index.html`)
+                } else {
+                    alert("Auth failure -- try again")
+                }
+            })
+            .catch(error => {
+                console.log('error', error)
+                alert(error) //TODO: move to toast
+            })
+
+    }
+
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+    const init = () => {
+        document.getElementById('server-name').innerText = window.location.origin
+    }
+    window.addEventListener("load", init);
+</script>
+
+</body>
+</html>
