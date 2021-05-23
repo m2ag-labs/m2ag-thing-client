@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs thing client" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/jstree/style.css" rel="stylesheet"/>
+    <title>m2ag.labs.thinger</title>
+    <style>
+        iframe {
+            position: relative;
+            height: 750px;
+            width: 100%;
+            border: 0;
+        }
+
+        .navbar {
+            padding-bottom: 0;
+            height: 50px;
+        }
+
+        .control-menu {
+            margin-right: 20px;
+        }
+
+        .tree-card {
+            height: 100%;
+        }
+
+        #tree_area {
+            overflow: scroll;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand">m2ag.labs.thinger</a>
+        <button aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
+                class="navbar-toggler"
+                data-bs-target="#navbarCollapse" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            </ul>
+            <div class="d-flex control-menu">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           role="button">
+                            about
+                        </a>
+                        <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="configManager('clear-login')">logout</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">about</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- container main content-->
+<main class="container-fluid">
+    <div class="row vw-100">
+        <!-- jstree card -->
+        <div class="col-md-3 px-0 py-0">
+            <div class="card tree-card">
+                <div class="card-body">
+                    <div id="tree_area"></div>
+                </div>
+            </div>
+        </div>
+        <!-- detail card -->
+        <div class="col-md-9 px-0 py-0">
+            <div class="card">
+                <div class="card-body" id="tree-detail-card">
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+<!-- Popper.js, then Bootstrap JS -->
+<script src="../js/vendor/popper.min.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<!-- need jquery.min -- slim will not work -- needed for jstree and bootstrap tables-->
+<script src="../js/vendor/jquery.min.js"></script>
+<script src="../js/vendor/jstree.min.js"></script>
+<script src="../js/tree.js"></script><!-- tree and ui actions  -->
+
+<script>
+    //TODO: move to path -- tornado wsqi
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const github_url = `${window.location.protocol}//${window.location.hostname}:8888`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+    const putOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+
+    const version_info = 'beta 1, 2021'
+    let config = {hash: '', opts: ''}
+
+    const init = () => {
+
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        if (opts.auth === '') {
+            alert('no auth token')
+        } else {
+            requestHeaders.append("Authorization", `Basic ${opts['auth']}`);
+            pollService()
+            //target_interval = setInterval(pollService, 3000)
+        }
+
+
+        fetch(`${api_url}/config`, getOptions)
+            .then(response => response.json())
+            .then(result => create_device_tree(result)) // jshint ignore:line
+            .catch(error => alert(error))
+        document.title = window.location.hostname
+    }
+    window.addEventListener("load", init)
+</script>
+
+</body>
+</html>

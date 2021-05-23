@@ -59,7 +59,7 @@ const handleMoveNode = (data) => {
 }
 
 const resizeAll = () => {
-    for( let i = 0; i < iframes.length; i++) {
+    for (let i = 0; i < iframes.length; i++) {
         iframes[i].style.height = `${window.innerHeight - 150}px`
         iframes[i].contentWindow.postMessage(window.innerHeight, window.origin)
     }
@@ -77,14 +77,14 @@ const setDetail = (node) => {
                 if ('ui' in node.original) {
                     document.getElementsByClassName('ui_pill').item(0).style.display = 'block'
                     document.getElementById('ui_frame').contentWindow.location.replace(`ui/raspiui.html?index=${node.original.ui}&socket=true&jwt=${config.token}`) // jshint ignore:line
-                } else if (current_tab === 'ui-tab'){
+                } else if (current_tab === 'ui-tab') {
                     thing_tab.show()
                 }
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
                     document.getElementById('helper_frame').contentWindow.location.replace(`ui/editor.html?path=${node.original.helper}&type=python&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
 
-                } else if(current_tab === 'helper-tab'){
+                } else if (current_tab === 'helper-tab') {
                     thing_tab.show()
                 }
                 break
@@ -97,6 +97,9 @@ const setDetail = (node) => {
             case 'm2ag-service-tag':
                 document.getElementById('service_frame').contentWindow.location.replace(`ui/service.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Math.random()}`) // jshint ignore:line
                 break
+            case 'm2ag-user-tag':
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/user.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
+                break
             default:
                 break
         }
@@ -105,7 +108,7 @@ const setDetail = (node) => {
 //If user changes from a parent to a leaf and back too  fast fetch errors will occur.
 const handleChangeTree = (data) => {
     if (data.node !== undefined && data.node.data !== null) {
-        if(current_node !== data.node.data) {
+        if (current_node !== data.node.data) {
             current_node = data.node.data
             fetch(`${api_url}/${data.node.data}`, getOptions)// jshint ignore:line
                 .then(response => response.json())
@@ -142,7 +145,6 @@ const enableTree = () => { // jshint ignore:line
 }
 
 const create_device_tree = (response) => { // jshint ignore:line
-    let current_data = response.data
     let root = {
         "icon": "../../css/images/cpu.svg",
         "text": response.data.server.id,
@@ -154,6 +156,26 @@ const create_device_tree = (response) => { // jshint ignore:line
     };
 
     root.children.push({
+        "icon": "../../css/images/people.svg",
+        "text": "users",
+        "type": "users",
+        "state": {"opened": false},
+        "children": []
+    });
+
+    for (let i in response.data.users) { // jshint ignore:line
+        if (response.data.available.hasOwnProperty(i) && response.data.enabled.indexOf(response.data.users[i]) < 0) {
+            root.children[root.children.length - 1].children.push({
+                "icon": "../../css/images/person.svg",
+                "type": "user",
+                "text": response.data.users[i],
+                "index": "m2ag-user-tag",
+                "data": `config/user/${response.data.users[i]}`,
+            });
+        }
+    }
+
+    root.children.push({
         "icon": "../../css/images/node-minus.svg",
         "text": "available",
         "type": "component",
@@ -161,18 +183,18 @@ const create_device_tree = (response) => { // jshint ignore:line
         "children": []
     });
 
-    for (let i in current_data.available) { // jshint ignore:line
-        if (current_data.available.hasOwnProperty(i) && current_data.enabled.indexOf(current_data.available[i]) < 0) {
+    for (let i in response.data.available) { // jshint ignore:line
+        if (response.data.available.hasOwnProperty(i) && response.data.enabled.indexOf(response.data.available[i]) < 0) {
             let helper = false
-            if (current_data.helpers.indexOf(current_data.available[i]) !== -1) {
-                helper = `config/helpers/${current_data.available[i]}`
+            if (response.data.helpers.indexOf(response.data.available[i]) !== -1) {
+                helper = `config/helpers/${response.data.available[i]}`
             }
             root.children[root.children.length - 1].children.push({
                 "icon": "../../css/images/file-text.svg",
                 "type": "thing",
-                "text": current_data.available[i],
+                "text": response.data.available[i],
                 "index": "m2ag-thing-tag",
-                "data": `config/things/${current_data.available[i]}`,
+                "data": `config/things/${response.data.available[i]}`,
                 "helper": helper
             });
         }
@@ -187,18 +209,18 @@ const create_device_tree = (response) => { // jshint ignore:line
         "children": []
     });
 
-    for (let i in current_data.enabled) { // jshint ignore:line
-        if (current_data.enabled.hasOwnProperty(i)) {
+    for (let i in response.data.enabled) { // jshint ignore:line
+        if (response.data.enabled.hasOwnProperty(i)) {
             let helper = false
-            if (current_data.helpers.indexOf(current_data.enabled[i]) !== -1) {
-                helper = `config/helpers/${current_data.enabled[i]}`
+            if (response.data.helpers.indexOf(response.data.enabled[i]) !== -1) {
+                helper = `config/helpers/${response.data.enabled[i]}`
             }
             root.children[root.children.length - 1].children.push({
                 "type": "thing",
-                "text": current_data.enabled[i],
+                "text": response.data.enabled[i],
                 "index": "m2ag-thing-tag",
                 "ui": i,
-                "data": `config/things/${current_data.enabled[i]}`,
+                "data": `config/things/${response.data.enabled[i]}`,
                 "helper": helper
             });
         }
@@ -210,12 +232,12 @@ const create_device_tree = (response) => { // jshint ignore:line
         "state": {"opened": true},
         "children": []
     });
-    for (let i in current_data.services) { // jshint ignore:line
-        if (current_data.services.hasOwnProperty(i)) {
+    for (let i in response.data.services) { // jshint ignore:line
+        if (response.data.services.hasOwnProperty(i)) {
             root.children[root.children.length - 1].children.push({
                 "type": "service",
-                "text": current_data.services[i],
-                "data": `${current_data.services[i]}/status`,
+                "text": response.data.services[i],
+                "data": `${response.data.services[i]}/status`,
                 "index": "m2ag-service-tag"
             });
         }
@@ -262,10 +284,18 @@ const treeInit = () => { // jshint ignore:line
 
 window.addEventListener('resize', resizeAll);
 window.onmessage = (event) => {
-    switch(event.data){
+    switch (event.data) {
         case 'resize':
             //TODO: this resizes everything every time for each iframe.
             resizeAll()
+            break
+        case 'reload-tree':
+            fetch(`${api_url}/config`, getOptions)// jshint ignore:line
+                .then(response => response.json())
+                .then(result => {
+                    create_device_tree(result)
+                })
+                .catch(error => alert(error))
             break
         default:
             console.log(event.data)

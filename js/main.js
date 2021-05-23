@@ -50,25 +50,16 @@ const jwtModal = (mode) => {
     }
  }
 
-/**
- *
- * @param mode
- */
-const setPassword = () =>{
-    config.hash = btoa(document.getElementById('connect_name').value + ":" + document.getElementById('password_1').value);
-    document.getElementById('connect_password').value = document.getElementById('password_1').value;
-    configManager('save');
-}
 
-const mainActionHandler = () => {
+const mainActionHandler = (id) => {
 
-    switch (this.id) {
+    switch (id) {
         case 'save_password':
             const pw_1 = document.getElementById("password_1").value;
             const pw_2 = document.getElementById("password_2").value;
             if (pw_1 !== "" && pw_1 === pw_2) {
                 let data = {user: document.getElementById("connect_name").value, password: pw_1};
-                putDOptions.data = JSON.stringify(data)
+                putOptions.data = JSON.stringify(data)
                 fetch(`${api_url}/password`, putOptions)
                     .then(response => response.json())
                     .then(() => setPassword())

@@ -12,22 +12,35 @@
     <link href="css/jstree/style.css" rel="stylesheet"/>
     <title>m2ag.labs.thing.builder</title>
     <style>
-        .navbar{
-            margin-bottom: 0px;
+        iframe {
+            position: relative;
+            height: 750px;
+            width: 100%;
+            border: 0;
+        }
+
+        #service_frame, #thing_frame, #helper_frame {
+            overflow: hidden;
+        }
+
+        .navbar {
+            padding-bottom: 0;
             height: 50px;
         }
-        .control-menu{
+
+        .control-menu {
             margin-right: 20px;
         }
+
         .tree-card {
             height: 100%;
         }
+
         #device_tree_area {
             overflow: scroll;
             height: 100%;
         }
     </style>
-
 </head>
 <body>
 <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
@@ -50,10 +63,9 @@
                         </a>
                         <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
                             <li><a class="dropdown-item" href="#" onclick="configManager('clear-login')">logout</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="connectModal(true)">credentials</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="pickModal(true)">things</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
                         </ul>
                     </li>
@@ -69,7 +81,7 @@
 <main class="container-fluid">
     <div class="row vw-100">
         <!-- jstree card -->
-        <div class="col-sm-3">
+        <div class="col-md-3 px-0 py-0">
             <div class="card tree-card">
                 <div class="card-body">
                     <div id="device_tree_area"></div>
@@ -77,7 +89,7 @@
             </div>
         </div>
         <!-- detail card -->
-        <div class="col-sm-9">
+        <div class="col-md-9 px-0 py-0">
             <div class="card">
                 <div class="card-body" id="tree-detail-card">
                     <!-- Nav tabs -->
@@ -119,30 +131,18 @@
                         <div aria-labelledby="ui-tab" class="tab-pane" id="ui" role="tabpanel">
                             <div class="card">
                                 <div class="card-body">
-                                    <iframe id="ui_frame" scrolling="yes" src=""
-                                            style="position: relative; height: 750px; width: 100%; border: 0;"
-                                            title="ui">
-                                    </iframe>
+                                    <iframe id="ui_frame" src="" title="ui"></iframe>
                                 </div>
                             </div>
                         </div>
                         <div aria-labelledby="service-tab" class="tab-pane active" id="service" role="tabpanel">
-                            <iframe id="service_frame" scrolling="no" src=""
-                                    style="position: relative; height: 750px; width: 100%; border: 0;"
-                                    title="service">
-                            </iframe>
+                            <iframe id="service_frame" scrolling="no" src="" title="service"></iframe>
                         </div>
                         <div aria-labelledby="thing-tab" class="tab-pane" id="thing" role="tabpanel">
-                            <iframe id="thing_frame" scrolling="no" src=""
-                                    style="position: relative; height: 750px; width: 100%; border: 0;"
-                                    title="thing">
-                            </iframe>
+                            <iframe id="thing_frame" scrolling="no" src="" title="thing"></iframe>
                         </div>
                         <div aria-labelledby="helper-tab" class="tab-pane" id="helper" role="tabpanel">
-                            <iframe id="helper_frame" scrolling="no" src=""
-                                    style="position: relative; height: 750px; width: 100%; border: 0;"
-                                    title="helper">
-                            </iframe>
+                            <iframe id="helper_frame" scrolling="no" src="" title="helper"></iframe>
                         </div>
                     </div>
                 </div>
@@ -200,11 +200,11 @@
                                                                    type="password">
                                                         </div>
                                                         <div>
-                                                            <button class="control_action btn btn-primary"
+                                                            <button class="btn btn-primary"
                                                                     id="save_login"
                                                                     type="button">login
                                                             </button>
-                                                            <button class="control_action btn btn-danger"
+                                                            <button class="btn btn-danger"
                                                                     id="clear_login"
                                                                     type="button">log out
                                                             </button>
@@ -242,7 +242,7 @@
                                                     </form>
                                                 </li>
                                                 <li class="list-group-item  text-center">
-                                                    <button class="btn btn-primary control_action" id="save_password"
+                                                    <button class="btn btn-primary" id="save_password"
                                                             type="button">
                                                         save password
                                                     </button>
@@ -439,7 +439,7 @@
 <!-- Popper.js, then Bootstrap JS -->
 <script src="js/vendor/popper.min.js"></script>
 <script src="js/vendor/bootstrap.min.js"></script>
-<!-- need jquery.min -- slim will not work -->
+<!-- need jquery.min -- slim will not work -- needed for jstree and bootstrap tables-->
 <script src="js/vendor/jquery.min.js"></script>
 <script src="js/vendor/jstree.min.js"></script>
 <script src="js/tree.js"></script><!-- tree and ui actions  -->
@@ -457,7 +457,7 @@
         redirect: 'follow'
     }
     const version_info = 'beta 1, 2021'
-    let config = { hash: '', token: '', opts: ''}
+    let config = {hash: '', token: '', opts: ''}
 
     const configManager = (mode = 'load') => {
         switch (mode) {
@@ -466,14 +466,15 @@
                 config = localStorage.getItem('client_config');
                 try {
                     config = JSON.parse(config);
+                    if(config === null) config = {}
                 } catch (e) {
                     config = {}
                 }
-                if('hash' in config && config.hash !== ''){
+                if ('hash' in config && config.hash !== '') {
                     requestHeaders.append("Authorization", 'Basic ' + config.hash);
-                    if(config.token === undefined) config.token = ''
+                    if (config.token === undefined) config.token = ''
                 } else {
-                     window.location.replace('ui/signin.html')
+                    window.location.replace('ui/signin.html')
                 }
                 break;
             case 'save':
@@ -501,32 +502,23 @@
 
     const init = () => {
         configManager('load') //sets dataOptions dataHeader too
-        if(config.hash !== '') {
-            fetch(`${api_url}/config`, getOptions)
+        fetch(`${api_url}/config`, getOptions)
+            .then(response => response.json())
+            .then(result => create_device_tree(result)) // jshint ignore:line
+            .catch(error => alert(error))
+        //get a valid jwt token from the server, set in options, call fetch
+        if (config.token === '') {
+            fetch(`${api_url}/auth`, getOptions)
                 .then(response => response.json())
-                .then(result => create_device_tree(result)) // jshint ignore:line
+                .then(result => {
+                    config.token = result.data['token']
+                    configManager('save')
+                })
                 .catch(error => alert(error))
-            //get a valid jwt token from the server, set in options, call fetch
-            if (config.token === '') {
-                fetch(`${api_url}/auth`, getOptions)
-                    .then(response => response.json())
-                    .then(result => {
-                        config.token = result.data['token']
-                        configManager('save')
-                    })
-                    .catch(error => alert(error))
-            }
-            document.title = window.location.hostname
-            treeInit() // jshint ignore:line
-            let controls = document.getElementsByClassName('control_action')
-            for (let i = 0; i < controls.length; i++) {
-                controls[i].addEventListener('click', mainActionHandler, false)
-            }
-        } else {
-
         }
+        document.title = window.location.hostname
+        treeInit() // jshint ignore:line
     }
-
     window.addEventListener("load", init)
 </script>
 
