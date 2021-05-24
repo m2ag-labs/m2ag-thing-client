@@ -9,7 +9,7 @@
     <link href="../siteicon.png" rel="mask-icon" type=""/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/jstree/style.css" rel="stylesheet"/>
+    <link href="css/bootstrap-table.min.css" rel="stylesheet">
     <title>m2ag.labs.thinger</title>
     <style>
         iframe {
@@ -24,90 +24,45 @@
             height: 50px;
         }
 
-        .control-menu {
-            margin-right: 20px;
-        }
-
-        .tree-card {
-            height: 100%;
-        }
-
-        #tree_area {
-            overflow: scroll;
-            height: 100%;
-        }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
+<nav class="navbar navbar-expand-sm navbar-light fixed-top bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand">m2ag.labs.thinger</a>
-        <button aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
-                class="navbar-toggler"
-                data-bs-target="#navbarCollapse" data-bs-toggle="collapse" type="button">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <div class="navbar-brand"><span id="edit-nav-label">m2ag.labs.thinger</span></div>
+        <div class="" id="navbarCollapse">
+            <ul class="navbar-nav">
             </ul>
-            <div class="d-flex control-menu">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                           role="button">
-                            about
-                        </a>
-                        <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="configManager('clear-login')">logout</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">about</a>
-                    </li>
-                </ul>
+            <div class="d-flex">
+
             </div>
         </div>
     </div>
 </nav>
-<!-- container main content-->
 <main class="container-fluid">
-    <div class="row vw-100">
-        <!-- jstree card -->
-        <div class="col-md-3 px-0 py-0">
-            <div class="card tree-card">
-                <div class="card-body">
-                    <div id="tree_area"></div>
-                </div>
-            </div>
-        </div>
-        <!-- detail card -->
-        <div class="col-md-9 px-0 py-0">
-            <div class="card">
-                <div class="card-body" id="tree-detail-card">
-
-                </div>
-            </div>
-
-        </div>
-
-    </div>
+    <table id="things_table">
+        <thead>
+        <tr>
+            <th data-field='status'>status</th>
+            <th data-field='component'>component</th>
+            <th data-field='driver'>driver</th>
+            <th data-field='detail'>detail</th>
+        </tr>
+        </thead>
+    </table>
 </main>
-<!-- Popper.js, then Bootstrap JS -->
-<script src="../js/vendor/popper.min.js"></script>
-<script src="../js/vendor/bootstrap.min.js"></script>
-<!-- need jquery.min -- slim will not work -- needed for jstree and bootstrap tables-->
+<!--script src="js/vendor/popper.min.js"></script>
+<script src="js/vendor/bootstrap.min.js"></script-->
 <script src="../js/vendor/jquery.min.js"></script>
-<script src="../js/vendor/jstree.min.js"></script>
-<script src="../js/tree.js"></script><!-- tree and ui actions  -->
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+
+
+
 
 <script>
     //TODO: move to path -- tornado wsqi
     const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
-    const github_url = `${window.location.protocol}//${window.location.hostname}:8888`
+    const github_url = `https://raw.githubusercontent.com/m2ag-labs/m2ag-things/beta1`
     const requestHeaders = new Headers();
     requestHeaders.append("Content-Type", "application/json");
     const getOptions = {
@@ -122,7 +77,65 @@
     }
 
     const version_info = 'beta 1, 2021'
-    let config = {hash: '', opts: ''}
+    let opts = {auth: '', opts: ''}
+    let $table = $('#things_table')
+
+    /**
+     * Can't get fetch to get the module files from git hub due to cors issues -- xhr works.
+     * It's pretty fast too. Wrapped in a promise
+     * @param path  to a thing, component or other resource on git hub
+     * @param type  json or text
+     * @returns {Promise<>}
+     */
+    const getThings = (path = '', type = 'json') => {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            let timeout
+            xhr.addEventListener("readystatechange", function () {
+                if (this.readyState === 4) {
+                    clearTimeout(timeout)
+                    if (this.responseText.includes("404: Not Found")) {
+                        reject('file not found')
+                    } else {
+                        if (type === 'json') {
+                            try {
+                                resolve(JSON.parse(this.responseText))
+                            } catch (e) {
+                                reject("unable to parse json", path)
+                            }
+                        } else {
+                            resolve(this.responseText)
+                        }
+                    }
+                }
+            });
+            xhr.open("GET", `${github_url}/${path}?_=${Date.now()}`);
+            xhr.send();
+            timeout = setTimeout(() => {
+                    reject('request timeout')
+                }, 3000
+            )
+        });
+    }
+
+    const buildTable = (data) => {
+        //TODO: if data is an error -- message about internet connection and no table
+        //TODO: maybe give a warning when going to this page -- let the user know it is online
+        let table_data = []
+        for(let i in data){
+            let c = {}
+            c['status'] = '<button class="btn btn-sm btn-outline-warning">remove</button>'
+            c['component'] = i
+            if('driver' in data[i]){
+                c['driver'] = data[i]['driver']
+            } else {
+                c['driver'] = 'none'
+            }
+            c['detail'] = '<button class="btn btn-sm btn-outline-primary">detail</button>'
+            table_data.push(c)
+        }
+        $table.bootstrapTable({data: table_data})
+    }
 
     const init = () => {
 
@@ -136,15 +149,18 @@
             alert('no auth token')
         } else {
             requestHeaders.append("Authorization", `Basic ${opts['auth']}`);
-            pollService()
+            //pollService()
             //target_interval = setInterval(pollService, 3000)
         }
+        getThings('/things/things.json')
+            .then(response => buildTable(response)).catch(error => buildTable(error))
 
-
-        fetch(`${api_url}/config`, getOptions)
+        /*
+        fetch(`${github_url}/things/things.json`, getOptions)
             .then(response => response.json())
-            .then(result => create_device_tree(result)) // jshint ignore:line
+            .then(result => console.log(result)) // jshint ignore:line
             .catch(error => alert(error))
+         */
         document.title = window.location.hostname
     }
     window.addEventListener("load", init)

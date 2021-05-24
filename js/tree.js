@@ -105,7 +105,8 @@ const setDetail = (node) => {
         }
     }
 }
-//If user changes from a parent to a leaf and back too  fast fetch errors will occur.
+
+
 const handleChangeTree = (data) => {
     if (data.node !== undefined && data.node.data !== null) {
         if (current_node !== data.node.data) {
