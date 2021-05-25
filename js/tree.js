@@ -100,6 +100,9 @@ const setDetail = (node) => {
             case 'm2ag-user-tag':
                 document.getElementById('service_frame').contentWindow.location.replace(`ui/user.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
                 break
+            case 'm2ag-thinger-tag':
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/thinger.html?auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
+                break
             default:
                 break
         }
@@ -111,12 +114,7 @@ const handleChangeTree = (data) => {
     if (data.node !== undefined && data.node.data !== null) {
         if (current_node !== data.node.data) {
             current_node = data.node.data
-            fetch(`${api_url}/${data.node.data}`, getOptions)// jshint ignore:line
-                .then(response => response.json())
-                .then(result => {
-                    setDetail(data.node, result)
-                })
-                .catch(error => console.log('error', error))
+            setDetail(data.node)
         }
     } else {
         setTabs('none')
@@ -179,6 +177,8 @@ const create_device_tree = (response) => { // jshint ignore:line
     root.children.push({
         "icon": "../../css/images/node-minus.svg",
         "text": "available",
+        "data": "thinger",
+        "index": "m2ag-thinger-tag",
         "type": "component",
         "state": {"opened": false},
         "children": []
