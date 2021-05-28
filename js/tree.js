@@ -100,8 +100,8 @@ const setDetail = (node) => {
             case 'm2ag-user-tag':
                 document.getElementById('service_frame').contentWindow.location.replace(`ui/user.html?path=${node.data}&type=json&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
                 break
-            case 'm2ag-thinger-tag':
-                document.getElementById('service_frame').contentWindow.location.replace(`ui/thinger.html?auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
+            case 'm2ag-thinggetter-tag':
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/thinggetter.html?auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
                 break
             default:
                 break
@@ -177,8 +177,8 @@ const create_device_tree = (response) => { // jshint ignore:line
     root.children.push({
         "icon": "../../css/images/node-minus.svg",
         "text": "available",
-        "data": "thinger",
-        "index": "m2ag-thinger-tag",
+        "data": "thinggetter",
+        "index": "m2ag-thinggetter-tag",
         "type": "component",
         "state": {"opened": false},
         "children": []
