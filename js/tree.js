@@ -155,26 +155,6 @@ const create_device_tree = (response) => { // jshint ignore:line
     };
 
     root.children.push({
-        "icon": "../../css/images/people.svg",
-        "text": "users",
-        "type": "users",
-        "state": {"opened": false},
-        "children": []
-    });
-
-    for (let i in response.data.users) { // jshint ignore:line
-        if (response.data.available.hasOwnProperty(i) && response.data.enabled.indexOf(response.data.users[i]) < 0) {
-            root.children[root.children.length - 1].children.push({
-                "icon": "../../css/images/person.svg",
-                "type": "user",
-                "text": response.data.users[i],
-                "index": "m2ag-user-tag",
-                "data": `config/user/${response.data.users[i]}`,
-            });
-        }
-    }
-
-    root.children.push({
         "icon": "../../css/images/node-minus.svg",
         "text": "available",
         "data": "thinggetter",
@@ -243,6 +223,27 @@ const create_device_tree = (response) => { // jshint ignore:line
             });
         }
     }
+
+    root.children.push({
+        "icon": "../../css/images/people.svg",
+        "text": "users",
+        "type": "users",
+        "state": {"opened": false},
+        "children": []
+    });
+
+    for (let i in response.data.users) { // jshint ignore:line
+        if (response.data.available.hasOwnProperty(i) && response.data.enabled.indexOf(response.data.users[i]) < 0) {
+            root.children[root.children.length - 1].children.push({
+                "icon": "../../css/images/person.svg",
+                "type": "user",
+                "text": response.data.users[i],
+                "index": "m2ag-user-tag",
+                "data": `config/user/${response.data.users[i]}`,
+            });
+        }
+    }
+
     device_tree_area.jstree(true).settings.core.data = [root];
     device_tree_area.jstree(true).refresh();
 }

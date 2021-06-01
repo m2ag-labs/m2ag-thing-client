@@ -1,35 +1,3 @@
-
-
-const connectModal = (mode) => {
-    const modal = new bootstrap.Modal(document.getElementById('connect_modal'))
-    if (mode) {
-        if (config.hash === undefined) {
-            document.getElementById("clear_login").disabled = true;
-            document.getElementById("save_login").disabled = false;
-        } else {
-            document.getElementById("clear_login").disabled = false;
-            document.getElementById("save_login").disabled = true;
-        }
-        modal.show()
-    } else {
-        modal.hide()
-    }
-}
-
-const pickModal = (mode) => {
-    const modal = new bootstrap.Modal(document.getElementById('pick_modal'))
-    if (mode) {
-        if (config.hash === undefined) {
-            connectModal(true)
-        } else {
-            thingerInit() // jshint ignore:line
-            modal.show()
-        }
-    } else {
-        modal.hide()
-    }
-}
-
 const jwtModal = (mode) => {
     const modal = new bootstrap.Modal(document.getElementById('jwt_modal'))
     if(mode) {
@@ -52,26 +20,7 @@ const jwtModal = (mode) => {
 
 
 const mainActionHandler = (id) => {
-
-    switch (id) {
-        case 'save_password':
-            const pw_1 = document.getElementById("password_1").value;
-            const pw_2 = document.getElementById("password_2").value;
-            if (pw_1 !== "" && pw_1 === pw_2) {
-                let data = {user: document.getElementById("connect_name").value, password: pw_1};
-                putOptions.data = JSON.stringify(data)
-                fetch(`${api_url}/password`, putOptions)
-                    .then(response => response.json())
-                    .then(() => setPassword())
-                    .catch(error => console.log('error', error))
-
-            } else {
-                alert("The password field can not be empty. Both fields must match"); // jshint ignore:line
-            }
-            break;
-
-        case 'thing_ui_menu':
-                const src = document.getElementById('ui_frame').src
+    const src = document.getElementById('ui_frame').src
                 if (src.includes('index.html')) {
                     document.getElementById('thing_ui_url').innerText = "select a thing and try again"
                 } else {
@@ -87,12 +36,7 @@ const mainActionHandler = (id) => {
 
                 }
                 $("#thing_ui_modal").modal("show")
-            break;
-        default:
-            console.log(this.id);
-            break;
-    }
-}
+        }
 
 
 

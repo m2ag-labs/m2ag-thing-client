@@ -48,16 +48,21 @@
 </head>
 <body>
 <main class="container-fluid">
+    <div id="page_spinner" class="text-center">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
     <table data-pagination="true"
            data-search="true"
            id="things_table"
     >
         <thead>
         <tr>
-            <th data-field='status' data-sortable="true" id="status_f">status</th>
-            <th data-field='component' data-sortable="true" id="component_f">component</th>
-            <th data-field='driver' data-sortable="true" id="driver_f">driver</th>
-            <th data-field='detail' id="detail_f">detail</th>
+            <th data-field='status' data-sortable="true" id="status_f"></th>
+            <th data-field='component' data-sortable="true" id="component_f"></th>
+            <th data-field='driver' data-sortable="true" id="driver_f"></th>
+            <th data-field='detail' id="detail_f"></th>
         </tr>
         </thead>
     </table>
@@ -120,7 +125,7 @@
         try {
             //TODO: check for error here
             Promise.all(calls).then((values) => {
-                console.log(values);
+               // console.log(values);
                 window.top.postMessage('reload-tree', window.origin)
                 getLocalConfig()
             });
@@ -130,13 +135,6 @@
     }
 
     const addThing = (thing) => {
-        //TODO: rework this to point at firebase api - move to fetch
-        //0. start the spinner
-        //1. download thing and save
-        //2. download helper and save
-        //3. install driver
-        //4. update tree
-        //5. update list
         document.getElementById(`spin_${thing}`).classList.add('spinner-grow')
         document.getElementById(`spin_${thing}`).classList.add('spinner-grow-sm')
         putOptions.method = 'PUT'
@@ -161,7 +159,7 @@
                     try {
                         Promise.all(calls).then(results => {
                             //TODO: test results for failure
-                            console.log(results)
+                            //console.log(results)
                             window.top.postMessage('reload-tree', window.origin)
                             getLocalConfig()
                         })
@@ -204,8 +202,6 @@
         }
         $table.bootstrapTable({data: table_data})
         $table.bootstrapTable('refresh')
-
-
     }
 
     const init = () => {
@@ -228,11 +224,14 @@
 
         Promise.all(calls).then(results => {
             //TODO: check for errors
+            document.getElementById('status_f').innerText = 'status'
+            document.getElementById('component_f').innerText = 'component'
+            document.getElementById('driver_f').innerText = 'driver'
+            document.getElementById('detail_f').innerText = 'detail'
             opts.data = JSON.parse(results[0].data)
             buildTable(results[1].data)
+            document.getElementById('page_spinner').style.display = 'none'
         }).catch(error => alert(error))
-
-
         document.title = window.location.hostname
     }
     window.addEventListener("load", init)
