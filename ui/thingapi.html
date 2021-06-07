@@ -38,13 +38,13 @@
             </ul>
             <div class="d-flex">
                 <div class="form-check">
-                    <input onclick="clickHandler('summary')" class="form-check-input" id="summary_radio" name="summary_radio" type="radio">
+                    <input onclick="clickHandler('summary')" checked class="form-check-input" id="summary_radio" name="summary_radio" type="radio">
                     <label class="form-check-label" for="summary_radio">
                         summary
                     </label>
                 </div>
                 <div class="form-check">
-                    <input onclick="clickHandler('thing')" checked class="form-check-input" id="thing_radio" name="thing_radio" type="radio">
+                    <input onclick="clickHandler('thing')" class="form-check-input" id="thing_radio" name="thing_radio" type="radio">
                     <label class="form-check-label" for="thing_radio">
                         thing description
                     </label>
@@ -92,7 +92,7 @@
             editor.session.setValue(JSON.stringify(thing_data, null, 2))
         } else if(document.getElementById('summary_radio').checked){
             //TODO: generate summary.
-            editor.session.setMode('ace/mode/yaml')
+            editor.session.setMode('ace/mode/text')
             editor.session.setValue(createSummary())
         }
     }
@@ -108,7 +108,7 @@
         doc+= `\t ws-root:  ${ws}${window.location.hostname}:8888\n`
         doc+= `\ncomponents:\n`
         for(i of thing_data){
-            doc+= `\t${i.title}\n`
+            doc+= `\n\t${i.title}\n`
             doc+= `\t\thref:  ${i.href}\n`
             doc+= `\t\tbase:  ${i.base}\n`
             doc+= `\t\tws:  ${i.links[3].href}?jwt=${opts.auth}\n`
