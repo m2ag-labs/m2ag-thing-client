@@ -32,12 +32,8 @@
             margin-right: 20px;
         }
 
-        .tree-card {
-            height: 100%;
-        }
-
         #device_tree_area {
-            overflow: scroll;
+            overflow: auto;
             height: 100%;
         }
     </style>
@@ -81,12 +77,8 @@
 <main class="container-fluid">
     <div class="row vw-100">
         <!-- jstree card -->
-        <div class="col-md-3 px-0 py-0">
-            <div class="card tree-card">
-                <div class="card-body">
-                    <div id="device_tree_area"></div>
-                </div>
-            </div>
+        <div class="col-md-3">
+            <div id="device_tree_area"></div>
         </div>
         <!-- detail card -->
         <div class="col-md-9 px-0 py-0">

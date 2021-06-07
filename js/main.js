@@ -1,7 +1,5 @@
 const jwtModal = (mode) => {
     const modal = new bootstrap.Modal(document.getElementById('jwt_modal'))
-    if(mode) {
-        if (config.hash !== undefined) {
             fetch(`${api_url}/auth`, getOptions)
                 .then(response => response.json())
                 .then(result => {
@@ -10,12 +8,6 @@ const jwtModal = (mode) => {
                 })
                 .catch(error => console.log('error', error))
             modal.show()
-        } else {
-            connectModal(true)
-        }
-    } else {
-        modal.hide()
-    }
  }
 
 
@@ -35,7 +27,6 @@ const mainActionHandler = (id) => {
                     document.getElementById('thing_ws_url').innerText = `${uri}${path}${auth}`
 
                 }
-                $("#thing_ui_modal").modal("show")
         }
 
 

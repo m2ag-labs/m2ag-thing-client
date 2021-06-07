@@ -103,6 +103,9 @@ const setDetail = (node) => {
             case 'm2ag-thinggetter-tag':
                 document.getElementById('service_frame').contentWindow.location.replace(`ui/thinggetter.html?auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
                 break
+             case 'm2ag-thingapi-tag':
+                document.getElementById('service_frame').contentWindow.location.replace(`ui/thingapi.html?auth=${config.token}&ts=${Date.now()}`) // jshint ignore:line
+                break
             default:
                 break
         }
@@ -185,6 +188,8 @@ const create_device_tree = (response) => { // jshint ignore:line
     root.children.push({
         "icon": "../../css/images/node-plus.svg",
         "text": "enabled",
+        "data": "thingurl",
+        "index": "m2ag-thingapi-tag",
         "type": "component",
         "state": {"opened": true},
         "children": []
