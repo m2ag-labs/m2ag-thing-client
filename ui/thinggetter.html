@@ -76,14 +76,22 @@
 
 <script>
     const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
-    const m2agapi_url = `https://thing-builder-api.web.app/api/v1`
+    const m2agapi_url = `https://storage.googleapis.com/m2ag-things-dev`
     const requestHeaders = new Headers();
     requestHeaders.append("Content-Type", "application/json");
+    const gcHeaders = new Headers()
+    gcHeaders.append("Content-Type", "application/json");
     const getOptions = {
         method: 'GET',
         headers: requestHeaders,
         redirect: 'follow'
     }
+     const gcOptions = {
+         method: 'GET',
+         headers: gcHeaders ,
+         redirect: 'follow'
+    }
+
     const putOptions = {
         method: 'PUT',
         headers: requestHeaders,
@@ -93,7 +101,6 @@
     const version_info = 'beta 1, 2021'
     const opts = {auth: '', data: {}}
     const $table = $('#things_table')
-
 
     const getLocalConfig = () => {
         fetch(`${api_url}/config`, getOptions)
@@ -138,10 +145,10 @@
         document.getElementById(`spin_${thing}`).classList.add('spinner-grow')
         document.getElementById(`spin_${thing}`).classList.add('spinner-grow-sm')
         putOptions.method = 'PUT'
-        fetch(`${m2agapi_url}/things/${thing}`)
+        fetch(`${m2agapi_url}/${thing}.json`, gcOptions)
             .then(response => response.json())
             .then(result => {
-                    let th = JSON.parse(result.data)
+                    let th = result
                     let calls = []
                     putOptions.body = JSON.stringify(th.thing)
                     calls.push(fetch(`${api_url}/config/things/${thing}`, putOptions).then(response => response.json()))
@@ -219,7 +226,7 @@
         }
 
         let calls = []
-        calls.push(fetch(`${m2agapi_url}/things/thingslist`, getOptions).then(response => response.json()))
+        calls.push(fetch(`${m2agapi_url}/thingslist.json`, gcOptions).then(response => response.json()))
         calls.push(fetch(`${api_url}/config`, getOptions).then(response => response.json()))
 
         Promise.all(calls).then(results => {
@@ -228,7 +235,7 @@
             document.getElementById('component_f').innerText = 'component'
             document.getElementById('driver_f').innerText = 'driver'
             document.getElementById('detail_f').innerText = 'detail'
-            opts.data = JSON.parse(results[0].data)
+            opts.data = results[0]
             buildTable(results[1].data)
             document.getElementById('page_spinner').style.display = 'none'
         }).catch(error => alert(error))
