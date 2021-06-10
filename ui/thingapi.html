@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs.editor" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <title>m2ag.labs.thing.ui.editor</title>
+    <style>
+        .editor {
+            height: 730px
+        }
+
+        .navbar {
+            height: 40px
+        }
+
+        body {
+            min-height: 75rem;
+            padding-top: 2.5rem;
+        }
+        .form-check {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<!--ui page -->
+<nav class="navbar navbar-expand-sm navbar-light fixed-top bg-light">
+    <div class="container-fluid">
+        <div class="navbar-brand"><span id="edit-nav-label">Loading...</span></div>
+        <div class="" id="navbarCollapse">
+            <ul class="navbar-nav">
+            </ul>
+            <div class="d-flex">
+                <div class="form-check">
+                    <input onclick="clickHandler('summary')" checked class="form-check-input" id="summary_radio" name="summary_radio" type="radio">
+                    <label class="form-check-label" for="summary_radio">
+                        summary
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input onclick="clickHandler('thing')" class="form-check-input" id="thing_radio" name="thing_radio" type="radio">
+                    <label class="form-check-label" for="thing_radio">
+                        thing description
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<main class="container-fluid">
+    <div class="bg-light rounded editor" id="ace_editor">no data</div>
+</main>
+<!--script src="js/vendor/popper.min.js"></script>
+<script src="js/vendor/bootstrap.min.js"></script-->
+<script src="js/vendor/ace/ace.js"></script>
+<script>
+    const editor = ace.edit("ace_editor")
+    editor.setTheme("ace/theme/chrome")
+    editor.session.setUseWrapMode(true);
+    editor.setOptions({
+        fontSize: "12pt",
+    });
+
+    editor.setReadOnly(true)
+    let thing_data = []
+    //TODO: add editor options to nav bar
+    const clickHandler = (action) => {
+        switch (action) {
+            case 'thing':
+                document.getElementById('summary_radio').checked = false
+                updateUi()
+                break
+            case 'summary':
+                document.getElementById('thing_radio').checked = false
+                updateUi()
+                break
+            default:
+                break
+        }
+    }
+
+    const updateUi = () => {
+
+        if(document.getElementById('thing_radio').checked){
+            editor.session.setMode('ace/mode/json')
+            editor.session.setValue(JSON.stringify(thing_data, null, 2))
+        } else if(document.getElementById('summary_radio').checked){
+            //TODO: generate summary.
+            editor.session.setMode('ace/mode/text')
+            editor.session.setValue(createSummary())
+        }
+    }
+
+    const createSummary = () => {
+        let doc = ''
+        let ws = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+
+
+        doc+= "summary\n"
+        doc+= `\t jwt:  ${opts.auth}\n`
+        doc+= `\t root:  ${thing_url}\n`
+        doc+= `\t ws-root:  ${ws}${window.location.hostname}:8888\n`
+        doc+= `\ncomponents:\n`
+        for(i of thing_data){
+            doc+= `\n\t${i.title}\n`
+            doc+= `\t\thref:  ${i.href}\n`
+            doc+= `\t\tbase:  ${i.base}\n`
+            doc+= `\t\tws:  ${i.links[3].href}?jwt=${opts.auth}\n`
+            doc+= `\t\tui:  ${window.location.origin}/ui/raspiui.html?index=${i.href.slice(1)}&socket=true&jwt=${opts.auth}\n`
+        }
+        return doc
+    }
+    const poll = () => {
+        fetch(`${thing_url}/`, getOptions)
+            .then(response => response.json())
+            .then(result => {
+                thing_data = result
+                updateUi()})
+            .catch(error => {
+                //TODO: disable radio buttons
+                thing_data = {error: "the thing server is not responding", message: error}
+                updateUi()
+            })
+
+    }
+
+    let opts = {auth: ''}
+    const thing_url = `${window.location.protocol}//${window.location.hostname}:8888`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    document.getElementById('edit-nav-label').innerText = thing_url
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+
+    const init = () => {
+        //sets up an editor in its own page. Handles updates to mods and config.
+        //?auth=<token>
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        if (opts.auth !== undefined && opts.auth !== '') {
+            auth = `Bearer ${opts['auth']}`
+            requestHeaders.append("Authorization", auth);
+            poll()
+        } else {
+            alert('authorization error') // gotta have a token
+        }
+    }
+
+    window.addEventListener("load", init);
+    window.onmessage = (event) => {
+        document.getElementById('ace_editor').style.height = `${event.data - 190}px`
+        editor.resize()
+    }
+    window.top.postMessage('resize', window.origin)
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

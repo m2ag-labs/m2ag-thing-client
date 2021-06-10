@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs thing client" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <title>m2ag.labs.ui.user</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    </style>
+</head>
+<body class="text-center">
+<main class="form-signin">
+    <form autocomplete="off" onsubmit="return false;">
+        <h1 class="h5 mb-3 fw-normal"><span id="user_action">change password</span></h1>
+        <div class="form-floating">
+            <input class="form-control" id="floatingInput" placeholder="new user" readonly type="text">
+            <label for="floatingInput">user</label>
+        </div>
+        <div class="form-floating py-2">
+            <input autocomplete="off" class="form-control" id="floatingPassword" placeholder="new password" type="text">
+            <label for="floatingPassword">new password</label>
+        </div>
+        <!--div class="checkbox mb-3">
+            <label>
+                <input checked type="checkbox" value="remember-me"> remember me
+            </label>
+        </div-->
+        <button class="w-100 btn btn-lg btn-outline-primary" onclick="passwordHandler('change')">change</button>
+        <div class="form-floating py-3" id="delete_button">
+            <h1 class="h5 mb-3 fw-normal">delete this user</h1>
+            <button class="w-100 btn btn-lg btn-outline-danger" onclick="passwordHandler('delete')">delete</button>
+        </div>
+
+    </form>
+</main>
+
+<!--script src="js/vendor/popper.min.js"></script>
+<script src="js/vendor/bootstrap.min.js"></script-->
+
+<script>
+    const passwordHandler = (mode) => {
+
+        switch (mode) {
+            case 'change':
+                const pass = document.getElementById('floatingPassword').value
+                if (pass !== '') {
+                    putOptions.body = JSON.stringify({ user: opts.user, password: pass })
+                    fetch(`${api_url}/${opts.path}`, putOptions)
+                        .then(response => {
+                            if(response.status === 200){
+
+                            } else {
+                                alert('password not saved')
+                            }
+                        })
+                        .catch(error => alert(error))
+                } else {
+                    alert('please enter a password')
+                }
+                break
+            case 'delete':
+                putOptions.body  = JSON.stringify({ user: opts.user})
+                putOptions.method = 'DELETE'
+                fetch(`${api_url}/${opts.path}`, putOptions)
+                    .then(response => {
+                        if(response.status === 200){
+                            window.top.postMessage('reload-tree', window.origin)
+                            window.location.replace('blank.html')
+                        } else {
+                            alert('password not saved')
+                        }
+                    })
+                    .catch(error => alert(error))
+                putOptions.method='PUT'
+                break
+            default:
+                break
+        }
+
+
+    }
+    const updateUi = (result) => {
+        opts.users = result.data
+        if(opts.users.length === 1){
+            document.getElementById('delete_button').style.display = 'none'
+        }
+    }
+    /*
+        Use the alternate users get path
+     */
+    const poll = () => {
+        fetch(`${api_url}/${opts.path}`, getOptions)
+            .then(response => response.json())
+            .then(result => updateUi(result))
+            .catch(error => alert(error))
+    }
+
+    let opts = {auth: '', user: '', users: ''}
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+    const putOptions = {
+        method: 'PUT',
+        headers: requestHeaders,
+        redirect: 'follow',
+        body: ''
+    }
+    const init = () => {
+        //sets up an editor in its own page. Handles updates to mods and config.
+        //?path=<module>&type=text|json|python&auth=<auth_hash>
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        opts.user = opts.path.split('/').pop()
+        document.getElementById('floatingInput').value = opts.user
+        if (opts.auth !== undefined && opts.auth !== '') {
+            auth = `Basic ${opts['auth']}`
+            requestHeaders.append("Authorization", auth);
+            poll()
+        } else {
+            alert('authorization error') // gotta have a token
+        }
+    }
+    window.addEventListener("load", init);
+</script>
+
+</body>
+</html>

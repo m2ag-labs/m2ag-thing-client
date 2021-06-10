@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs thing client" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-table.min.css" rel="stylesheet">
+    <title>m2ag.labs.thing.getter</title>
+    <style>
+        main {
+            position: relative;
+            height: auto;
+            width: 100%;
+            border: 0;
+        }
+
+        #status_f {
+            width: 15%
+        }
+
+        #component_f {
+            width: 25%;
+        }
+
+        #driver_f {
+            width: 40%;
+        }
+
+        #detail_f {
+            width: 15%
+        }
+
+        button {
+            width: 100%;
+        }
+
+        tr {
+            alignment: center;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<main class="container-fluid">
+    <div id="page_spinner" class="text-center">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+    <table data-pagination="true"
+           data-search="true"
+           id="things_table"
+    >
+        <thead>
+        <tr>
+            <th data-field='status' data-sortable="true" id="status_f"></th>
+            <th data-field='component' data-sortable="true" id="component_f"></th>
+            <th data-field='driver' data-sortable="true" id="driver_f"></th>
+            <th data-field='detail' id="detail_f"></th>
+        </tr>
+        </thead>
+    </table>
+</main>
+<script src="../js/vendor/jquery.min.js"></script>
+<script src="../js/vendor/popper.min.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
+<script src="js/vendor/bootstrap-table.min.js"></script>
+<script src="js/vendor/bootstrap-table-toolbar.min.js"></script>
+
+
+<script>
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const m2agapi_url = `https://storage.googleapis.com/m2ag-things-dev`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const gcHeaders = new Headers()
+    gcHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    }
+     const gcOptions = {
+         method: 'GET',
+         headers: gcHeaders ,
+         redirect: 'follow'
+    }
+
+    const putOptions = {
+        method: 'PUT',
+        headers: requestHeaders,
+        redirect: 'follow',
+        body: ''
+    }
+    const version_info = 'beta 1, 2021'
+    const opts = {auth: '', data: {}}
+    const $table = $('#things_table')
+
+    const getLocalConfig = () => {
+        fetch(`${api_url}/config`, getOptions)
+            .then(response => response.json())
+            .then(result => buildTable(result.data)) // jshint ignore:line
+            .catch(error => alert(error))
+    }
+
+    const removeThing = (thing) => {
+        /*DELETE -- 1 remove thing
+                    2 remove helper if loaded
+                    3 remove driver if installed
+                    4 update table entry for thing -- change to add if all results good
+                    5 reload tree on host page
+         */
+        document.getElementById(`spin_${thing}`).classList.add('spinner-grow')
+        document.getElementById(`spin_${thing}`).classList.add('spinner-grow-sm')
+        putOptions.method = 'DELETE'
+        let calls = []
+        calls.push(fetch(`${api_url}/config/things/${thing}`, putOptions))
+        if (opts.data[thing]['helper']) {
+            calls.push(fetch(`${api_url}/config/helpers/${thing}`, putOptions))
+        }
+        if (opts.data[thing]['driver'] !== undefined) {
+            for (let i in opts.data[thing]['driver']) {
+                calls.push(fetch(`${api_url}/config/pip/${opts.data[thing]['driver'][i]}`, putOptions))
+            }
+        }
+        try {
+            //TODO: check for error here
+            Promise.all(calls).then((values) => {
+               // console.log(values);
+                window.top.postMessage('reload-tree', window.origin)
+                getLocalConfig()
+            });
+        } catch {
+            throw Error("Promise failed");
+        }
+    }
+
+    const addThing = (thing) => {
+        document.getElementById(`spin_${thing}`).classList.add('spinner-grow')
+        document.getElementById(`spin_${thing}`).classList.add('spinner-grow-sm')
+        putOptions.method = 'PUT'
+        fetch(`${m2agapi_url}/${thing}.json`, gcOptions)
+            .then(response => response.json())
+            .then(result => {
+                    let th = result
+                    let calls = []
+                    putOptions.body = JSON.stringify(th.thing)
+                    calls.push(fetch(`${api_url}/config/things/${thing}`, putOptions).then(response => response.json()))
+                    if ('helper' in th) {
+                        putOptions.body = JSON.stringify({data: th.helper})
+                        calls.push(fetch(`${api_url}/config/helpers/${thing}`, putOptions).then(response => response.json()))
+                    }
+                    if (opts.data[thing]['driver'] !== undefined) {
+                        putOptions.body = ""
+                        for (let i in opts.data[thing]['driver']) {
+                            calls.push(fetch(`${api_url}/config/pip/${opts.data[thing]['driver'][i]}`, putOptions)
+                                .then(response => response.json()))
+                        }
+                    }
+                    try {
+                        Promise.all(calls).then(results => {
+                            //TODO: test results for failure
+                            //console.log(results)
+                            window.top.postMessage('reload-tree', window.origin)
+                            getLocalConfig()
+                        })
+                    } catch {
+                        throw Error("Promise failed");
+                    }
+                }
+            ).catch(error => alert('unable to get thing: ' + error))
+
+    }
+
+    const buildTable = (result) => {
+        //TODO: if data is an error -- message about internet connection and no table
+        //TODO: maybe give a warning when going to this page -- let the user know it is online
+        let table_data = []
+        for (let i in opts.data) {
+            let c = {}
+            if (result.enabled.includes(i)) {
+                c['status'] = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">
+  <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+</svg>`
+            } else if (result.available.includes(i)) {
+                c['status'] = `<button class="btn btn-sm btn-outline-danger" onclick="removeThing('${i}')">
+                <span id="spin_${i}" class="" role="status" aria-hidden="true"></span>
+                remove</button>`
+            } else {
+                c['status'] = `<button class="btn btn-sm btn-outline-success" onclick="addThing('${i}')">
+                <span id="spin_${i}" class="" role="status" aria-hidden="true"></span>
+                add</button>`
+            }
+
+            c['component'] = i
+            if ('driver' in opts.data[i]) {
+                c['driver'] = opts.data[i]['driver']
+            } else {
+                c['driver'] = 'none'
+            }
+            c['detail'] = '<button class="btn btn-sm btn-outline-primary">detail</button>'
+            table_data.push(c)
+        }
+        $table.bootstrapTable({data: table_data})
+        $table.bootstrapTable('refresh')
+    }
+
+    const init = () => {
+
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        if (opts.auth === '') {
+            alert('no auth')
+        } else {
+            requestHeaders.append("Authorization", `Basic ${opts['auth']}`);
+        }
+
+        let calls = []
+        calls.push(fetch(`${m2agapi_url}/thingslist.json`, gcOptions).then(response => response.json()))
+        calls.push(fetch(`${api_url}/config`, getOptions).then(response => response.json()))
+
+        Promise.all(calls).then(results => {
+            //TODO: check for errors
+            document.getElementById('status_f').innerText = 'status'
+            document.getElementById('component_f').innerText = 'component'
+            document.getElementById('driver_f').innerText = 'driver'
+            document.getElementById('detail_f').innerText = 'detail'
+            opts.data = results[0]
+            buildTable(results[1].data)
+            document.getElementById('page_spinner').style.display = 'none'
+        }).catch(error => alert(error))
+        document.title = window.location.hostname
+    }
+    window.addEventListener("load", init)
+</script>
+
+</body>
+</html>

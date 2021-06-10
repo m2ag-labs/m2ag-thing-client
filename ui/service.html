@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <link href="../siteicon.png" rel="apple-touch-icon" type="image/png"/>
+    <meta content="m2ag.labs.ui.service" name="apple-mobile-web-app-title">
+    <link href="../siteicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="../siteicon.png" rel="mask-icon" type=""/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <title>m2ag.labs.ui.service</title>
+    <style>
+        .btn {
+            margin-left: 20px;
+        }
+        .editor {
+            height: 730px
+        }
+        .navbar {
+            height: 40px
+        }
+        body {
+            min-height: 75rem;
+            padding-top: 1rem;
+        }
+    </style>
+    <title>m2ag.labs.thing.ui.service</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-light fixed-top bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href=""><span id="service-button-label">Loading...</span></a>
+        <ul class="navbar-nav">
+        </ul>
+        <div class="btn-toolbar">
+            <button class="btn btn-outline-success" id="service-enable-button" onclick="serviceButtonClick('enable')">
+                enable
+            </button>
+            <button class="btn btn-outline-success" id="service-start-button" onclick="serviceButtonClick('start')">
+                start
+            </button>
+            <button class="btn btn-outline-success" id="service-restart-button" onclick="serviceButtonClick('restart')">
+                restart
+            </button>
+        </div>
+
+    </div>
+</nav>
+<main class="container-fluid">>
+    <div class="editor" id="ace_editor">no data</div>
+</main>
+<!--script src="js/vendor/popper.min.js"></script>
+<script src="js/vendor/bootstrap.min.js"></script-->
+<script src="js/vendor/ace/ace.js"></script>
+<script>
+    const pollService = () => {
+        if (opts.auth !== undefined && opts.auth !== '') {
+            fetch(`${api_url}/${opts.path}`, getOptions)
+                .then(response => response.json())
+                .then(result => updateUi(result))
+                .catch(error => console.log('error', error))
+        } else {
+            alert('missing auth token') // gotta have a token
+        }
+    }
+
+    const updateUi = (result) => {
+        editor.session.setMode("ace/mode/text")
+        editor.session.setValue(result.data)
+        editor.setReadOnly(true)
+        setServiceButtons(result.data)
+        document.getElementById('service-button-label').innerText = opts.path.split('/')[0]
+    }
+
+    const setServiceButtons = (result) => {
+        const isRunning = result.split("\n")[2].trim().indexOf(`(running)`) > -1
+        const isEnabled = result.split("\n")[1].trim().indexOf(`service; enabled;`) > -1
+        if (isRunning) {
+            document.getElementById("service-start-button").innerText = 'stop'
+            document.getElementById("service-start-button").classList.remove('btn-outline-success')
+            document.getElementById("service-start-button").classList.add('btn-outline-danger')
+        } else {
+            document.getElementById("service-start-button").innerText = 'start'
+            document.getElementById("service-start-button").classList.remove('btn-outline-danger')
+            document.getElementById("service-start-button").classList.add('btn-outline-success')
+        }
+        if (isEnabled) {
+            document.getElementById("service-enable-button").innerText = 'disable'
+            document.getElementById("service-enable-button").classList.remove('btn-outline-success')
+            document.getElementById("service-enable-button").classList.add('btn-outline-danger')
+        } else {
+            document.getElementById("service-enable-button").innerText = 'enable'
+            document.getElementById("service-enable-button").classList.remove('btn-outline-danger')
+            document.getElementById("service-enable-button").classList.add('btn-outline-success')
+        }
+
+    }
+
+    const serviceButtonClick = (action) => {
+        let endpoint = document.getElementById('service-button-label').innerText + '/'
+        switch (action) {
+            case 'enable':
+                if (document.getElementById("service-enable-button").innerText === 'enable') {
+                    endpoint += 'enable'
+                } else {
+                    endpoint += 'disable'
+                }
+                break
+            case 'start':
+                if (document.getElementById("service-start-button").innerText === 'start') {
+                    endpoint += 'start'
+                } else {
+                    endpoint += 'stop'
+                }
+                break
+            default:
+                endpoint += 'restart'
+                break
+
+        }
+        fetch(`${api_url}/${endpoint}`, getOptions)
+            .then(response => response.json())
+            .then(result => {
+                updateUi(result)
+            })
+            .catch(error => console.log('error', error))
+    }
+
+    const init = () => {
+        let param = window.location.search.substring(1, window.location.search.length);
+        param = param.split('&')
+        for (const i in param) {
+            const ix = param[i].split('=')
+            opts[ix[0]] = ix[1]
+        }
+        if (opts.auth === '') {
+            alert('no auth token')
+        } else {
+            requestHeaders.append("Authorization", `Basic ${opts['auth']}`);
+            pollService()
+            target_interval = setInterval(pollService, 3000)
+        }
+    }
+
+    let opts = {auth: ''}
+    const editor = ace.edit("ace_editor")
+    editor.setTheme("ace/theme/chrome")
+    editor.setOptions({fontSize: "12pt"});
+    let target_interval = 3 //poll the service this often when open
+    const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    const getOptions = {
+        method: 'GET',
+        headers: requestHeaders,
+        redirect: 'follow'
+    };
+    const putOptions = {
+        method: 'PUT',
+        headers: requestHeaders,
+        body: '',
+        redirect: 'follow'
+    }
+
+    window.addEventListener("load", init);
+    window.onmessage = (event) => {
+        document.getElementById('ace_editor').style.height = `${event.data - 150}px`
+        editor.resize()
+    }
+    window.top.postMessage('resize', window.origin)
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

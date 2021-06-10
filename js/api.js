@@ -5,7 +5,7 @@ const git_url = `https://raw.githubusercontent.com/m2ag-labs/m2ag-things/master`
 const dataHeaders = new Headers();
 dataHeaders.append("Content-Type", "application/json")
 //dataHeaders.append("Authorization", 'Basic ' + auth_hash) -- set in init in main and managelocalstrorage
-const   getDataOptions = {
+const  getDataOptions = {
     method: 'GET',
     headers: dataHeaders,
     redirect: 'follow'
