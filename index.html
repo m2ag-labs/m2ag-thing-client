@@ -263,7 +263,7 @@
                 break;
             case 'clear-login':
                 config.hash = ''
-                config.jwt = ''
+                config.token = ''
                 localStorage.setItem('client_config', JSON.stringify(config));
                 window.location.replace('ui/signin.html')
                 break;
