@@ -152,7 +152,7 @@
                     let calls = []
                     putOptions.body = JSON.stringify(th.thing)
                     calls.push(fetch(`${api_url}/config/things/${thing}`, putOptions).then(response => response.json()))
-                    if ('helper' in th) {
+                    if ('helper' in th && Object.keys(th.helper).length > 0) {
                         putOptions.body = JSON.stringify({data: th.helper})
                         calls.push(fetch(`${api_url}/config/helpers/${thing}`, putOptions).then(response => response.json()))
                     }
