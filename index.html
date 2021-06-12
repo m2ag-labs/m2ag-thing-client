@@ -248,6 +248,7 @@
                 if ('hash' in config && config.hash !== '') {
                     requestHeaders.append("Authorization", 'Basic ' + config.hash);
                     if (config.token === undefined) config.token = ''
+                    return true;
                 } else {
                     window.location.replace('ui/signin.html')
                 }
@@ -260,39 +261,42 @@
                 config.hash = btoa(document.getElementById('connect_name').value + ":" + document.getElementById('connect_password').value);
                 dataHeaders.set("Authorization", 'Basic ' + config.hash)
                 localStorage.setItem('client_config', JSON.stringify(config));
+                return true
                 break;
             case 'clear-login':
                 config.hash = ''
                 config.token = ''
                 localStorage.setItem('client_config', JSON.stringify(config));
                 window.location.replace('ui/signin.html')
+                return true
                 break;
             default:
                 console.log("unknown local storage operation");
                 break;
         }
-
+        return false;
     }
 
 
     const init = () => {
-        configManager('load') //sets dataOptions dataHeader too
-        fetch(`${api_url}/config`, getOptions)
-            .then(response => response.json())
-            .then(result => create_device_tree(result)) // jshint ignore:line
-            .catch(error => alert(error))
-        //get a valid jwt token from the server, set in options, call fetch
-        if (config.token === '') {
-            fetch(`${api_url}/auth`, getOptions)
+        if(configManager('load')) { //sets dataOptions dataHeader too
+            fetch(`${api_url}/config`, getOptions)
                 .then(response => response.json())
-                .then(result => {
-                    config.token = result.data['token']
-                    configManager('save')
-                })
+                .then(result => create_device_tree(result)) // jshint ignore:line
                 .catch(error => alert(error))
+            //get a valid jwt token from the server, set in options, call fetch
+            if (config.token === '') {
+                fetch(`${api_url}/auth`, getOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        config.token = result.data['token']
+                        configManager('save')
+                    })
+                    .catch(error => alert(error))
+            }
+            document.title = window.location.hostname
+            treeInit() // jshint ignore:line
         }
-        document.title = window.location.hostname
-        treeInit() // jshint ignore:line
     }
     window.addEventListener("load", init)
 </script>
