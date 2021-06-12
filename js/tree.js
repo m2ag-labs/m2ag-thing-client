@@ -4,7 +4,10 @@ const iframes = document.querySelectorAll("iframe");
 
 const thing_tab = new bootstrap.Tab(document.querySelector('#thing-tab')); // jshint ignore:line
 const service_tab = new bootstrap.Tab(document.querySelector('#service-tab')) // jshint ignore:line
+const ui_tab = new bootstrap.Tab(document.querySelector('#ui-tab')) // jshint ignore:line
 
+let service_list = {}
+let tree_data = {}
 let current_view = 'none'
 let current_tab = 'none'
 let current_node = 'none'
@@ -17,7 +20,7 @@ const setTabs = (view) => {
     if (view !== current_view) {
         current_view = view
         if (current_view === 'm2ag-thing-tag') {
-            thing_tab.show()
+            ui_tab.show()
             current_tab = 'thing-tab'
         } else {
             service_tab.show()
@@ -103,7 +106,7 @@ const setDetail = (node) => {
             case 'm2ag-thinggetter-tag':
                 document.getElementById('service_frame').contentWindow.location.replace(`ui/thinggetter.html?auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
                 break
-             case 'm2ag-thingapi-tag':
+            case 'm2ag-thingapi-tag':
                 document.getElementById('service_frame').contentWindow.location.replace(`ui/thingapi.html?auth=${config.token}&ts=${Date.now()}`) // jshint ignore:line
                 break
             default:
@@ -146,7 +149,8 @@ const enableTree = () => { // jshint ignore:line
     $('#device_tree_area i.jstree-ocl').off('click.block');
 }
 
-const create_device_tree = (response) => { // jshint ignore:line
+const create_device_tree = () => {// jshint ignore:line
+    const response = tree_data
     let root = {
         "icon": "../../css/images/cpu.svg",
         "text": response.data.server.id,
@@ -218,9 +222,18 @@ const create_device_tree = (response) => { // jshint ignore:line
         "state": {"opened": true},
         "children": []
     });
+    //If service list is not populated, do so now
     for (let i in response.data.services) { // jshint ignore:line
         if (response.data.services.hasOwnProperty(i)) {
+            const target = response.data.services[i]
+            let ic
+            if (service_list[target]) {
+                ic = '../../css/images/led-green.png'
+            } else {
+                ic = '../../css/images/led-red.png'
+            }
             root.children[root.children.length - 1].children.push({
+                "icon": ic,
                 "type": "service",
                 "text": response.data.services[i],
                 "data": `${response.data.services[i]}/status`,
@@ -244,11 +257,10 @@ const create_device_tree = (response) => { // jshint ignore:line
                 "type": "user",
                 "text": response.data.users[i],
                 "index": "m2ag-user-tag",
-                "data": `config/user/${response.data.users[i]}`,
+                "data": `config/user/${response.data.users[i]}`
             });
         }
     }
-
     device_tree_area.jstree(true).settings.core.data = [root];
     device_tree_area.jstree(true).refresh();
 }
@@ -262,9 +274,6 @@ const treeInit = () => { // jshint ignore:line
             },
             "thing": {
                 "icon": "../../css/images/speedometer2.svg"
-            },
-            "service": {
-                "icon": "../../css/images/led-green.png"
             }
         },
         "dnd": {
@@ -286,7 +295,52 @@ const treeInit = () => { // jshint ignore:line
     device_tree_area.bind("move_node.jstree", function (e, data) { // jshint ignore:line
         handleMoveNode(data)
     });
+    fetch(`${api_url}/config`, getOptions)
+                .then(response => response.json())
+                .then(result => {
+                    tree_data = result
+                    for(let i in tree_data.data.services){
+                        service_list[tree_data.data.services[i]] = false
+                    }
+                    webWorkerFunction()
+                })// jshint ignore:line
+                .catch(error => alert(error))
+            //get a valid jwt token from the server, set in options, call fetch
 
+    //TODO: move to webworker
+    webTimer = setInterval(webWorkerFunction, 3000)
+
+}
+
+let webTimer
+
+const webWorkerFunction = () => {
+    let calls = []
+    for (let i in service_list) {
+        calls.push(fetch(`${api_url}/status/${i}`, getOptions)
+            .then(response => response.json()))
+    }
+    Promise.all(calls).then(results => {
+        let changed = false
+        for(let i in results) {
+            for (let j in results[i].data) {
+                if (service_list[j] !== results[i].data[j]) {
+                    service_list[j] = results[i].data[j]
+                    changed = true
+                }
+            }
+        }
+       if(changed){
+           disableTree()
+           create_device_tree()
+           enableTree()
+       }
+    }).catch(error => alert(error))/**/
+
+}
+
+window.onbeforeunload = (event) => {
+    clearInterval(webTimer)
 }
 
 window.addEventListener('resize', resizeAll);
@@ -309,3 +363,4 @@ window.onmessage = (event) => {
             break
     }
 }
+

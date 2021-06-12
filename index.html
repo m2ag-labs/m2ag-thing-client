@@ -146,9 +146,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">jwt info</h5>
-                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <ul class="list-group text-left">
@@ -169,39 +167,6 @@
                     </div>
                 </div>
             </div>
-            <!-- thing url  -->
-            <div class="modal" id="thing_ui_modal" role="dialog" tabindex="-1">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">thing ui url</h5>
-                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="card">
-                                <div class="card-body">
-                                    <ul class="list-group text-left">
-                                        <li class="list-group-item list-group-item-primary  text-center">
-                                            thing urls
-                                        </li>
-                                        <li class="list-group-item  text-center">
-                                            <span id="thing_ui_url"></span>
-                                        </li>
-                                        <li class="list-group-item  list-group-item-primary text-center">
-                                            thing ws url
-                                        </li>
-                                        <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
-                                            <span id="thing_ws_url"></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -215,7 +180,7 @@
 <script src="js/tree.js"></script><!-- tree and ui actions  -->
 <script src="js/main.js"></script><!-- main -->
 <script>
-    //TODO: move to path -- tornado wsqi
+    //TODO: move to path -- need to convert back end to tornado app.
     const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
     const thing_url = `${window.location.protocol}//${window.location.hostname}:8888`
     const requestHeaders = new Headers();
@@ -280,11 +245,6 @@
 
     const init = () => {
         if(configManager('load')) { //sets dataOptions dataHeader too
-            fetch(`${api_url}/config`, getOptions)
-                .then(response => response.json())
-                .then(result => create_device_tree(result)) // jshint ignore:line
-                .catch(error => alert(error))
-            //get a valid jwt token from the server, set in options, call fetch
             if (config.token === '') {
                 fetch(`${api_url}/auth`, getOptions)
                     .then(response => response.json())
