@@ -163,6 +163,10 @@
         redirect: 'follow'
     }
 
+    window.onbeforeunload = (event) => {
+        clearInterval(target_interval)
+    }
+
     window.addEventListener("load", init);
     window.onmessage = (event) => {
         document.getElementById('ace_editor').style.height = `${event.data - 150}px`

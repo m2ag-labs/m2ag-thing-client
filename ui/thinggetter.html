@@ -11,6 +11,7 @@
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-table.min.css" rel="stylesheet">
     <title>m2ag.labs.thing.getter</title>
+    <base target="_blank">
     <style>
         main {
             position: relative;
@@ -43,6 +44,9 @@
             alignment: center;
             text-align: center;
         }
+        iframe{
+            height: 700px;
+        }
 
     </style>
 </head>
@@ -67,6 +71,22 @@
         </thead>
     </table>
 </main>
+
+<!-- Full screen modal -->
+<div id="info_modal" class="modal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <iframe id="info_frame" src=""></iframe>
+    </div>
+  </div>
+</div>
+
+
+
+
 <script src="../js/vendor/jquery.min.js"></script>
 <script src="../js/vendor/popper.min.js"></script>
 <script src="../js/vendor/bootstrap.min.js"></script>
@@ -101,6 +121,7 @@
     const version_info = 'beta 1, 2021'
     const opts = {auth: '', data: {}}
     const $table = $('#things_table')
+    const info_modal = new bootstrap.Modal(document.getElementById('info_modal'))
 
     const getLocalConfig = () => {
         fetch(`${api_url}/config`, getOptions)
@@ -132,7 +153,6 @@
         try {
             //TODO: check for error here
             Promise.all(calls).then((values) => {
-               // console.log(values);
                 window.top.postMessage('reload-tree', window.origin)
                 getLocalConfig()
             });
@@ -204,11 +224,23 @@
             } else {
                 c['driver'] = 'none'
             }
-            c['detail'] = '<button class="btn btn-sm btn-outline-primary">detail</button>'
+            c['detail'] = `<button onclick="getInfo('${i}')" class="btn btn-sm btn-outline-primary">detail</button>`
             table_data.push(c)
         }
         $table.bootstrapTable({data: table_data})
         $table.bootstrapTable('refresh')
+    }
+
+    const getInfo = (id) =>{
+        document.getElementById("info_frame").src = ""
+        fetch(`${opts.data[id].info}?embedded=true`, gcOptions)
+            .then(response => response.text())
+            .then(result => {
+                result = result.replace(/<a /g, '<a target="_blank"')
+                document.getElementById("info_frame").contentWindow.document.write(result)
+                info_modal.show()
+            })
+
     }
 
     const init = () => {

@@ -331,9 +331,7 @@ const webWorkerFunction = () => {
             }
         }
        if(changed){
-           disableTree()
            create_device_tree()
-           enableTree()
        }
     }).catch(error => alert(error))/**/
 
