@@ -166,7 +166,7 @@
             //TODO: check for error here
             Promise.all(calls).then((values) => {
                 //getLocalConfig()
-                //window.top.postMessage('reload-tree', window.origin)
+                window.top.postMessage('reload-tree', window.origin)
                 window.location.reload()
             });
         } catch {
@@ -203,7 +203,7 @@
                             //TODO: test results for failure
                             //console.log(results)
                             //getLocalConfig()
-                            //window.top.postMessage('reload-tree', window.origin)
+                            window.top.postMessage('reload-tree', window.origin)
                             window.location.reload()
                         })
                     } catch {
