@@ -37,6 +37,32 @@ const tabClickHandler = (tab) => { // jshint ignore:line
     current_tab = tab
 }
 
+let webTimer
+
+const webWorkerFunction = () => {
+    let calls = []
+    for (let i in service_list) {
+        calls.push(fetch(`${api_url}/status/${i}`, getOptions)
+            .then(response => response.json()))
+    }
+    Promise.all(calls).then(results => {
+        let changed = false
+        for(let i in results) {
+            for (let j in results[i].data) {
+                if (service_list[j] !== results[i].data[j]) {
+                    service_list[j] = results[i].data[j]
+                    changed = true
+                }
+            }
+        }
+       if(changed){
+           create_device_tree()
+       }
+    }).catch(error => alert(error))/**/
+
+}
+
+
 /**
  * On move is only tracked for things.
  * Must restart thing server when a change is made
@@ -56,9 +82,16 @@ const handleMoveNode = (data) => {
     fetch(`${api_url}/config/enabled`, putOptions)// jshint ignore:line
         .then(response => response.json())
         .then(result => {
-            create_device_tree(result)
+            current_node = 'none'
+            tree_data = result
+            create_device_tree()
         })
         .catch(error => console.log('error', error))
+    if(service_list['m2ag-thing']){ //stop the thing on enabled list updates
+        fetch(`${api_url}/m2ag-thing/stop`, getOptions)// jshint ignore:line
+        .catch(error => console.log('error', error))
+    }
+
 }
 
 const resizeAll = () => {
@@ -86,7 +119,6 @@ const setDetail = (node) => {
                 if ('helper' in node.original && node.original.helper !== false) {
                     document.getElementsByClassName('helper_pill').item(0).style.display = 'block'
                     document.getElementById('helper_frame').contentWindow.location.replace(`ui/editor.html?path=${node.original.helper}&type=python&auth=${config.hash}&ts=${Date.now()}`) // jshint ignore:line
-
                 } else if (current_tab === 'helper-tab') {
                     thing_tab.show()
                 }
@@ -123,8 +155,11 @@ const handleChangeTree = (data) => {
             setDetail(data.node)
         }
     } else {
-        setTabs('none')
-        current_node = 'none'
+        //Prevent reloads of iframe content on tree update
+        if(data.action !== 'deselect_all') {
+            setTabs('none')
+            current_node = 'none'
+        }
     }
 }
 
@@ -262,7 +297,7 @@ const create_device_tree = () => {// jshint ignore:line
         }
     }
     device_tree_area.jstree(true).settings.core.data = [root];
-    device_tree_area.jstree(true).refresh();
+    device_tree_area.jstree(false).refresh();
 }
 
 const treeInit = () => { // jshint ignore:line
@@ -312,31 +347,6 @@ const treeInit = () => { // jshint ignore:line
 
 }
 
-let webTimer
-
-const webWorkerFunction = () => {
-    let calls = []
-    for (let i in service_list) {
-        calls.push(fetch(`${api_url}/status/${i}`, getOptions)
-            .then(response => response.json()))
-    }
-    Promise.all(calls).then(results => {
-        let changed = false
-        for(let i in results) {
-            for (let j in results[i].data) {
-                if (service_list[j] !== results[i].data[j]) {
-                    service_list[j] = results[i].data[j]
-                    changed = true
-                }
-            }
-        }
-       if(changed){
-           create_device_tree()
-       }
-    }).catch(error => alert(error))/**/
-
-}
-
 window.onbeforeunload = (event) => {
     clearInterval(webTimer)
 }
@@ -352,7 +362,8 @@ window.onmessage = (event) => {
             fetch(`${api_url}/config`, getOptions)// jshint ignore:line
                 .then(response => response.json())
                 .then(result => {
-                    create_device_tree(result)
+                    tree_data = result
+                    create_device_tree()
                 })
                 .catch(error => alert(error))
             break

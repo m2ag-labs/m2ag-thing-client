@@ -142,11 +142,11 @@
 
             <!-- jwt modal -->
             <div class="modal" id="jwt_modal" role="dialog" tabindex="-1">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-fullscreen" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">jwt info</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                         </div>
                         <div class="modal-body">
                             <ul class="list-group text-left">
@@ -159,7 +159,7 @@
                                 <li class="list-group-item  list-group-item-primary text-center">
                                     jwt
                                 </li>
-                                <li class="list-group-item  text-center" style="overflow-wrap: anywhere;">
+                                <li class="list-group-item  text-center" style="overflow-wrap: break-word;">
                                     <span id="jwt_token"></span>
                                 </li>
                             </ul>
@@ -178,7 +178,6 @@
 <script src="js/vendor/jquery.min.js"></script>
 <script src="js/vendor/jstree.min.js"></script>
 <script src="js/tree.js"></script><!-- tree and ui actions  -->
-<script src="js/main.js"></script><!-- main -->
 <script>
     //TODO: move to path -- need to convert back end to tornado app.
     const api_url = `${window.location.protocol}//${window.location.hostname}:5000`
@@ -206,7 +205,7 @@
                 config = localStorage.getItem('client_config');
                 try {
                     config = JSON.parse(config);
-                    if(config === null) config = {}
+                    if (config === null) config = {}
                 } catch (e) {
                     config = {}
                 }
@@ -242,9 +241,21 @@
         return false;
     }
 
+    const jwtModal = () => {
+        const modal = new bootstrap.Modal(document.getElementById('jwt_modal'))
+        fetch(`${api_url}/auth`, getOptions)
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('thing_url').innerText = thing_url
+                document.getElementById('jwt_token').innerText = result.data.token
+            })
+            .catch(error => console.log('error', error))
+        modal.show()
+    }
+
 
     const init = () => {
-        if(configManager('load')) { //sets dataOptions dataHeader too
+        if (configManager('load')) { //sets dataOptions dataHeader too
             if (config.token === '') {
                 fetch(`${api_url}/auth`, getOptions)
                     .then(response => response.json())
@@ -259,6 +270,7 @@
         }
     }
     window.addEventListener("load", init)
+
 </script>
 
 </body>

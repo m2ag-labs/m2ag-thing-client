@@ -44,7 +44,8 @@
             alignment: center;
             text-align: center;
         }
-        iframe{
+
+        iframe {
             height: 700px;
         }
 
@@ -52,11 +53,11 @@
 </head>
 <body>
 <main class="container-fluid">
-    <div id="page_spinner" class="text-center">
-  <div class="spinner-border" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-</div>
+    <div class="text-center" id="page_spinner">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     <table data-pagination="true"
            data-search="true"
            id="things_table"
@@ -73,18 +74,16 @@
 </main>
 
 <!-- Full screen modal -->
-<div id="info_modal" class="modal" tabindex="-1">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-        <iframe id="info_frame" src=""></iframe>
+<div class="modal" id="info_modal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <iframe id="info_frame" src=""></iframe>
+        </div>
     </div>
-  </div>
 </div>
-
-
 
 
 <script src="../js/vendor/jquery.min.js"></script>
@@ -106,10 +105,10 @@
         headers: requestHeaders,
         redirect: 'follow'
     }
-     const gcOptions = {
-         method: 'GET',
-         headers: gcHeaders ,
-         redirect: 'follow'
+    const gcOptions = {
+        method: 'GET',
+        headers: gcHeaders,
+        redirect: 'follow'
     }
 
     const putOptions = {
@@ -137,8 +136,8 @@
                     4 update table entry for thing -- change to add if all results good
                     5 reload tree on host page
          */
-        document.getElementById(`spin_${thing}`).classList.add('spinner-grow')
-        document.getElementById(`spin_${thing}`).classList.add('spinner-grow-sm')
+        document.getElementById(`btn_${thing}`).classList.add('spinner-grow')
+        document.getElementById(`btn_${thing}`).classList.add('spinner-grow-sm')
         putOptions.method = 'DELETE'
         let calls = []
         calls.push(fetch(`${api_url}/config/things/${thing}`, putOptions))
@@ -153,8 +152,9 @@
         try {
             //TODO: check for error here
             Promise.all(calls).then((values) => {
-                window.top.postMessage('reload-tree', window.origin)
                 getLocalConfig()
+                updateButton(thing)
+                window.top.postMessage('reload-tree', window.origin)
             });
         } catch {
             throw Error("Promise failed");
@@ -162,8 +162,8 @@
     }
 
     const addThing = (thing) => {
-        document.getElementById(`spin_${thing}`).classList.add('spinner-grow')
-        document.getElementById(`spin_${thing}`).classList.add('spinner-grow-sm')
+        document.getElementById(`btn_${thing}`).classList.add('spinner-grow')
+        document.getElementById(`btn_${thing}`).classList.add('spinner-grow-sm')
         putOptions.method = 'PUT'
         fetch(`${m2agapi_url}/${thing}.json`, gcOptions)
             .then(response => response.json())
@@ -172,7 +172,7 @@
                     let calls = []
                     putOptions.body = JSON.stringify(th.thing)
                     calls.push(fetch(`${api_url}/config/things/${thing}`, putOptions).then(response => response.json()))
-                    if ('helper' in th && Object.keys(th.helper).length > 0) {
+                    if ('helper' in th && th['helper'] !== "") {
                         putOptions.body = JSON.stringify({data: th.helper})
                         calls.push(fetch(`${api_url}/config/helpers/${thing}`, putOptions).then(response => response.json()))
                     }
@@ -187,8 +187,9 @@
                         Promise.all(calls).then(results => {
                             //TODO: test results for failure
                             //console.log(results)
-                            window.top.postMessage('reload-tree', window.origin)
                             getLocalConfig()
+                            updateButton(thing)
+                            window.top.postMessage('reload-tree', window.origin)
                         })
                     } catch {
                         throw Error("Promise failed");
@@ -196,6 +197,30 @@
                 }
             ).catch(error => alert('unable to get thing: ' + error))
 
+    }
+
+    const callButton = (thing) => {
+        let button = document.getElementById(`btn_${thing}`)
+        if (button.innerText === 'add') {
+            addThing(thing)
+        } else {
+            removeThing(thing)
+        }
+    }
+
+    const updateButton = (thing = 'none') => {
+        let button = document.getElementById(`btn_${thing}`)
+        button.classList.remove('spinner-grow')
+        button.classList.remove('spinner-grow-sm')
+        if (button.innerText === 'add') {
+            button.classList.remove('btn-outline-success')
+            button.classList.add('btn-outline-danger')
+            button.innerText = 'remove'
+        } else {
+            button.classList.remove('btn-outline-danger')
+            button.classList.add('btn-outline-success')
+            button.innerText = 'add'
+        }
     }
 
     const buildTable = (result) => {
@@ -209,13 +234,9 @@
   <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
 </svg>`
             } else if (result.available.includes(i)) {
-                c['status'] = `<button class="btn btn-sm btn-outline-danger" onclick="removeThing('${i}')">
-                <span id="spin_${i}" class="" role="status" aria-hidden="true"></span>
-                remove</button>`
+                c['status'] = `<button id="btn_${i}" class="btn btn-sm btn-outline-danger" onclick="callButton('${i}')">remove</button>`
             } else {
-                c['status'] = `<button class="btn btn-sm btn-outline-success" onclick="addThing('${i}')">
-                <span id="spin_${i}" class="" role="status" aria-hidden="true"></span>
-                add</button>`
+                c['status'] = `<button id="btn_${i}" class="btn btn-sm btn-outline-success" onclick="callButton('${i}')">add</button>`
             }
 
             c['component'] = i
@@ -224,20 +245,26 @@
             } else {
                 c['driver'] = 'none'
             }
-            c['detail'] = `<button onclick="getInfo('${i}')" class="btn btn-sm btn-outline-primary">detail</button>`
+            c['detail'] = `<button id="btn_info_${i}" onclick="getInfo('${i}')" class="btn btn-sm btn-outline-primary">info</button>`
             table_data.push(c)
         }
         $table.bootstrapTable({data: table_data})
         $table.bootstrapTable('refresh')
     }
 
-    const getInfo = (id) =>{
-        document.getElementById("info_frame").src = ""
+    const getInfo = (id) => {
+        button = document.getElementById(`btn_info_${id}`)
+        button.classList.add('spinner-grow')
+        button.classList.add('spinner-grow-sm')
         fetch(`${opts.data[id].info}?embedded=true`, gcOptions)
             .then(response => response.text())
             .then(result => {
+                //make sure all anchors open in new tab.
                 result = result.replace(/<a /g, '<a target="_blank"')
-                document.getElementById("info_frame").contentWindow.document.write(result)
+                document.getElementById("info_frame").srcdoc = result
+                //document.getElementById("info_frame").contentWindow.document.write(result)
+                button.classList.remove('spinner-grow')
+                button.classList.remove('spinner-grow-sm')
                 info_modal.show()
             })
 
@@ -266,14 +293,18 @@
             document.getElementById('status_f').innerText = 'status'
             document.getElementById('component_f').innerText = 'component'
             document.getElementById('driver_f').innerText = 'driver'
-            document.getElementById('detail_f').innerText = 'detail'
+            document.getElementById('detail_f').innerText = 'info'
             opts.data = results[0]
             buildTable(results[1].data)
             document.getElementById('page_spinner').style.display = 'none'
+            window.top.postMessage('resize', window.origin)
         }).catch(error => alert(error))
         document.title = window.location.hostname
     }
     window.addEventListener("load", init)
+    window.onmessage = (event) => {
+        $table.bootstrapTable('resetView', {height: event.data - 150}  )
+    }
 </script>
 
 </body>
