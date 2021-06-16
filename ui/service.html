@@ -137,7 +137,7 @@
         if (opts.auth === '') {
             alert('no auth token')
         } else {
-            requestHeaders.append("Authorization", `Basic ${opts['auth']}`);
+            requestHeaders.append("Authorization", `Basic ${decodeURIComponent(opts['auth'])}`);
             pollService()
             target_interval = setInterval(pollService, 3000)
         }

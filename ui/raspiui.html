@@ -64,7 +64,7 @@
         //get the defaults from the thing and setup fields
         //get bearer token from the query string
         if (opts['jwt'] !== undefined && opts['jwt'] !== '') {
-            auth = `Bearer ${opts['jwt']}`
+            auth = `Bearer ${decodeURIComponent(opts['jwt'])}`
             requestHeaders.append("Authorization", auth);
             fetch(`${thing_url}/${opts.index}`, getOptions)
                 .then(response => response.json())

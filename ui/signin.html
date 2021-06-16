@@ -85,7 +85,7 @@
         fetch(`${api_url}/config`, getOptions)
             .then(response => {
                 if (response.status === 200) {
-                    config.hash = auth_hash
+                    config.hash = encodeURIComponent(auth_hash)
                     localStorage.setItem('client_config', JSON.stringify(config));
                     window.location.replace(`${window.location.origin}/index.html`)
                 } else {

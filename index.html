@@ -121,11 +121,7 @@
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div aria-labelledby="ui-tab" class="tab-pane" id="ui" role="tabpanel">
-                            <div class="card">
-                                <div class="card-body">
-                                    <iframe id="ui_frame" src="" title="ui"></iframe>
-                                </div>
-                            </div>
+                            <iframe id="ui_frame" src="" title="ui"></iframe>
                         </div>
                         <div aria-labelledby="service-tab" class="tab-pane active" id="service" role="tabpanel">
                             <iframe id="service_frame" scrolling="no" src="" title="service"></iframe>
@@ -142,7 +138,7 @@
 
             <!-- jwt modal -->
             <div class="modal" id="jwt_modal" role="dialog" tabindex="-1">
-                <div class="modal-dialog modal-fullscreen" role="document">
+                <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">jwt info</h5>
@@ -168,7 +164,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </main>
 <!-- Popper.js, then Bootstrap JS -->
@@ -210,7 +205,8 @@
                     config = {}
                 }
                 if ('hash' in config && config.hash !== '') {
-                    requestHeaders.append("Authorization", 'Basic ' + config.hash);
+                    requestHeaders.append("Authorization", 'Basic ' + decodeURIComponent(config.hash));
+                    config.hash = config.hash
                     if (config.token === undefined) config.token = ''
                     return true;
                 } else {
@@ -222,8 +218,8 @@
                 break
             case 'save-password':
                 //TODO: save editor states -- this just does passwords now
-                config.hash = btoa(document.getElementById('connect_name').value + ":" + document.getElementById('connect_password').value);
-                dataHeaders.set("Authorization", 'Basic ' + config.hash)
+                config.hash = encodeURIComponent(btoa(document.getElementById('connect_name').value + ":" + document.getElementById('connect_password').value))
+                requestHeaders.set("Authorization", 'Basic ' + decodeURIComponent(config.hash))
                 localStorage.setItem('client_config', JSON.stringify(config));
                 return true
                 break;
@@ -260,7 +256,7 @@
                 fetch(`${api_url}/auth`, getOptions)
                     .then(response => response.json())
                     .then(result => {
-                        config.token = result.data['token']
+                        config.token = encodeURIComponent(result.data['token'])
                         configManager('save')
                     })
                     .catch(error => alert(error))

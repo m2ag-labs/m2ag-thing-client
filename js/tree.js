@@ -20,7 +20,7 @@ const setTabs = (view) => {
     if (view !== current_view) {
         current_view = view
         if (current_view === 'm2ag-thing-tag') {
-            ui_tab.show()
+            thing_tab.show()
             current_tab = 'thing-tab'
         } else {
             service_tab.show()
@@ -58,7 +58,10 @@ const webWorkerFunction = () => {
        if(changed){
            create_device_tree()
        }
-    }).catch(error => alert(error))/**/
+    }).catch(error => {
+        console.log(error)
+        //alert(error)
+    })/**/
 
 }
 
@@ -339,8 +342,11 @@ const treeInit = () => { // jshint ignore:line
                     }
                     webWorkerFunction()
                 })// jshint ignore:line
-                .catch(error => alert(error))
-            //get a valid jwt token from the server, set in options, call fetch
+                .catch(error =>{
+                    configManager('clear-login')
+                    //alert(error)
+                })
+
 
     //TODO: move to webworker
     webTimer = setInterval(webWorkerFunction, 3000)

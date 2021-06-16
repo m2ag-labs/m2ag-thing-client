@@ -44,6 +44,10 @@
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
         }
+        #message_text{
+            padding-top: 3%;
+        }
+
     </style>
 </head>
 <body class="text-center">
@@ -70,6 +74,7 @@
         </div>
 
     </form>
+    <div class="h5" id="message_text"></div>
 </main>
 
 <!--script src="js/vendor/popper.min.js"></script>
@@ -86,14 +91,14 @@
                     fetch(`${api_url}/${opts.path}`, putOptions)
                         .then(response => {
                             if(response.status === 200){
-
+                                document.getElementById('message_text').innerText = "password saved"
                             } else {
-                                alert('password not saved')
+                                document.getElementById('message_text').innerText = "error changing password"
                             }
                         })
                         .catch(error => alert(error))
                 } else {
-                    alert('please enter a password')
+                    document.getElementById('message_text').innerText = 'please enter a password'
                 }
                 break
             case 'delete':
@@ -105,7 +110,7 @@
                             window.top.postMessage('reload-tree', window.origin)
                             window.location.replace('blank.html')
                         } else {
-                            alert('password not saved')
+                            alert('user not deleted')
                         }
                     })
                     .catch(error => alert(error))
@@ -160,7 +165,7 @@
         opts.user = opts.path.split('/').pop()
         document.getElementById('floatingInput').value = opts.user
         if (opts.auth !== undefined && opts.auth !== '') {
-            auth = `Basic ${opts['auth']}`
+            const auth = `Basic ${decodeURIComponent(opts['auth'])}`
             requestHeaders.append("Authorization", auth);
             poll()
         } else {

@@ -164,7 +164,7 @@
             opts[ix[0]] = ix[1]
         }
         if (opts.auth !== undefined && opts.auth !== '') {
-            auth = `Basic ${opts['auth']}`
+            auth = `Basic ${decodeURIComponent(opts['auth'])}`
             requestHeaders.append("Authorization", auth);
             poll()
         } else {
