@@ -25,16 +25,21 @@
 
         .navbar {
             padding-bottom: 0;
-            height: 50px;
+            padding-top: 0;
+            height: 4%;
         }
 
         .control-menu {
-            margin-right: 20px;
+            margin-right: 25px;
         }
 
         #device_tree_area {
             overflow: auto;
             height: 100%;
+        }
+        main {
+            padding-top: 0;
+            margin-top: 0;
         }
     </style>
 </head>
@@ -65,8 +70,19 @@
                             <li><a class="dropdown-item" href="#" onclick="jwtModal(true)">jwt</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">about</a>
+                    <li class="nav-item dropdown control-menu">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           id="navbarDropdown" role="button">
+                            help
+                        </a>
+                        <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
+                            <li><a class="dropdown-item" target="_blank" href="https://github.com/m2ag-labs/m2ag-thing-builder/wiki/thing-builder">wiki</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" target="_blank" href="https://github.com/m2ag-labs/m2ag-thing-client/issues">client bugs</a></li>
+                            <li><a class="dropdown-item" target="_blank" href="https://github.com/m2ag-labs/m2ag-thing-builder/issues">thing bugs</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -166,6 +182,12 @@
         </div>
     </div>
 </main>
+<nav class="navbar fixed-bottom navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-light" href="#">© 2021 m2ag.labs</a>
+        <p class="navbar-light" href="#">beta 1.0 </p>
+    </div>
+</nav>
 <!-- Popper.js, then Bootstrap JS -->
 <script src="js/vendor/popper.min.js"></script>
 <script src="js/vendor/bootstrap.min.js"></script>
