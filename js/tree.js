@@ -346,8 +346,7 @@ const treeInit = () => { // jshint ignore:line
                     configManager('clear-login')
                     //alert(error)
                 })
-
-
+    create_device_tree()
     //TODO: move to webworker
     webTimer = setInterval(webWorkerFunction, 3000)
 

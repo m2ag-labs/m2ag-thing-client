@@ -228,7 +228,6 @@
                 }
                 if ('hash' in config && config.hash !== '') {
                     requestHeaders.append("Authorization", 'Basic ' + decodeURIComponent(config.hash));
-                    config.hash = config.hash
                     if (config.token === undefined) config.token = ''
                     return true;
                 } else {
