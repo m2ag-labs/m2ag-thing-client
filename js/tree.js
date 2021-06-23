@@ -341,12 +341,13 @@ const treeInit = () => { // jshint ignore:line
                         service_list[tree_data.data.services[i]] = false
                     }
                     webWorkerFunction()
+                    create_device_tree()
                 })// jshint ignore:line
                 .catch(error =>{
                     configManager('clear-login')
                     //alert(error)
                 })
-    create_device_tree()
+
     //TODO: move to webworker
     webTimer = setInterval(webWorkerFunction, 3000)
 
